@@ -1,0 +1,166 @@
+#include "gameList.h"
+
+using namespace std;
+
+GameList::GameList()
+{	
+}
+GameList::~GameList(void)
+{
+}
+
+
+void GameList::init(dbHandle& db_obj, float posX, float posY, int width, float height)
+{
+	//setup Database handeler
+	db = db_obj;
+	
+	listOfItems = db.getFullGamesList();
+
+	filteredListOfItems.clear();
+	int counter = 0;
+	for(int i = 0; i < listOfItems.size(); ++i)
+	{
+		if (listOfItems.at(i).region == "USA")
+			filteredListOfItems.push_back(listOfItems.at(i));
+	}
+	selectedItemNum = 0;
+
+	repeat = false;
+
+	//setup rectangle 
+	rectangle.setSize(sf::Vector2f(width, height));
+	rectangle.setPosition(posX, posY);
+	rectangle.setFillColor(sf::Color::Color(0,0,0,40));
+	rectangle.setOutlineColor(sf::Color::White);
+	rectangle.setOutlineThickness(1);
+
+
+	selectedFont.loadFromFile(".\\assets\\fonts\\Teknik-Bold.ttf");
+	normalFont.loadFromFile(".\\assets\\fonts\\Teknik-Bold.ttf");
+	normalFontSize = 14;
+	selectedFontSize = 20;
+
+
+	selectedText.setFont(selectedFont);
+	selectedText.setCharacterSize(19);
+	selectedText.setColor(sf::Color::Red);
+	selectedText.setString(filteredListOfItems.at(selectedItemNum).title);
+}
+
+
+
+void GameList::update()
+{
+	
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+	{
+		if (!repeat)
+		{
+			selectedItemNum++;
+			repeat = true;
+			counter = 0;
+		}
+		else
+		{
+			counter++;
+			if (counter > 10)
+				selectedItemNum++;
+		}
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+	{
+		if (!repeat)
+		{
+			selectedItemNum--;
+			repeat = true;
+			counter = 0;
+		}
+		else
+		{
+			counter++;
+			if (counter > 10)
+				selectedItemNum--;
+		}
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+	{
+		if (!repeat)
+		{
+			repeat = true;
+			filteredListOfItems.clear();
+			filteredListOfItems = db.getGamesListQuery("platform_id = 23");
+		}
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+	{
+		if (!repeat)
+		{
+			repeat = true;
+			filteredListOfItems.clear();
+			filteredListOfItems = db.getGamesListQuery("platform_id = 6 and region = 'USA' ");
+		}
+	}
+	else
+	{
+		repeat = false;
+		counter = 0;
+	}	
+	
+	//Lock selectedItemNum To size of the vector
+	if (selectedItemNum < 0)
+		selectedItemNum = filteredListOfItems.size() -1;
+	else if (selectedItemNum >= filteredListOfItems.size())
+		selectedItemNum = 0;
+
+	selectedText.setString(filteredListOfItems.at(selectedItemNum).title);
+}
+
+void GameList::draw(sf::RenderWindow& window)
+{
+	int selectedPosX = rectangle.getPosition().x + 30;
+	int selectedPosY = (rectangle.getSize().y / 2) + rectangle.getPosition().y;
+	selectedText.setPosition(selectedPosX, selectedPosY);
+	
+	sf::Texture flagTexture;
+	if (!flagTexture.loadFromFile(".\\assets\\icons\\FLAG_" + filteredListOfItems.at(selectedItemNum).region + ".png"))
+		flagTexture.loadFromFile(".\\assets\\icons\\FLAG_NO_FLAG.png"); //if cant load image use the no flag one
+
+	sf::Sprite flagSprite;
+	flagSprite.setTexture(flagTexture);
+	flagSprite.setPosition(selectedText.getPosition().x - 20, selectedText.getPosition().y + 6);
+
+	int numNormalItems = (rectangle.getSize().y - selectedFontSize) / normalFontSize;
+	float normalPosX = rectangle.getPosition().x, normalPosY = selectedPosY - selectedFontSize;
+	
+	window.draw(rectangle);	
+	window.draw(selectedText);
+	window.draw(flagSprite);
+
+	for(int i=0; i < numNormalItems/2; ++i)
+	{
+		int itemNum = selectedItemNum - i-1;
+		if (itemNum < 0)
+			itemNum = filteredListOfItems.size() + itemNum;
+
+		dbHandle::listItem item = filteredListOfItems.at(itemNum);
+
+		sf::Text normalText;
+		sf::Sprite normalFlagSprite;
+		sf::Texture normalFlagTexture;
+		
+		if (!normalFlagTexture.loadFromFile(".\\assets\\icons\\FLAG_" + item.region + ".png"))
+			normalFlagTexture.loadFromFile(".\\assets\\icons\\FLAG_NO_FLAG.png"); //if cant load image use the no flag one
+		normalFlagSprite.setTexture(normalFlagTexture);
+		normalFlagSprite.setPosition(normalPosX, normalPosY - (i*normalFontSize)+4);
+		window.draw(normalFlagSprite);
+
+		normalText.setFont(normalFont);
+		normalText.setCharacterSize(normalFontSize);
+		normalText.setColor(sf::Color(sf::Color::White));
+		normalText.setString(item.title);
+		normalText.setPosition(normalPosX + 20, normalPosY - (i*normalFontSize));
+		window.draw(normalText);
+	}
+
+}
