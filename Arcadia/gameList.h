@@ -12,7 +12,6 @@ class GameList
 		dbHandle db;
 		sf::Text selectedText;
 		std::vector<dbHandle::listItem> listOfItems;
-		std::vector<dbHandle::listItem> filteredListOfItems;
 		int selectedItemNum;
 		int counter;
 		bool repeat;

@@ -17,13 +17,7 @@ void GameList::init(dbHandle& db_obj, float posX, float posY, int width, float h
 	
 	listOfItems = db.getFullGamesList();
 
-	filteredListOfItems.clear();
-	int counter = 0;
-	for(int i = 0; i < listOfItems.size(); ++i)
-	{
-		if (listOfItems.at(i).region == "USA")
-			filteredListOfItems.push_back(listOfItems.at(i));
-	}
+	
 	selectedItemNum = 0;
 
 	repeat = false;
@@ -45,7 +39,7 @@ void GameList::init(dbHandle& db_obj, float posX, float posY, int width, float h
 	selectedText.setFont(selectedFont);
 	selectedText.setCharacterSize(19);
 	selectedText.setColor(sf::Color::Red);
-	selectedText.setString(filteredListOfItems.at(selectedItemNum).title);
+	selectedText.setString(listOfItems.at(selectedItemNum).title);
 }
 
 
@@ -88,8 +82,8 @@ void GameList::update()
 		if (!repeat)
 		{
 			repeat = true;
-			filteredListOfItems.clear();
-			filteredListOfItems = db.getGamesListQuery("platform_id = 23");
+			listOfItems.clear();
+			listOfItems = db.getGamesListQuery("platform_id = 23");
 		}
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
@@ -97,8 +91,8 @@ void GameList::update()
 		if (!repeat)
 		{
 			repeat = true;
-			filteredListOfItems.clear();
-			filteredListOfItems = db.getGamesListQuery("platform_id = 6 and region = 'USA' ");
+			listOfItems.clear();
+			listOfItems = db.getGamesListQuery("platform_id = 6 and region = 'USA' ");
 		}
 	}
 	else
@@ -109,11 +103,11 @@ void GameList::update()
 	
 	//Lock selectedItemNum To size of the vector
 	if (selectedItemNum < 0)
-		selectedItemNum = filteredListOfItems.size() -1;
-	else if (selectedItemNum >= filteredListOfItems.size())
+		selectedItemNum = listOfItems.size() -1;
+	else if (selectedItemNum >= listOfItems.size())
 		selectedItemNum = 0;
 
-	selectedText.setString(filteredListOfItems.at(selectedItemNum).title);
+	selectedText.setString(listOfItems.at(selectedItemNum).title);
 }
 
 void GameList::draw(sf::RenderWindow& window)
@@ -123,7 +117,7 @@ void GameList::draw(sf::RenderWindow& window)
 	selectedText.setPosition(selectedPosX, selectedPosY);
 	
 	sf::Texture flagTexture;
-	if (!flagTexture.loadFromFile(".\\assets\\icons\\FLAG_" + filteredListOfItems.at(selectedItemNum).region + ".png"))
+	if (!flagTexture.loadFromFile(".\\assets\\icons\\FLAG_" + listOfItems.at(selectedItemNum).region + ".png"))
 		flagTexture.loadFromFile(".\\assets\\icons\\FLAG_NO_FLAG.png"); //if cant load image use the no flag one
 
 	sf::Sprite flagSprite;
@@ -141,9 +135,9 @@ void GameList::draw(sf::RenderWindow& window)
 	{
 		int itemNum = selectedItemNum - i-1;
 		if (itemNum < 0)
-			itemNum = filteredListOfItems.size() + itemNum;
+			itemNum = listOfItems.size() + itemNum;
 
-		dbHandle::listItem item = filteredListOfItems.at(itemNum);
+		dbHandle::listItem item = listOfItems.at(itemNum);
 
 		sf::Text normalText;
 		sf::Sprite normalFlagSprite;
