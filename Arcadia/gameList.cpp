@@ -83,7 +83,7 @@ void GameList::update()
 		{
 			repeat = true;
 			listOfItems.clear();
-			listOfItems = db.getGamesListQuery("platform_id = 23");
+			listOfItems = db.getGamesListQuery("and platform_id = 23");
 		}
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
@@ -92,7 +92,7 @@ void GameList::update()
 		{
 			repeat = true;
 			listOfItems.clear();
-			listOfItems = db.getGamesListQuery("platform_id = 6 and region = 'USA' ");
+			listOfItems = db.getGamesListQuery("and platform_id = 6 and region = 'USA' ");
 		}
 	}
 	else
@@ -137,14 +137,20 @@ void GameList::draw(sf::RenderWindow& window)
 		if (itemNum < 0)
 			itemNum = listOfItems.size() + itemNum;
 
-		dbHandle::listItem item = listOfItems.at(itemNum);
+		dbHandle::gameListItem item = listOfItems.at(itemNum);
 
 		sf::Text normalText;
 		sf::Sprite normalFlagSprite;
 		sf::Texture normalFlagTexture;
 		
-		if (!normalFlagTexture.loadFromFile(".\\assets\\icons\\FLAG_" + item.region + ".png"))
-			normalFlagTexture.loadFromFile(".\\assets\\icons\\FLAG_NO_FLAG.png"); //if cant load image use the no flag one
+		if (item.region != "NULL")
+		{
+			if (!normalFlagTexture.loadFromFile(".\\assets\\icons\\FLAG_" + item.region + ".png"))
+				normalFlagTexture.loadFromFile(".\\assets\\icons\\FLAG_NO_FLAG.png"); //if cant load image use the no flag one
+		}
+		else
+			normalFlagTexture.create(1,1);
+
 		normalFlagSprite.setTexture(normalFlagTexture);
 		normalFlagSprite.setPosition(normalPosX, normalPosY - (i*normalFontSize)+4);
 		window.draw(normalFlagSprite);

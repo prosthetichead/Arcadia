@@ -12,19 +12,24 @@ private:
 	std::string db_fileName;
 
 public:
-	struct listItem {
+	struct gameListItem {
 		std::string title;
 		std::string gameID;
 		std::string region;
 		std::string platform;
 		std::string platformID;
 	};
+	struct filterListItem {
+		std::string title;
+		std::string filterIcon;
+		std::string filterString;
+	};
 
 	dbHandle(void);
 	dbHandle(std::string fileName);
-	std::vector<listItem> getFullGamesList();
+	std::vector<gameListItem> getFullGamesList();
 	void setFilePath(std::string fileName);
-	std::vector<dbHandle::listItem> dbHandle::getFullGamesList2();
-	std::vector<dbHandle::listItem> dbHandle::getGamesListQuery(std::string whereStatment);
+	std::vector<dbHandle::gameListItem> dbHandle::getFullGamesList2();
+	std::vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStatment);
 };
 

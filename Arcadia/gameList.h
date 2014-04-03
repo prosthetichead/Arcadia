@@ -11,10 +11,10 @@ class GameList
 		sf::Font normalFont;
 		dbHandle db;
 		sf::Text selectedText;
-		std::vector<dbHandle::listItem> listOfItems;
+		std::vector<dbHandle::gameListItem> listOfItems;
 		int selectedItemNum;
-		int counter;
-		bool repeat;
+		bool repeat; // used for input control (maybe moved to a input handeler?)
+		int counter; //used for input control (maybe moved to a input handeler?)
 		int normalFontSize;
 		int selectedFontSize;
 	public:
