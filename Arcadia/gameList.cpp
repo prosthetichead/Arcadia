@@ -44,62 +44,16 @@ void GameList::init(dbHandle& db_obj, float posX, float posY, int width, float h
 
 
 
-void GameList::update()
+void GameList::update(inputHandle::inputState inputStates)
 {
-	
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+	if (inputStates.up_press || inputStates.up_hold)
 	{
-		if (!repeat)
-		{
-			selectedItemNum++;
-			repeat = true;
-			counter = 0;
-		}
-		else
-		{
-			counter++;
-			if (counter > 10)
-				selectedItemNum++;
-		}
+		selectedItemNum++;
 	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+	else if (inputStates.down_press || inputStates.down_hold)
 	{
-		if (!repeat)
-		{
-			selectedItemNum--;
-			repeat = true;
-			counter = 0;
-		}
-		else
-		{
-			counter++;
-			if (counter > 10)
-				selectedItemNum--;
-		}
+		selectedItemNum--;
 	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-	{
-		if (!repeat)
-		{
-			repeat = true;
-			listOfItems.clear();
-			listOfItems = db.getGamesListQuery("and platform_id = 23");
-		}
-	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-	{
-		if (!repeat)
-		{
-			repeat = true;
-			listOfItems.clear();
-			listOfItems = db.getGamesListQuery("and platform_id = 6 and region = 'USA' ");
-		}
-	}
-	else
-	{
-		repeat = false;
-		counter = 0;
-	}	
 	
 	//Lock selectedItemNum To size of the vector
 	if (selectedItemNum < 0)

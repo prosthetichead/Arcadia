@@ -24,6 +24,7 @@ public:
 		std::string filterIcon;
 		std::string filterString;
 	};
+	
 
 	dbHandle(void);
 	dbHandle(std::string fileName);

@@ -8,11 +8,14 @@ private:
 	sf::RectangleShape rectangle;
 	int selectedItemNum;
 	std::vector<dbHandle::filterListItem> listOfItems;
+	dbHandle db;
 	
 public:
 	filterList(void);
 	~filterList(void);
-	void filterList::init(dbHandle& db_obj, float posX, float posY, int width, float height);
+	void filterList::update();
+	void filterList::draw(sf::RenderWindow& window);
+	void filterList::init(dbHandle& db_obj, float posX, float posY, int width, float height, std::vector<dbHandle::filterListItem> listItems);
 	void filterList::addNewFilterItem(dbHandle::filterListItem);
 };
 

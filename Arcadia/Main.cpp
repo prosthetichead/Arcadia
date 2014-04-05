@@ -3,6 +3,7 @@
 #include <windows.h>
 #include "gameList.h"
 #include "dbHandle.h"
+#include "inputHandle.h"
 
 
 void activateDebugConsole();
@@ -17,7 +18,8 @@ sf::RenderWindow window;
 sf::Event event;
 GameList gameList;
 dbHandle db;
- 
+inputHandle ih;
+
 
 //turns on the debug console
 void activateDebugConsole()
@@ -30,7 +32,7 @@ void activateDebugConsole()
 }
 int main()
 {
-	//activateDebugConsole();  //turn on debug console
+	activateDebugConsole();  //turn on debug console
 	initialize();
 
 	while (window.isOpen())
@@ -72,8 +74,8 @@ void initialize()
 
 void update()
 {
-	
-	gameList.update();
+	inputHandle::inputState inputStates = ih.update();
+	gameList.update(inputStates);
 
 }
 

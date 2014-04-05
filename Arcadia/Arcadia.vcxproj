@@ -84,7 +84,7 @@
   <ItemGroup>
     <ClCompile Include="dbHandle.cpp" />
     <ClCompile Include="gameList.cpp" />
-    <ClCompile Include="inputHandler.cpp" />
+    <ClCompile Include="inputHandle.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="filterList.cpp" />
     <ClCompile Include="sqlite3pp.cpp" />
@@ -92,8 +92,8 @@
   <ItemGroup>
     <ClInclude Include="dbHandle.h" />
     <ClInclude Include="gameList.h" />
-    <ClInclude Include="inputHandler.h" />
     <ClInclude Include="filterList.h" />
+    <ClInclude Include="inputHandle.h" />
     <ClInclude Include="sqlite3pp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

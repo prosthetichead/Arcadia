@@ -21,9 +21,6 @@
     <ClCompile Include="gameList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="inputHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="sqlite3pp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -33,12 +30,12 @@
     <ClCompile Include="filterList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="inputHandle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="inputHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sqlite3pp.h">
@@ -48,6 +45,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="filterList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="inputHandle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

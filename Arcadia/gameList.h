@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "dbHandle.h"
+#include "inputHandle.h"
 
 
 class GameList
@@ -21,7 +22,7 @@ class GameList
 		GameList();
 		~GameList(void);
 		void GameList::init(dbHandle& db_obj, float posX, float posY, int width, float height);
-		void GameList::update();
+		void GameList::update(inputHandle::inputState inputStates);
 		void GameList::draw(sf::RenderWindow& window);
 		void GameList::setPlatform(std::string platformID);
 };
