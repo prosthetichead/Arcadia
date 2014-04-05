@@ -29,11 +29,32 @@ void filterList::init(dbHandle& db_obj, float posX, float posY, int width, float
 	rectangle.setOutlineThickness(1);
 }
 
-void filterList::update()
+bool filterList::update(inputHandle::inputState inputStates)
 {
+	bool newFilter = false;
+	if (inputStates.left_press || inputStates.left_hold)
+	{
+		selectedItemNum++;
+		newFilter = true;
+	}
+	else if (inputStates.right_press || inputStates.right_hold)
+	{
+		selectedItemNum--;
+		newFilter = true;
+	}
+	
+	//Lock selectedItemNum To size of the vector
+	if (selectedItemNum < 0)
+		selectedItemNum = listOfItems.size() -1;
+	else if (selectedItemNum >= listOfItems.size())
+		selectedItemNum = 0;
+	
+	return newFilter;
+}
 
-
-
+std::string filterList::getFilterString()
+{
+	return listOfItems.at(selectedItemNum).filterString;
 }
 
 void filterList::draw(sf::RenderWindow& window)

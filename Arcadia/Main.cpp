@@ -4,7 +4,7 @@
 #include "gameList.h"
 #include "dbHandle.h"
 #include "inputHandle.h"
-
+#include "filterList.h"
 
 void activateDebugConsole();
 void initialize();
@@ -19,7 +19,7 @@ sf::Event event;
 GameList gameList;
 dbHandle db;
 inputHandle ih;
-
+filterList platformFilter;
 
 //turns on the debug console
 void activateDebugConsole()
@@ -65,6 +65,7 @@ void initialize()
 {	
 	db.setFilePath("database.db");
 	gameList.init(db, 5, 30, 500, 1000);
+	platformFilter.init(db, 5, 30, 500, 1000, );
 
 
 	window.create(sf::VideoMode(1400, 1050), "Arcadia");
@@ -72,13 +73,14 @@ void initialize()
 }
 
 
+
+
 void update()
 {
-	inputHandle::inputState inputStates = ih.update();
+	inputHandle::inputState inputStates = ih.update(); //Get Input States
 	gameList.update(inputStates);
 
 }
-
 
 void draw()
 {

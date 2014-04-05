@@ -70,5 +70,10 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 			results.push_back(newItem);
 	}
 	return results;
+}
+
+std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
+{
+	vector<dbHandle::filterListItem> filterList;
 
 }
