@@ -84,9 +84,13 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 
 		dbHandle::filterListItem newItem;
 		std::string platform_ID = (*i).get<const char*>(0);
+		std::string platform_alias = (*i).get<const char*>(2);
 		newItem.filterString = "platform_id = " + platform_ID;
 		newItem.title = (*i).get<const char*>(1);
+		newItem.filterIcon = ".\\assets\\icons\\PLATFORM_" + platform_alias + ".png"; 
+
 		filterList.push_back(newItem);
+		
 	}
 	return filterList;
 	

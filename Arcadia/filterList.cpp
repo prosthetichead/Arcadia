@@ -1,5 +1,7 @@
 #include "filterList.h"
 
+bool newFilter = false;
+float selectedScale = 2;
 
 filterList::filterList(void)
 {
@@ -31,11 +33,9 @@ void filterList::init(dbHandle& db_obj, float posX, float posY, int width, float
 
 bool filterList::update(inputHandle::inputState inputStates)
 {
-
-	bool newFilter = false;
+	newFilter = false;
 	if (inputStates.left_press || inputStates.left_hold)
 	{
-				std::cout << "filterList Update";
 		selectedItemNum++;
 		newFilter = true;
 	}
@@ -61,5 +61,27 @@ std::string filterList::getFilterString()
 
 void filterList::draw(sf::RenderWindow& window)
 {
+	sf::Sprite selectedSprite;
+	sf::Texture selectedTexture;
+	
+	dbHandle::filterListItem selectedItem = listOfItems.at(selectedItemNum);
 
+	selectedTexture.loadFromFile(selectedItem.filterIcon);
+	
+	selectedSprite.setTexture(selectedTexture);
+	if (newFilter)
+		selectedScale = 6;
+	if (selectedScale > 2) 
+		selectedScale = selectedScale - 0.3; 
+	else 
+		selectedScale = 2;
+	selectedSprite.setScale(selectedScale, selectedScale);
+	selectedSprite.setOrigin(32/2, 32/2);
+
+	selectedSprite.setPosition(rectangle.getPosition().x,rectangle.getPosition().y);
+
+
+
+	window.draw(selectedSprite);
+	
 }

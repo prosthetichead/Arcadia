@@ -66,7 +66,7 @@ void initialize()
 	db.setFilePath("database.db");
 	gameList.init(db, 5, 30, 500, 1000);
 
-	platformFilter.init(db, 5, 30, 500, 1000, db.getPlatformFilterList());
+	platformFilter.init(db, 300, 300, 32, 32, db.getPlatformFilterList());
 
 
 	window.create(sf::VideoMode(1400, 1050), "Arcadia");
@@ -91,7 +91,7 @@ void draw()
 	window.clear(sf::Color::Black);
 	
 	gameList.draw(window);
-
+	platformFilter.draw(window);
 	window.display();
 }
 
