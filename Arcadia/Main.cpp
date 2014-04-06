@@ -64,10 +64,9 @@ int main()
 void initialize()
 {	
 	db.setFilePath("database.db");
-	gameList.init(db, 5, 30, 500, 1000);
-
-	platformFilter.init(db, 300, 300, 32, 32, db.getPlatformFilterList());
-
+	gameList.init(db, 1, 80, 500, 800);
+	platformFilter.init(db, 1, 50, 500, db.getPlatformFilterList());
+	gameList.updateFilter(platformFilter.getFilterString());
 
 	window.create(sf::VideoMode(1400, 1050), "Arcadia");
 	window.setFramerateLimit(30); //window.setVerticalSyncEnabled(true);
@@ -80,7 +79,7 @@ void update()
 {
 	inputHandle::inputState inputStates = ih.update(); //Get Input States
 	if (platformFilter.update(inputStates))
-		gameList.updateFilter("and " + platformFilter.getFilterString());
+		gameList.updateFilter(platformFilter.getFilterString());
 	gameList.update(inputStates);
 
 }

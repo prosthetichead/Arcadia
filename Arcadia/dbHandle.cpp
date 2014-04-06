@@ -46,7 +46,6 @@ vector<dbHandle::gameListItem> dbHandle::getFullGamesList()
 
 vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStatment)
 {
-	std::cout << "select games.name, games.game_id, games.region, platforms.alias from games, platforms where games.platform_id = platforms.id " + whereStatment;
 	vector<dbHandle::gameListItem> results;
 	sqlite3pp::database db("database.db");
 	std::string query = "select games.name, games.game_id, games.region, platforms.alias from games, platforms where games.platform_id = platforms.id " + whereStatment; 
@@ -76,16 +75,23 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 {
 	vector<dbHandle::filterListItem> filterList;
+	
+	//Add the all items filter as first filter
+	dbHandle::filterListItem newItemAll;
+	newItemAll.filterIcon = ".\\assets\\icons\\PLATFORM_ALL.PNG";
+	newItemAll.filterString = " ";
+	newItemAll.title = "All Platforms";
+	filterList.push_back(newItemAll);
+
 	sqlite3pp::database db("database.db");
 	std::string query = "select distinct platforms.id, platforms.name, platforms.alias from platforms, games where games.platform_id = platforms.id and games.active = 1";
 	sqlite3pp::query qry(db, query.c_str());
 	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
 	{
-
 		dbHandle::filterListItem newItem;
 		std::string platform_ID = (*i).get<const char*>(0);
 		std::string platform_alias = (*i).get<const char*>(2);
-		newItem.filterString = "platform_id = " + platform_ID;
+		newItem.filterString = "and platform_id = " + platform_ID;
 		newItem.title = (*i).get<const char*>(1);
 		newItem.filterIcon = ".\\assets\\icons\\PLATFORM_" + platform_alias + ".png"; 
 

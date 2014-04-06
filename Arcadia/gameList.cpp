@@ -15,7 +15,7 @@ void GameList::init(dbHandle& db_obj, float posX, float posY, int width, float h
 	//setup Database handeler
 	db = db_obj;
 	
-	listOfItems = db.getFullGamesList();
+	//listOfItems = db.getFullGamesList();
 
 	
 	selectedItemNum = 0;
@@ -39,7 +39,6 @@ void GameList::init(dbHandle& db_obj, float posX, float posY, int width, float h
 	selectedText.setFont(selectedFont);
 	selectedText.setCharacterSize(19);
 	selectedText.setColor(sf::Color::Red);
-	selectedText.setString(listOfItems.at(selectedItemNum).title);
 }
 
 void GameList::updateFilter(std::string filterString)
@@ -84,9 +83,11 @@ void GameList::draw(sf::RenderWindow& window)
 	flagSprite.setPosition(selectedText.getPosition().x - 20, selectedText.getPosition().y + 6);
 
 	int numNormalItems = (rectangle.getSize().y - selectedFontSize) / normalFontSize;
+	if (numNormalItems > listOfItems.size())
+		numNormalItems = listOfItems.size();
 	float normalPosX = rectangle.getPosition().x, normalPosY = selectedPosY - selectedFontSize;
 	
-	window.draw(rectangle);	
+	//window.draw(rectangle);	
 	window.draw(selectedText);
 	window.draw(flagSprite);
 
