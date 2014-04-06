@@ -123,4 +123,38 @@ void GameList::draw(sf::RenderWindow& window)
 		window.draw(normalText);
 	}
 
+	normalPosX = rectangle.getPosition().x;
+	normalPosY = selectedPosY + selectedFontSize + 8;
+	for(int i=0; i < numNormalItems/2; ++i)
+	{
+		int itemNum = selectedItemNum + i + 1;
+		if (itemNum > listOfItems.size() - 1)
+			itemNum = 0 + (itemNum - listOfItems.size());
+			
+		dbHandle::gameListItem item = listOfItems.at(itemNum);
+
+		sf::Text normalText;
+		sf::Sprite normalFlagSprite;
+		sf::Texture normalFlagTexture;
+		
+		if (item.region != "NULL")
+		{
+			if (!normalFlagTexture.loadFromFile(".\\assets\\icons\\FLAG_" + item.region + ".png"))
+				normalFlagTexture.loadFromFile(".\\assets\\icons\\FLAG_NO_FLAG.png"); //if cant load image use the no flag one
+		}
+		else
+			normalFlagTexture.create(1,1);
+
+		normalFlagSprite.setTexture(normalFlagTexture);
+		normalFlagSprite.setPosition(normalPosX, normalPosY + (i*normalFontSize)+4);
+		window.draw(normalFlagSprite);
+
+		normalText.setFont(normalFont);
+		normalText.setCharacterSize(normalFontSize);
+		normalText.setColor(sf::Color(sf::Color::White));
+		normalText.setString(item.title);
+		normalText.setPosition(normalPosX + 20, normalPosY + (i*normalFontSize));
+		window.draw(normalText);
+	}
+
 }
