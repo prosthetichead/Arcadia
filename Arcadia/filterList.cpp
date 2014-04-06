@@ -31,9 +31,11 @@ void filterList::init(dbHandle& db_obj, float posX, float posY, int width, float
 
 bool filterList::update(inputHandle::inputState inputStates)
 {
+
 	bool newFilter = false;
 	if (inputStates.left_press || inputStates.left_hold)
 	{
+				std::cout << "filterList Update";
 		selectedItemNum++;
 		newFilter = true;
 	}

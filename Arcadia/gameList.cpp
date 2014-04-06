@@ -42,17 +42,22 @@ void GameList::init(dbHandle& db_obj, float posX, float posY, int width, float h
 	selectedText.setString(listOfItems.at(selectedItemNum).title);
 }
 
+void GameList::updateFilter(std::string filterString)
+{
+	selectedItemNum = 0;
+	listOfItems = db.getGamesListQuery(filterString);
 
+}
 
 void GameList::update(inputHandle::inputState inputStates)
 {
 	if (inputStates.up_press || inputStates.up_hold)
 	{
-		selectedItemNum++;
+		selectedItemNum--;
 	}
 	else if (inputStates.down_press || inputStates.down_hold)
 	{
-		selectedItemNum--;
+		selectedItemNum++;
 	}
 	
 	//Lock selectedItemNum To size of the vector

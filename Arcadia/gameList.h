@@ -24,6 +24,6 @@ class GameList
 		void GameList::init(dbHandle& db_obj, float posX, float posY, int width, float height);
 		void GameList::update(inputHandle::inputState inputStates);
 		void GameList::draw(sf::RenderWindow& window);
-		void GameList::setPlatform(std::string platformID);
+		void GameList::updateFilter(std::string filterString);
 };
 

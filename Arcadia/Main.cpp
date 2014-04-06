@@ -65,7 +65,8 @@ void initialize()
 {	
 	db.setFilePath("database.db");
 	gameList.init(db, 5, 30, 500, 1000);
-	platformFilter.init(db, 5, 30, 500, 1000, );
+
+	platformFilter.init(db, 5, 30, 500, 1000, db.getPlatformFilterList());
 
 
 	window.create(sf::VideoMode(1400, 1050), "Arcadia");
@@ -78,6 +79,8 @@ void initialize()
 void update()
 {
 	inputHandle::inputState inputStates = ih.update(); //Get Input States
+	if (platformFilter.update(inputStates))
+		gameList.updateFilter("and " + platformFilter.getFilterString());
 	gameList.update(inputStates);
 
 }

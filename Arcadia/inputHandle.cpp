@@ -45,6 +45,38 @@ inputHandle::inputState inputHandle::update()
 				inputStates.down_hold = true;
 		}	
 	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+	{
+		if (!repeat)
+		{
+			repeat = true;
+			inputStates.left_press = true;
+			counter = 0;
+		}
+		else
+		{
+			inputStates.left_press = false;
+			counter++;
+			if (counter > 10)
+				inputStates.left_hold = true;
+		}	
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+	{
+		if (!repeat)
+		{
+			repeat = true;
+			inputStates.right_press = true;
+			counter = 0;
+		}
+		else
+		{
+			inputStates.right_press = false;
+			counter++;
+			if (counter > 10)
+				inputStates.right_hold = true;
+		}	
+	}
 	else
 	{
 		clear();
