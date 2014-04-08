@@ -5,6 +5,7 @@
 #include "dbHandle.h"
 #include "inputHandle.h"
 #include "filterList.h"
+#include "launcher.h"
 
 void activateDebugConsole();
 void initialize();
@@ -19,7 +20,10 @@ sf::Event event;
 GameList gameList;
 dbHandle db;
 inputHandle ih;
+launcher launch;
 filterList platformFilter;
+std::string path;
+inputHandle::inputState inputStates;
 
 //turns on the debug console
 void activateDebugConsole()
@@ -30,13 +34,29 @@ void activateDebugConsole()
 	freopen("CONOUT$", "w",stderr);
 	printf( "--DEBUG CONSOLE-- \n" );
 }
+std::string getExePath()
+  {
+	char appPath[MAX_PATH];//always use MAX_PATH for filepaths
+	GetModuleFileNameA(NULL,appPath,sizeof(appPath));
+	std::string strAppDirectory = appPath;
+	strAppDirectory = strAppDirectory.substr(0, strAppDirectory.rfind("\\"));
+	return strAppDirectory;
+  }
+
 int main()
 {
 	activateDebugConsole();  //turn on debug console
+	path = getExePath();
+	std::cout << path << std::endl;
 	initialize();
 
 	while (window.isOpen())
    {	
+		inputStates = ih.update(); //Get Input States
+		
+		if((inputStates.exit_press) && (launch.processRunning))
+			launch.terminate();
+
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
@@ -63,25 +83,29 @@ int main()
 //runs just once
 void initialize()
 {	
-	db.setFilePath("database.db");
+	db.setFilePath(path, "database.db");
 	gameList.init(db, 1, 80, 500, 800);
 	platformFilter.init(db, 1, 50, 500, db.getPlatformFilterList());
 	gameList.updateFilter(platformFilter.getFilterString());
 
+	launch.init(db);
+
 	window.create(sf::VideoMode(1400, 1050), "Arcadia");
 	window.setFramerateLimit(30); //window.setVerticalSyncEnabled(true);
+
+	
 }
-
-
-
 
 void update()
 {
-	inputHandle::inputState inputStates = ih.update(); //Get Input States
+	
 	if (platformFilter.update(inputStates))
+	{
 		gameList.updateFilter(platformFilter.getFilterString());
+		launch.launchGame();
+		
+	}
 	gameList.update(inputStates);
-
 }
 
 void draw()

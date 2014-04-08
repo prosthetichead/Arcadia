@@ -10,8 +10,11 @@ class dbHandle
 {
 private:
 	std::string db_fileName;
+	
 
 public:
+	std::string exe_path;
+
 	struct gameListItem {
 		std::string title;
 		std::string gameID;
@@ -27,11 +30,11 @@ public:
 	
 
 	dbHandle(void);
-	dbHandle(std::string fileName);
 	std::vector<gameListItem> getFullGamesList();
-	void setFilePath(std::string fileName);
+	void setFilePath(std::string path, std::string fileName);
 	std::vector<dbHandle::gameListItem> dbHandle::getFullGamesList2();
 	std::vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStatment);
 	std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList();
+
 };
 

@@ -77,6 +77,22 @@ inputHandle::inputState inputHandle::update()
 				inputStates.right_hold = true;
 		}	
 	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+	{
+		if (!repeat)
+		{
+			repeat = true;
+			inputStates.exit_press = true;
+			counter = 0;
+		}
+		else
+		{
+			inputStates.exit_press = false;
+			counter++;
+			if (counter > 10)
+				inputStates.exit_hold = true;
+		}	
+	}
 	else
 	{
 		clear();
@@ -98,6 +114,8 @@ void inputHandle::clear()
 	inputStates.btn_1_hold = false;
 	inputStates.btn_2_press = false;
 	inputStates.btn_2_hold = false;
+	inputStates.exit_press = false;
+	inputStates.exit_hold = false;
 	repeat = false;
 	counter = 0;
 }

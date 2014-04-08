@@ -20,6 +20,8 @@ public:
 		bool btn_1_hold;
 		bool btn_2_press;
 		bool btn_2_hold;
+		bool exit_press;
+		bool exit_hold;
 	};
 
 	inputHandle(void);

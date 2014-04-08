@@ -6,20 +6,18 @@ dbHandle::dbHandle(void)
 {
 	db_fileName = " ";
 }
-dbHandle::dbHandle(std::string fileName)
+
+void dbHandle::setFilePath(std::string path, std::string fileName)
 {
-	db_fileName = fileName;
-}
-void dbHandle::setFilePath(std::string fileName)
-{
-	db_fileName = fileName;
+	exe_path = path;
+	db_fileName = path + "\\" + fileName;
 }
 
 vector<dbHandle::gameListItem> dbHandle::getFullGamesList()
 {
 	vector<dbHandle::gameListItem> results;
 	results.reserve(400000);
-	sqlite3pp::database db("database.db");
+	sqlite3pp::database db(db_fileName.c_str());
 	sqlite3pp::query qry(db, "select games.name, games.game_id, games.region, platforms.alias from games, platforms where games.platform_id = platforms.id");
 	
 	sqlite3pp::query::iterator intBegin = qry.begin();
@@ -47,7 +45,7 @@ vector<dbHandle::gameListItem> dbHandle::getFullGamesList()
 vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStatment)
 {
 	vector<dbHandle::gameListItem> results;
-	sqlite3pp::database db("database.db");
+	sqlite3pp::database db(db_fileName.c_str());
 	std::string query = "select games.name, games.game_id, games.region, platforms.alias from games, platforms where games.platform_id = platforms.id " + whereStatment; 
 	sqlite3pp::query qry(db, query.c_str());
 	sqlite3pp::query::iterator intBegin = qry.begin();
@@ -83,7 +81,7 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 	newItemAll.title = "All Platforms";
 	filterList.push_back(newItemAll);
 
-	sqlite3pp::database db("database.db");
+	sqlite3pp::database db(db_fileName.c_str());
 	std::string query = "select distinct platforms.id, platforms.name, platforms.alias from platforms, games where games.platform_id = platforms.id and games.active = 1";
 	sqlite3pp::query qry(db, query.c_str());
 	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
