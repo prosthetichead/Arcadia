@@ -25,5 +25,6 @@ class GameList
 		void GameList::update(inputHandle::inputState inputStates);
 		void GameList::draw(sf::RenderWindow& window);
 		void GameList::updateFilter(std::string filterString);
+		dbHandle::gameListItem  GameList::getCurrentItem();
 };
 

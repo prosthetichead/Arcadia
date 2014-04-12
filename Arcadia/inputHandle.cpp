@@ -77,7 +77,25 @@ inputHandle::inputState inputHandle::update()
 				inputStates.right_hold = true;
 		}	
 	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))					 //   btn_1
+	{
+		if (!repeat)
+		{
+			repeat = true;
+			inputStates.btn_1_press = true;
+			counter = 0;
+		}
+		else
+		{
+			inputStates.btn_1_press = false;
+			counter++;
+			if (counter > 10)
+				inputStates.btn_1_hold = true;
+		}	
+	}
+
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))				//		Exit
 	{
 		if (!repeat)
 		{

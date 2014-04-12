@@ -18,13 +18,24 @@ void launcher::init(dbHandle& db_obj)
 {
 	db = db_obj;
 }
+
 bool launcher::terminate()
 {
 	TerminateProcess(pi.hProcess, 1);
 	processRunning = false;
 	return true;
 }
-bool launcher::launchGame()
+
+bool launcher::update(inputHandle::inputState inputStates, dbHandle::gameListItem gameItem)
+{
+	if(inputStates.btn_1_press)
+	{
+		launchGame(db.getLaunchCode(gameItem.platformID, gameItem.gameID));
+	}
+	return true;
+}
+
+bool launcher::launchGame(std::string commandString)
 {
 	if (processRunning)
 	{
@@ -32,7 +43,8 @@ bool launcher::launchGame()
 		processRunning = false;
 	}
 
-	LPTSTR szCmdline = _tcsdup(TEXT("C:\\Users\\Ashley\\Documents\\Visual Studio 2012\\Projects\\Arcadia\\Release\\platforms\\NES\\emu\\fceux.exe \"C:\\Users\\Ashley\\Documents\\Visual Studio 2012\\Projects\\Arcadia\\Arcadia\\platforms\\NES\\roms\\River City Ransom (USA).nes\" "));
+	std::wstring test;
+	LPSTR szCmdline = const_cast<char *>(commandString.c_str());
 	DWORD dwExitCode = 0;
 
 	
@@ -40,7 +52,7 @@ bool launcher::launchGame()
 	si.cb = sizeof(si);
 	ZeroMemory( &pi, sizeof(pi) );
 	if (!
-	CreateProcess
+		CreateProcess
 			(
 			NULL,
 			szCmdline
@@ -52,7 +64,7 @@ bool launcher::launchGame()
 			)
 			)
 		{
-			std::cout << "Unable to execute.";
+			std::cout << "Unable to execute." << std::endl;
 			return false;
 		}
 

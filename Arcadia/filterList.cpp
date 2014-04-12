@@ -5,7 +5,7 @@ float selectedScale = 2;
 
 filterList::filterList(void)
 {
-
+	selectedItemNum = 1;
 }
 
 
@@ -19,10 +19,7 @@ void filterList::init(dbHandle& db_obj, float posX, float posY, int width, std::
 	db = db_obj;
 	
 	listOfItems = listItems; 
-
-	
-	selectedItemNum = 1;
-	
+		
 	//setup rectangle 
 	rectangle.setSize(sf::Vector2f(width, 0));
 	rectangle.setPosition(posX, posY);

@@ -18,7 +18,7 @@ vector<dbHandle::gameListItem> dbHandle::getFullGamesList()
 	vector<dbHandle::gameListItem> results;
 	results.reserve(400000);
 	sqlite3pp::database db(db_fileName.c_str());
-	sqlite3pp::query qry(db, "select games.name, games.game_id, games.region, platforms.alias from games, platforms where games.platform_id = platforms.id");
+	sqlite3pp::query qry(db, "select games.name, games.game_id, games.region, platforms.alias, platforms.id from games, platforms where games.platform_id = platforms.id");
 	
 	sqlite3pp::query::iterator intBegin = qry.begin();
 	sqlite3pp::query::iterator intEnd = qry.end();
@@ -36,9 +36,11 @@ vector<dbHandle::gameListItem> dbHandle::getFullGamesList()
 				newItem.platform = "NULL";
 			else
 				newItem.platform = (*i).get<const char*>(3);
-			
+			newItem.platformID =  (*i).get<const char*>(4);
+
 			results.push_back(newItem);
 	}
+	db.disconnect();
 	return results;
 }
 
@@ -46,7 +48,7 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 {
 	vector<dbHandle::gameListItem> results;
 	sqlite3pp::database db(db_fileName.c_str());
-	std::string query = "select games.name, games.game_id, games.region, platforms.alias from games, platforms where games.platform_id = platforms.id " + whereStatment; 
+	std::string query = "select games.name, games.game_id, games.region, platforms.alias, platforms.id from games, platforms where games.platform_id = platforms.id and games.active = 1 " + whereStatment; 
 	sqlite3pp::query qry(db, query.c_str());
 	sqlite3pp::query::iterator intBegin = qry.begin();
 	sqlite3pp::query::iterator intEnd = qry.end();
@@ -64,9 +66,11 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 				newItem.platform = "NULL";
 			else
 				newItem.platform = (*i).get<const char*>(3);
-			
+			newItem.platformID =  (*i).get<const char*>(4);
+
 			results.push_back(newItem);
 	}
+	db.disconnect();
 	return results;
 }
 
@@ -76,7 +80,7 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 	
 	//Add the all items filter as first filter
 	dbHandle::filterListItem newItemAll;
-	newItemAll.filterIcon = ".\\assets\\icons\\PLATFORM_ALL.PNG";
+	newItemAll.filterIcon = exe_path + "\\assets\\icons\\PLATFORM_ALL.PNG";
 	newItemAll.filterString = " ";
 	newItemAll.title = "All Platforms";
 	filterList.push_back(newItemAll);
@@ -91,11 +95,50 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 		std::string platform_alias = (*i).get<const char*>(2);
 		newItem.filterString = "and platform_id = " + platform_ID;
 		newItem.title = (*i).get<const char*>(1);
-		newItem.filterIcon = ".\\assets\\icons\\PLATFORM_" + platform_alias + ".png"; 
+		newItem.filterIcon = exe_path + "\\assets\\icons\\PLATFORM_" + platform_alias + ".png"; 
 
 		filterList.push_back(newItem);
 		
 	}
-	return filterList;
+	return filterList;	
+}
+
+std::string dbHandle::getLaunchCode(std::string platform_id, std::string game_id)
+{
+
 	
+	sqlite3pp::database db(db_fileName.c_str());
+	std::string query = "select load_string, game_path, roms_path, file_name from games, platforms where platforms.id = '" + platform_id + "' and game_id = '" + game_id + "'"; 
+	sqlite3pp::query qry(db, query.c_str());
+	std::string load_string = "";
+	std::string game_path = "";
+	std::string roms_path = "";
+	std::string file_name = "";
+	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
+	{
+		if ((*i).get<const char*>(0) != NULL)
+			load_string = (*i).get<const char*>(0);
+		
+		if ((*i).get<const char*>(1) != NULL)
+			game_path = (*i).get<const char*>(1);
+
+		if ((*i).get<const char*>(2) != NULL)
+			roms_path = (*i).get<const char*>(2);
+		
+		if ((*i).get<const char*>(3) != NULL)
+			file_name = (*i).get<const char*>(3);
+
+
+	}
+	
+	boost::replace_all(load_string, "%GAME_PATH%", game_path);
+	boost::replace_all(load_string, "%ROMS_PATH%", roms_path);
+	boost::replace_all(load_string, "%FILE_NAME%", file_name);
+
+	boost::replace_all(load_string, "%PATH%", exe_path);
+	cout << "STRING = " << load_string << endl;
+	
+	db.disconnect();
+	return load_string;
+
 }

@@ -45,7 +45,7 @@ std::string getExePath()
 
 int main()
 {
-	activateDebugConsole();  //turn on debug console
+	//activateDebugConsole();  //turn on debug console
 	path = getExePath();
 	std::cout << path << std::endl;
 	initialize();
@@ -84,16 +84,13 @@ int main()
 void initialize()
 {	
 	db.setFilePath(path, "database.db");
+	launch.init(db);
 	gameList.init(db, 1, 80, 500, 800);
 	platformFilter.init(db, 1, 50, 500, db.getPlatformFilterList());
 	gameList.updateFilter(platformFilter.getFilterString());
 
-	launch.init(db);
-
 	window.create(sf::VideoMode(1400, 1050), "Arcadia");
 	window.setFramerateLimit(30); //window.setVerticalSyncEnabled(true);
-
-	
 }
 
 void update()
@@ -101,11 +98,11 @@ void update()
 	
 	if (platformFilter.update(inputStates))
 	{
-		gameList.updateFilter(platformFilter.getFilterString());
-		launch.launchGame();
-		
+		gameList.updateFilter(platformFilter.getFilterString());		
 	}
 	gameList.update(inputStates);
+
+	launch.update(inputStates, gameList.getCurrentItem());
 }
 
 void draw()

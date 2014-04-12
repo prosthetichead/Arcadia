@@ -4,38 +4,31 @@ using namespace std;
 
 GameList::GameList()
 {	
+	selectedItemNum = 0;
+	repeat = false;
 }
 GameList::~GameList(void)
 {
 }
 
 
-void GameList::init(dbHandle& db_obj, float posX, float posY, int width, float height)
+void GameList::init(dbHandle& db_obj,  float posX, float posY, int width, float height)
 {
 	//setup Database handeler
 	db = db_obj;
-	
-	//listOfItems = db.getFullGamesList();
-
-	
-	selectedItemNum = 0;
-
-	repeat = false;
-
+		
 	//setup rectangle 
 	rectangle.setSize(sf::Vector2f(width, height));
 	rectangle.setPosition(posX, posY);
 	rectangle.setFillColor(sf::Color::Color(0,0,0,40));
 	rectangle.setOutlineColor(sf::Color::White);
 	rectangle.setOutlineThickness(1);
-
-
-	selectedFont.loadFromFile(".\\assets\\fonts\\Teknik-Bold.ttf");
-	normalFont.loadFromFile(".\\assets\\fonts\\Teknik-Bold.ttf");
+	
+	selectedFont.loadFromFile(db.exe_path + "\\assets\\fonts\\Teknik-Bold.ttf");
+	normalFont.loadFromFile(db.exe_path + "\\assets\\fonts\\Teknik-Bold.ttf");
 	normalFontSize = 14;
 	selectedFontSize = 20;
-
-
+	
 	selectedText.setFont(selectedFont);
 	selectedText.setCharacterSize(19);
 	selectedText.setColor(sf::Color::Red);
@@ -46,6 +39,11 @@ void GameList::updateFilter(std::string filterString)
 	selectedItemNum = 0;
 	listOfItems = db.getGamesListQuery(filterString);
 
+}
+
+dbHandle::gameListItem  GameList::getCurrentItem()
+{
+	return listOfItems.at(selectedItemNum);
 }
 
 void GameList::update(inputHandle::inputState inputStates)
@@ -75,9 +73,13 @@ void GameList::draw(sf::RenderWindow& window)
 	selectedText.setPosition(selectedPosX, selectedPosY);
 	
 	sf::Texture flagTexture;
-	if (!flagTexture.loadFromFile(".\\assets\\icons\\FLAG_" + listOfItems.at(selectedItemNum).region + ".png"))
-		flagTexture.loadFromFile(".\\assets\\icons\\FLAG_NO_FLAG.png"); //if cant load image use the no flag one
-
+	if (listOfItems.at(selectedItemNum).region != "NULL")
+	{
+		if (!flagTexture.loadFromFile(db.exe_path + "\\assets\\icons\\FLAG_" + listOfItems.at(selectedItemNum).region + ".png"))
+			flagTexture.loadFromFile(db.exe_path + "\\assets\\icons\\FLAG_NO_FLAG.png"); //if cant load image use the no flag one
+	}
+	else
+		flagTexture.create(1,1);
 	sf::Sprite flagSprite;
 	flagSprite.setTexture(flagTexture);
 	flagSprite.setPosition(selectedText.getPosition().x - 20, selectedText.getPosition().y + 6);
@@ -105,8 +107,8 @@ void GameList::draw(sf::RenderWindow& window)
 		
 		if (item.region != "NULL")
 		{
-			if (!normalFlagTexture.loadFromFile(".\\assets\\icons\\FLAG_" + item.region + ".png"))
-				normalFlagTexture.loadFromFile(".\\assets\\icons\\FLAG_NO_FLAG.png"); //if cant load image use the no flag one
+			if (!normalFlagTexture.loadFromFile(db.exe_path + "\\assets\\icons\\FLAG_" + item.region + ".png"))
+				normalFlagTexture.loadFromFile(db.exe_path + "\\assets\\icons\\FLAG_NO_FLAG.png"); //if cant load image use the no flag one
 		}
 		else
 			normalFlagTexture.create(1,1);
@@ -139,8 +141,8 @@ void GameList::draw(sf::RenderWindow& window)
 		
 		if (item.region != "NULL")
 		{
-			if (!normalFlagTexture.loadFromFile(".\\assets\\icons\\FLAG_" + item.region + ".png"))
-				normalFlagTexture.loadFromFile(".\\assets\\icons\\FLAG_NO_FLAG.png"); //if cant load image use the no flag one
+			if (!normalFlagTexture.loadFromFile(db.exe_path + "\\assets\\icons\\FLAG_" + item.region + ".png"))
+				normalFlagTexture.loadFromFile(db.exe_path + "\\assets\\icons\\FLAG_NO_FLAG.png"); //if cant load image use the no flag one
 		}
 		else
 			normalFlagTexture.create(1,1);

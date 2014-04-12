@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 #include "sqlite3pp.h"
-
+#include <boost/algorithm/string/replace.hpp>
 
 
 class dbHandle
@@ -35,6 +35,7 @@ public:
 	std::vector<dbHandle::gameListItem> dbHandle::getFullGamesList2();
 	std::vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStatment);
 	std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList();
+	std::string dbHandle::getLaunchCode(std::string platform_id, std::string game_id);
 
 };
 
