@@ -32,9 +32,9 @@ public:
 	dbHandle(void);
 	std::vector<gameListItem> getFullGamesList();
 	void setFilePath(std::string path, std::string fileName);
-	std::vector<dbHandle::gameListItem> dbHandle::getFullGamesList2();
 	std::vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStatment);
 	std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList();
+	std::vector<dbHandle::filterListItem> dbHandle::getFilterList();
 	std::string dbHandle::getLaunchCode(std::string platform_id, std::string game_id);
 
 };

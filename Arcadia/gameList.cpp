@@ -5,7 +5,7 @@ using namespace std;
 GameList::GameList()
 {	
 	selectedItemNum = 0;
-	repeat = false;
+	counter = 0;
 }
 GameList::~GameList(void)
 {
@@ -30,7 +30,7 @@ void GameList::init(dbHandle& db_obj,  float posX, float posY, int width, float 
 	selectedFontSize = 20;
 	
 	selectedText.setFont(selectedFont);
-	selectedText.setCharacterSize(19);
+	selectedText.setCharacterSize(selectedFontSize);
 	selectedText.setColor(sf::Color::Red);
 }
 
@@ -48,14 +48,26 @@ dbHandle::gameListItem  GameList::getCurrentItem()
 
 void GameList::update(inputHandle::inputState inputStates)
 {
-	if (inputStates.up_press || inputStates.up_hold)
+	if (inputStates.up_press)
 	{
 		selectedItemNum--;
 	}
-	else if (inputStates.down_press || inputStates.down_hold)
+	else if (inputStates.up_hold)
+	{
+		counter = counter + 1;
+		selectedItemNum = selectedItemNum - counter;
+	}
+	else if (inputStates.down_press)
 	{
 		selectedItemNum++;
 	}
+	else if (inputStates.down_hold)
+	{
+		counter = counter + 1;
+		selectedItemNum = selectedItemNum + counter;
+	}
+	else
+		counter = 0;
 	
 	//Lock selectedItemNum To size of the vector
 	if (selectedItemNum < 0)
@@ -69,7 +81,7 @@ void GameList::update(inputHandle::inputState inputStates)
 void GameList::draw(sf::RenderWindow& window)
 {
 	int selectedPosX = rectangle.getPosition().x + 30;
-	int selectedPosY = (rectangle.getSize().y / 2) + rectangle.getPosition().y;
+	int selectedPosY = (rectangle.getSize().y / 2) + rectangle.getPosition().y - selectedFontSize/2;
 	selectedText.setPosition(selectedPosX, selectedPosY);
 	
 	sf::Texture flagTexture;
@@ -126,7 +138,7 @@ void GameList::draw(sf::RenderWindow& window)
 	}
 
 	normalPosX = rectangle.getPosition().x;
-	normalPosY = selectedPosY + selectedFontSize + 8;
+	normalPosY = selectedPosY + selectedFontSize + 4;
 	for(int i=0; i < numNormalItems/2; ++i)
 	{
 		int itemNum = selectedItemNum + i + 1;

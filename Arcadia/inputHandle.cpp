@@ -78,20 +78,91 @@ inputHandle::inputState inputHandle::update()
 		}	
 	}
 
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))					 //   btn_1
+	//----------------------------------
+	// PLATFORM FILTER LEFT AND RIGHT
+	//----------------------------------
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))					 //   Platform Filter Left
 	{
 		if (!repeat)
 		{
 			repeat = true;
-			inputStates.btn_1_press = true;
+			inputStates.platform_filter_left_press = true;
 			counter = 0;
 		}
 		else
 		{
-			inputStates.btn_1_press = false;
+			inputStates.platform_filter_left_press = false;
 			counter++;
 			if (counter > 10)
-				inputStates.btn_1_hold = true;
+				inputStates.platform_filter_left_hold = true;
+		}	
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))					 //   Platform Filter Right
+	{
+		if (!repeat)
+		{
+			repeat = true;
+			inputStates.platform_filter_right_press = true;
+			counter = 0;
+		}
+		else
+		{
+			inputStates.platform_filter_right_press = false;
+			counter++;
+			if (counter > 10)
+				inputStates.platform_filter_right_hold = true;
+		}	
+	}
+	//----------------------------------
+	// USER FILTER LEFT AND RIGHT
+	//----------------------------------
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))					 //   user Filter Left
+	{
+		if (!repeat)
+		{
+			repeat = true;
+			inputStates.user_filter_left_press = true;
+			counter = 0;
+		}
+		else
+		{
+			inputStates.user_filter_left_press = false;
+			counter++;
+			if (counter > 10)
+				inputStates.user_filter_left_hold = true;
+		}	
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))					 //   user Filter Right
+	{
+		if (!repeat)
+		{
+			repeat = true;
+			inputStates.user_filter_right_press = true;
+			counter = 0;
+		}
+		else
+		{
+			inputStates.user_filter_right_press = false;
+			counter++;
+			if (counter > 10)
+				inputStates.user_filter_right_hold = true;
+		}	
+	}
+
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))				//		START GAME
+	{
+		if (!repeat)
+		{
+			repeat = true;
+			inputStates.start_game_press = true;
+			counter = 0;
+		}
+		else
+		{
+			inputStates.start_game_press = false;
+			counter++;
+			if (counter > 10)
+				inputStates.start_game_hold = true;
 		}	
 	}
 
@@ -128,12 +199,23 @@ void inputHandle::clear()
 	inputStates.left_hold = false;
 	inputStates.right_press = false;
 	inputStates.right_hold = false;
-	inputStates.btn_1_press = false;
-	inputStates.btn_1_hold = false;
-	inputStates.btn_2_press = false;
-	inputStates.btn_2_hold = false;
+
+	inputStates.platform_filter_left_press = false;
+	inputStates.platform_filter_right_press = false;
+	inputStates.platform_filter_left_hold = false;
+	inputStates.platform_filter_right_hold = false;
+
+	inputStates.user_filter_left_press = false;
+	inputStates.user_filter_right_press = false;
+	inputStates.user_filter_left_hold = false;
+	inputStates.user_filter_right_hold = false;
+
+	inputStates.start_game_press = false;
+	inputStates.start_game_hold = false;
+
 	inputStates.exit_press = false;
 	inputStates.exit_hold = false;
+
 	repeat = false;
 	counter = 0;
 }

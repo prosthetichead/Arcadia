@@ -48,7 +48,7 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 {
 	vector<dbHandle::gameListItem> results;
 	sqlite3pp::database db(db_fileName.c_str());
-	std::string query = "select games.name, games.game_id, games.region, platforms.alias, platforms.id from games, platforms where games.platform_id = platforms.id and games.active = 1 " + whereStatment; 
+	std::string query = "select games.name, games.game_id, games.region, platforms.alias, platforms.id from games, platforms where games.platform_id = platforms.id and games.active = 1 " + whereStatment + " order by games.name"; 
 	sqlite3pp::query qry(db, query.c_str());
 	sqlite3pp::query::iterator intBegin = qry.begin();
 	sqlite3pp::query::iterator intEnd = qry.end();
@@ -103,37 +103,65 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 	return filterList;	
 }
 
+std::vector<dbHandle::filterListItem> dbHandle::getFilterList()
+{
+	vector<dbHandle::filterListItem> filterList;
+	
+	//Add the all items filter as first filter
+	dbHandle::filterListItem newItemAll;
+	newItemAll.filterIcon = exe_path + "\\assets\\icons\\PLATFORM_ALL.PNG";
+	newItemAll.filterString = " ";
+	newItemAll.title = "No Filter";
+	filterList.push_back(newItemAll);
+
+	sqlite3pp::database db(db_fileName.c_str());
+	std::string query = "select name, filter_string, icon  from filters";
+	sqlite3pp::query qry(db, query.c_str());
+	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
+	{
+		dbHandle::filterListItem newItem;	
+		newItem.title = (*i).get<const char*>(0);
+		newItem.filterString = (*i).get<const char*>(1);
+		newItem.filterIcon = exe_path + "\\assets\\icons\\" + (*i).get<const char*>(2);
+
+		filterList.push_back(newItem);
+		
+	}
+	return filterList;	
+}
+
 std::string dbHandle::getLaunchCode(std::string platform_id, std::string game_id)
 {
 
 	
 	sqlite3pp::database db(db_fileName.c_str());
-	std::string query = "select load_string, game_path, roms_path, file_name from games, platforms where platforms.id = '" + platform_id + "' and game_id = '" + game_id + "'"; 
+	std::string query = "select load_string, game_path, roms_path, file_name, extension from games, platforms where platforms.id = '" + platform_id + "' and game_id = '" + game_id + "'"; 
 	sqlite3pp::query qry(db, query.c_str());
 	std::string load_string = "";
 	std::string game_path = "";
 	std::string roms_path = "";
 	std::string file_name = "";
+	std::string extension = "";
 	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
 	{
 		if ((*i).get<const char*>(0) != NULL)
 			load_string = (*i).get<const char*>(0);
-		
 		if ((*i).get<const char*>(1) != NULL)
 			game_path = (*i).get<const char*>(1);
-
 		if ((*i).get<const char*>(2) != NULL)
-			roms_path = (*i).get<const char*>(2);
-		
+			roms_path = (*i).get<const char*>(2);		
 		if ((*i).get<const char*>(3) != NULL)
 			file_name = (*i).get<const char*>(3);
-
-
+		if ((*i).get<const char*>(3) != NULL)
+		{
+			extension = (*i).get<const char*>(4);
+			extension = "." + extension;
+		}
 	}
 	
 	boost::replace_all(load_string, "%GAME_PATH%", game_path);
 	boost::replace_all(load_string, "%ROMS_PATH%", roms_path);
-	boost::replace_all(load_string, "%FILE_NAME%", file_name);
+	boost::replace_all(load_string, "%FILE_NAME%", file_name + extension);
 
 	boost::replace_all(load_string, "%PATH%", exe_path);
 	cout << "STRING = " << load_string << endl;

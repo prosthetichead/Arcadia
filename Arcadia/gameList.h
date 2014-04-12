@@ -14,8 +14,8 @@ class GameList
 		sf::Text selectedText;
 		std::vector<dbHandle::gameListItem> listOfItems;
 		int selectedItemNum;
-		bool repeat; // used for input control (maybe moved to a input handeler?)
-		int counter; //used for input control (maybe moved to a input handeler?)
+		
+		int counter; //used for input control
 		int normalFontSize;
 		int selectedFontSize;
 	public:

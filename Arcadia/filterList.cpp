@@ -1,11 +1,10 @@
 #include "filterList.h"
 
-bool newFilter = true;
-float selectedScale = 2;
-
 filterList::filterList(void)
 {
-	selectedItemNum = 1;
+	//newFilter = true;
+	selectedScale = 2;
+	selectedItemNum = 0;
 }
 
 
@@ -13,11 +12,13 @@ filterList::~filterList(void)
 {
 }
 
-void filterList::init(dbHandle& db_obj, float posX, float posY, int width, std::vector<dbHandle::filterListItem> listItems)
+void filterList::init(dbHandle& db_obj, float posX, float posY, int width, std::vector<dbHandle::filterListItem> listItems, std::string name)
 {
 	//setup Database handeler
 	db = db_obj;
 	
+	filterListName = name;
+
 	listOfItems = listItems; 
 		
 	//setup rectangle 
@@ -28,27 +29,22 @@ void filterList::init(dbHandle& db_obj, float posX, float posY, int width, std::
 	rectangle.setOutlineThickness(1);
 }
 
-bool filterList::update(inputHandle::inputState inputStates)
+void filterList::update(int move)
 {
-	newFilter = false;
-	if (inputStates.left_press)
-	{
-		selectedItemNum--;
-		newFilter = true;
-	}
-	else if (inputStates.right_press)
-	{
-		selectedItemNum++;
-		newFilter = true;
-	}
 	
+	newFilter = false;
+	if (move != 0)
+	{
+		std::cout << filterListName << " - Moved " << move << std::endl;
+		selectedItemNum = selectedItemNum + move;
+		newFilter = true;
+	}
+
 	//Lock selectedItemNum To size of the vector
 	if (selectedItemNum < 0)
 		selectedItemNum = listOfItems.size() -1;
 	else if (selectedItemNum >= listOfItems.size())
 		selectedItemNum = 0;
-	
-	return newFilter;
 }
 
 std::string filterList::getFilterString()
@@ -70,12 +66,17 @@ void filterList::draw(sf::RenderWindow& window)
 	float selectedPosX = rectangle.getSize().x/2;
 	float selectedPosY = rectangle.getPosition().y;
 
-	if (newFilter)
-		selectedScale = 1;
 	if (selectedScale < 2) 
-		selectedScale = selectedScale + 0.3; 
+		selectedScale = selectedScale + .4; 
 	else 
 		selectedScale = 2;
+	if (newFilter)
+	{
+		selectedScale = 1;
+		newFilter = false;
+	}
+
+
 	selectedSprite.setOrigin(32/2, 32/2);
 	selectedSprite.setScale(selectedScale, selectedScale);
 	selectedSprite.setPosition(selectedPosX, selectedPosY);	

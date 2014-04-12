@@ -21,9 +21,14 @@ GameList gameList;
 dbHandle db;
 inputHandle ih;
 launcher launch;
-filterList platformFilter;
+filterList platformFilters;
+filterList userFilters;
+
 std::string path;
 inputHandle::inputState inputStates;
+
+
+
 
 //turns on the debug console
 void activateDebugConsole()
@@ -45,7 +50,7 @@ std::string getExePath()
 
 int main()
 {
-	//activateDebugConsole();  //turn on debug console
+	activateDebugConsole();  //turn on debug console
 	path = getExePath();
 	std::cout << path << std::endl;
 	initialize();
@@ -54,7 +59,7 @@ int main()
    {	
 		inputStates = ih.update(); //Get Input States
 		
-		if((inputStates.exit_press) && (launch.processRunning))
+		if((inputStates.exit_hold) && (launch.processRunning))
 			launch.terminate();
 
 		while (window.pollEvent(event))
@@ -85,23 +90,43 @@ void initialize()
 {	
 	db.setFilePath(path, "database.db");
 	launch.init(db);
-	gameList.init(db, 1, 80, 500, 800);
-	platformFilter.init(db, 1, 50, 500, db.getPlatformFilterList());
-	gameList.updateFilter(platformFilter.getFilterString());
+	gameList.init(db, 1, 70, 500, 900);
+	platformFilters.init(db, 1, 40, 500, db.getPlatformFilterList(), "platform Filter List");
+	userFilters.init(db, 70, 1000, 500, db.getFilterList(), "User Filter List");
+	gameList.updateFilter(platformFilters.getFilterString());
 
 	window.create(sf::VideoMode(1400, 1050), "Arcadia");
-	window.setFramerateLimit(30); //window.setVerticalSyncEnabled(true);
+	window.setVerticalSyncEnabled(true);
 }
 
 void update()
 {
-	
-	if (platformFilter.update(inputStates))
+	bool newFilter = false;
+	if (inputStates.platform_filter_left_press)
 	{
-		gameList.updateFilter(platformFilter.getFilterString());		
+		platformFilters.update(-1);
+		newFilter = true;		
 	}
-	gameList.update(inputStates);
+	if (inputStates.platform_filter_right_press)
+	{
+		platformFilters.update(+1);
+		newFilter = true;		
+	}
+	if (inputStates.user_filter_left_press)
+	{
+		userFilters.update(-1);
+		newFilter = true;	
+	}
+	if (inputStates.user_filter_right_press)
+	{
+		userFilters.update(+1);
+		newFilter = true;		
+	}
+	if(newFilter)
+		gameList.updateFilter(platformFilters.getFilterString() + userFilters.getFilterString());	
 
+
+	gameList.update(inputStates);
 	launch.update(inputStates, gameList.getCurrentItem());
 }
 
@@ -111,7 +136,8 @@ void draw()
 	window.clear(sf::Color::Black);
 	
 	gameList.draw(window);
-	platformFilter.draw(window);
+	platformFilters.draw(window);
+	userFilters.draw(window);
 	window.display();
 }
 

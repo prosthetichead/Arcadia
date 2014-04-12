@@ -28,7 +28,7 @@ bool launcher::terminate()
 
 bool launcher::update(inputHandle::inputState inputStates, dbHandle::gameListItem gameItem)
 {
-	if(inputStates.btn_1_press)
+	if(inputStates.start_game_press)
 	{
 		launchGame(db.getLaunchCode(gameItem.platformID, gameItem.gameID));
 	}

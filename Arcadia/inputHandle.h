@@ -16,10 +16,21 @@ public:
 		bool left_hold;
 		bool right_press;
 		bool right_hold;
-		bool btn_1_press;
-		bool btn_1_hold;
-		bool btn_2_press;
-		bool btn_2_hold;
+
+		bool start_game_press;
+		bool start_game_hold;
+
+		bool platform_filter_left_press;
+		bool platform_filter_left_hold;
+		bool platform_filter_right_press;
+		bool platform_filter_right_hold;
+
+		bool user_filter_left_press;
+		bool user_filter_left_hold;
+		bool user_filter_right_press;
+		bool user_filter_right_hold;
+
+
 		bool exit_press;
 		bool exit_hold;
 	};
