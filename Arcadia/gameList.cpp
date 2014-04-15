@@ -6,6 +6,7 @@ GameList::GameList()
 {	
 	selectedItemNum = 0;
 	counter = 0;
+	selectedItemChange = false;	
 }
 GameList::~GameList(void)
 {
@@ -32,6 +33,11 @@ void GameList::init(dbHandle& db_obj,  float posX, float posY, int width, float 
 	selectedText.setFont(selectedFont);
 	selectedText.setCharacterSize(selectedFontSize);
 	selectedText.setColor(sf::Color::Red);
+
+
+
+	flagTexture.loadFromFile(db.exe_path + "\\assets\\icons\\FLAG_NO_FLAG.png");
+
 }
 
 void GameList::updateFilter(std::string filterString)
@@ -48,23 +54,16 @@ dbHandle::gameListItem  GameList::getCurrentItem()
 
 void GameList::update(inputHandle::inputState inputStates)
 {
-	if (inputStates.up_press)
+	selectedItemChange = false;
+	if (inputStates.up_press || inputStates.up_hold)
 	{
 		selectedItemNum--;
+		selectedItemChange = true;
 	}
-	else if (inputStates.up_hold)
-	{
-		counter = counter + 1;
-		selectedItemNum = selectedItemNum - counter;
-	}
-	else if (inputStates.down_press)
+	else if (inputStates.down_press || inputStates.down_hold)
 	{
 		selectedItemNum++;
-	}
-	else if (inputStates.down_hold)
-	{
-		counter = counter + 1;
-		selectedItemNum = selectedItemNum + counter;
+		selectedItemChange = true;
 	}
 	else
 		counter = 0;
@@ -75,7 +74,12 @@ void GameList::update(inputHandle::inputState inputStates)
 	else if (selectedItemNum >= listOfItems.size())
 		selectedItemNum = 0;
 
-	selectedText.setString(listOfItems.at(selectedItemNum).title);
+	// Run only if Selected Item is changed
+	if (selectedItemChange)
+	{
+		selectedText.setString(listOfItems.at(selectedItemNum).title);
+	}
+		
 }
 
 void GameList::draw(sf::RenderWindow& window)
@@ -83,18 +87,12 @@ void GameList::draw(sf::RenderWindow& window)
 	int selectedPosX = rectangle.getPosition().x + 30;
 	int selectedPosY = (rectangle.getSize().y / 2) + rectangle.getPosition().y - selectedFontSize/2;
 	selectedText.setPosition(selectedPosX, selectedPosY);
+
+
 	
-	sf::Texture flagTexture;
-	if (listOfItems.at(selectedItemNum).region != "NULL")
-	{
-		if (!flagTexture.loadFromFile(db.exe_path + "\\assets\\icons\\FLAG_" + listOfItems.at(selectedItemNum).region + ".png"))
-			flagTexture.loadFromFile(db.exe_path + "\\assets\\icons\\FLAG_NO_FLAG.png"); //if cant load image use the no flag one
-	}
-	else
-		flagTexture.create(1,1);
-	sf::Sprite flagSprite;
-	flagSprite.setTexture(flagTexture);
-	flagSprite.setPosition(selectedText.getPosition().x - 20, selectedText.getPosition().y + 6);
+	//sf::Sprite flagSprite;
+	//flagSprite.setTexture(flagTexture);
+	//flagSprite.setPosition(selectedText.getPosition().x - 20, selectedText.getPosition().y + 6);
 
 	int numNormalItems = (rectangle.getSize().y - selectedFontSize) / normalFontSize;
 	if (numNormalItems > listOfItems.size())
@@ -103,7 +101,7 @@ void GameList::draw(sf::RenderWindow& window)
 	
 	//window.draw(rectangle);	
 	window.draw(selectedText);
-	window.draw(flagSprite);
+	//window.draw(flagSprite);
 
 	for(int i=0; i < numNormalItems/2; ++i)
 	{
@@ -114,20 +112,9 @@ void GameList::draw(sf::RenderWindow& window)
 		dbHandle::gameListItem item = listOfItems.at(itemNum);
 
 		sf::Text normalText;
-		sf::Sprite normalFlagSprite;
-		sf::Texture normalFlagTexture;
-		
-		if (item.region != "NULL")
-		{
-			if (!normalFlagTexture.loadFromFile(db.exe_path + "\\assets\\icons\\FLAG_" + item.region + ".png"))
-				normalFlagTexture.loadFromFile(db.exe_path + "\\assets\\icons\\FLAG_NO_FLAG.png"); //if cant load image use the no flag one
-		}
-		else
-			normalFlagTexture.create(1,1);
 
-		normalFlagSprite.setTexture(normalFlagTexture);
-		normalFlagSprite.setPosition(normalPosX, normalPosY - (i*normalFontSize)+4);
-		window.draw(normalFlagSprite);
+		//flagSprite.setPosition(normalPosX, normalPosY - (i*normalFontSize)+4);
+		//window.draw(flagSprite);
 
 		normalText.setFont(normalFont);
 		normalText.setCharacterSize(normalFontSize);
@@ -148,20 +135,6 @@ void GameList::draw(sf::RenderWindow& window)
 		dbHandle::gameListItem item = listOfItems.at(itemNum);
 
 		sf::Text normalText;
-		sf::Sprite normalFlagSprite;
-		sf::Texture normalFlagTexture;
-		
-		if (item.region != "NULL")
-		{
-			if (!normalFlagTexture.loadFromFile(db.exe_path + "\\assets\\icons\\FLAG_" + item.region + ".png"))
-				normalFlagTexture.loadFromFile(db.exe_path + "\\assets\\icons\\FLAG_NO_FLAG.png"); //if cant load image use the no flag one
-		}
-		else
-			normalFlagTexture.create(1,1);
-
-		normalFlagSprite.setTexture(normalFlagTexture);
-		normalFlagSprite.setPosition(normalPosX, normalPosY + (i*normalFontSize)+4);
-		window.draw(normalFlagSprite);
 
 		normalText.setFont(normalFont);
 		normalText.setCharacterSize(normalFontSize);

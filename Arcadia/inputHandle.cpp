@@ -3,6 +3,7 @@
 inputHandle::inputHandle(void)
 {
 	clear(); //resets the inputStates 
+	repeat_time  = 15;
 }
 
 
@@ -25,7 +26,7 @@ inputHandle::inputState inputHandle::update()
 		{
 			inputStates.up_press = false;
 			counter++;
-			if (counter > 10)
+			if (counter > repeat_time)
 				inputStates.up_hold = true;
 		}	
 	}
@@ -41,7 +42,7 @@ inputHandle::inputState inputHandle::update()
 		{
 			inputStates.down_press = false;
 			counter++;
-			if (counter > 10)
+			if (counter > repeat_time)
 				inputStates.down_hold = true;
 		}	
 	}
@@ -57,7 +58,7 @@ inputHandle::inputState inputHandle::update()
 		{
 			inputStates.left_press = false;
 			counter++;
-			if (counter > 10)
+			if (counter > repeat_time)
 				inputStates.left_hold = true;
 		}	
 	}
@@ -73,7 +74,7 @@ inputHandle::inputState inputHandle::update()
 		{
 			inputStates.right_press = false;
 			counter++;
-			if (counter > 10)
+			if (counter > repeat_time)
 				inputStates.right_hold = true;
 		}	
 	}
@@ -93,7 +94,7 @@ inputHandle::inputState inputHandle::update()
 		{
 			inputStates.platform_filter_left_press = false;
 			counter++;
-			if (counter > 10)
+			if (counter > repeat_time)
 				inputStates.platform_filter_left_hold = true;
 		}	
 	}
@@ -109,7 +110,7 @@ inputHandle::inputState inputHandle::update()
 		{
 			inputStates.platform_filter_right_press = false;
 			counter++;
-			if (counter > 10)
+			if (counter > repeat_time)
 				inputStates.platform_filter_right_hold = true;
 		}	
 	}
@@ -128,7 +129,7 @@ inputHandle::inputState inputHandle::update()
 		{
 			inputStates.user_filter_left_press = false;
 			counter++;
-			if (counter > 10)
+			if (counter > repeat_time)
 				inputStates.user_filter_left_hold = true;
 		}	
 	}
@@ -144,7 +145,7 @@ inputHandle::inputState inputHandle::update()
 		{
 			inputStates.user_filter_right_press = false;
 			counter++;
-			if (counter > 10)
+			if (counter > repeat_time)
 				inputStates.user_filter_right_hold = true;
 		}	
 	}
@@ -161,7 +162,7 @@ inputHandle::inputState inputHandle::update()
 		{
 			inputStates.start_game_press = false;
 			counter++;
-			if (counter > 10)
+			if (counter > repeat_time)
 				inputStates.start_game_hold = true;
 		}	
 	}
@@ -178,7 +179,7 @@ inputHandle::inputState inputHandle::update()
 		{
 			inputStates.exit_press = false;
 			counter++;
-			if (counter > 10)
+			if (counter > repeat_time)
 				inputStates.exit_hold = true;
 		}	
 	}

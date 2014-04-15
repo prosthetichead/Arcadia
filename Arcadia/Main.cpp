@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <sfeMovie\Movie.hpp>
 #include <iostream>
 #include <windows.h>
 #include "gameList.h"
@@ -6,6 +7,9 @@
 #include "inputHandle.h"
 #include "filterList.h"
 #include "launcher.h"
+#include "icons.h"
+
+
 
 void activateDebugConsole();
 void initialize();
@@ -15,6 +19,7 @@ void draw();
 
 bool pause = false;
 
+sfe::Movie movie;
 sf::RenderWindow window;
 sf::Event event;
 GameList gameList;
@@ -24,10 +29,12 @@ launcher launch;
 filterList platformFilters;
 filterList userFilters;
 
+icons icon;
+
+
+
 std::string path;
 inputHandle::inputState inputStates;
-
-
 
 
 //turns on the debug console
@@ -57,6 +64,7 @@ int main()
 
 	while (window.isOpen())
    {	
+
 		inputStates = ih.update(); //Get Input States
 		
 		if((inputStates.exit_hold) && (launch.processRunning))
@@ -88,19 +96,28 @@ int main()
 //runs just once
 void initialize()
 {	
+
+	movie.openFromFile("c:\\Adventure Island (USA).mp4");
+
 	db.setFilePath(path, "database.db");
 	launch.init(db);
-	gameList.init(db, 1, 70, 500, 900);
+	icon.init(db);
+	gameList.init(db, 1, 70, 500,900);
 	platformFilters.init(db, 1, 40, 500, db.getPlatformFilterList(), "platform Filter List");
 	userFilters.init(db, 70, 1000, 500, db.getFilterList(), "User Filter List");
 	gameList.updateFilter(platformFilters.getFilterString());
 
 	window.create(sf::VideoMode(1400, 1050), "Arcadia");
-	window.setVerticalSyncEnabled(true);
+	//window.setVerticalSyncEnabled(true);
+
+	movie.resizeToFrame(500,100,640,480,true);
+	movie.play();
 }
 
 void update()
 {
+	
+
 	bool newFilter = false;
 	if (inputStates.platform_filter_left_press)
 	{
@@ -128,16 +145,22 @@ void update()
 
 	gameList.update(inputStates);
 	launch.update(inputStates, gameList.getCurrentItem());
+
+	movie.update();
 }
 
 void draw()
 {
 
 	window.clear(sf::Color::Black);
-	
+
 	gameList.draw(window);
 	platformFilters.draw(window);
 	userFilters.draw(window);
+
+	window.draw(movie);
+	
+
 	window.display();
 }
 

@@ -70,20 +70,21 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\GameDev\sqlite;C:\GameDev\SFML-2.1\include;C:\GameDev\boost_1_55_0</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files (x86)\sfeMovie\include;C:\GameDev\sqlite;C:\GameDev\SFML-2.1\include;C:\GameDev\boost_1_55_0</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>C:\GameDev\sqlite;C:\GameDev\SFML-2.1\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sqlite3.lib;sfml-main.lib;sfml-window.lib;sfml-system.lib;sfml-graphics.lib;sfml-audio.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\GameDev\sqlite;C:\GameDev\SFML-2.1\lib;C:\Program Files (x86)\sfeMovie\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfeMovie.lib;sqlite3.lib;sfml-main.lib;sfml-window.lib;sfml-system.lib;sfml-graphics.lib;sfml-audio.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dbHandle.cpp" />
     <ClCompile Include="gameList.cpp" />
+    <ClCompile Include="icons.cpp" />
     <ClCompile Include="inputHandle.cpp" />
     <ClCompile Include="launcher.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -94,6 +95,7 @@
     <ClInclude Include="dbHandle.h" />
     <ClInclude Include="gameList.h" />
     <ClInclude Include="filterList.h" />
+    <ClInclude Include="icons.h" />
     <ClInclude Include="inputHandle.h" />
     <ClInclude Include="launcher.h" />
     <ClInclude Include="sqlite3pp.h" />

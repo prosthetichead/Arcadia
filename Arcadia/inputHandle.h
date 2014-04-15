@@ -42,7 +42,10 @@ public:
 private:
 	bool repeat;
 	int counter;
+	int repeat_time;
+
 	void inputHandle::clear();
 	inputHandle::inputState inputStates;
+
 };
 

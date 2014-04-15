@@ -18,6 +18,10 @@ class GameList
 		int counter; //used for input control
 		int normalFontSize;
 		int selectedFontSize;
+
+		sf::Texture flagTexture;
+		bool selectedItemChange;
+
 	public:
 		GameList();
 		~GameList(void);

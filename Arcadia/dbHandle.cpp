@@ -100,6 +100,7 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 		filterList.push_back(newItem);
 		
 	}
+	db.disconnect();
 	return filterList;	
 }
 
@@ -127,13 +128,12 @@ std::vector<dbHandle::filterListItem> dbHandle::getFilterList()
 		filterList.push_back(newItem);
 		
 	}
+	db.disconnect();
 	return filterList;	
 }
 
 std::string dbHandle::getLaunchCode(std::string platform_id, std::string game_id)
 {
-
-	
 	sqlite3pp::database db(db_fileName.c_str());
 	std::string query = "select load_string, game_path, roms_path, file_name, extension from games, platforms where platforms.id = '" + platform_id + "' and game_id = '" + game_id + "'"; 
 	sqlite3pp::query qry(db, query.c_str());
@@ -168,5 +168,28 @@ std::string dbHandle::getLaunchCode(std::string platform_id, std::string game_id
 	
 	db.disconnect();
 	return load_string;
+}
 
+std::vector<dbHandle::iconItem> dbHandle::getIconPaths()
+{
+	std::vector<dbHandle::iconItem> list;
+
+	sqlite3pp::database db(db_fileName.c_str());
+	
+	std::string query = "select id, file_path from assets_icons";
+	sqlite3pp::query qry(db, query.c_str());
+
+	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
+	{
+		dbHandle::iconItem item;
+		item.id = (*i).get<const char*>(0);
+		item.path = (*i).get<const char*>(1);
+
+		boost::replace_all(item.path, "%PATH%", exe_path);
+
+		list.push_back(item);
+	}	
+
+	return list;
+	
 }

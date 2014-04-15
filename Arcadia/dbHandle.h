@@ -27,6 +27,11 @@ public:
 		std::string filterIcon;
 		std::string filterString;
 	};
+	struct iconItem {
+		std::string id;
+		std::string path;
+	};
+
 	
 
 	dbHandle(void);
@@ -36,6 +41,7 @@ public:
 	std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList();
 	std::vector<dbHandle::filterListItem> dbHandle::getFilterList();
 	std::string dbHandle::getLaunchCode(std::string platform_id, std::string game_id);
+	std::vector<dbHandle::iconItem> dbHandle::getIconPaths();
 
 };
 
