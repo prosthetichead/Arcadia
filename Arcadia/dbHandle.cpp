@@ -170,18 +170,18 @@ std::string dbHandle::getLaunchCode(std::string platform_id, std::string game_id
 	return load_string;
 }
 
-std::vector<dbHandle::iconItem> dbHandle::getIconPaths()
+std::vector<dbHandle::assetItem> dbHandle::getIconPaths()
 {
-	std::vector<dbHandle::iconItem> list;
+	std::vector<dbHandle::assetItem> list;
 
 	sqlite3pp::database db(db_fileName.c_str());
 	
-	std::string query = "select id, file_path from assets_icons";
+	std::string query = "select id, file_path from assets";
 	sqlite3pp::query qry(db, query.c_str());
 
 	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
 	{
-		dbHandle::iconItem item;
+		dbHandle::assetItem item;
 		item.id = (*i).get<const char*>(0);
 		item.path = (*i).get<const char*>(1);
 

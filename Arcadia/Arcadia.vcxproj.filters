@@ -36,7 +36,7 @@
     <ClCompile Include="launcher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="icons.cpp">
+    <ClCompile Include="assetHandle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -59,7 +59,7 @@
     <ClInclude Include="launcher.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="icons.h">
+    <ClInclude Include="assetHandle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

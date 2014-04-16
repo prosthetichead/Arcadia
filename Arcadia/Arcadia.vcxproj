@@ -84,7 +84,7 @@
   <ItemGroup>
     <ClCompile Include="dbHandle.cpp" />
     <ClCompile Include="gameList.cpp" />
-    <ClCompile Include="icons.cpp" />
+    <ClCompile Include="assetHandle.cpp" />
     <ClCompile Include="inputHandle.cpp" />
     <ClCompile Include="launcher.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -95,7 +95,7 @@
     <ClInclude Include="dbHandle.h" />
     <ClInclude Include="gameList.h" />
     <ClInclude Include="filterList.h" />
-    <ClInclude Include="icons.h" />
+    <ClInclude Include="assetHandle.h" />
     <ClInclude Include="inputHandle.h" />
     <ClInclude Include="launcher.h" />
     <ClInclude Include="sqlite3pp.h" />

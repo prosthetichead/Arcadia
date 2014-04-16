@@ -7,7 +7,7 @@
 #include "inputHandle.h"
 #include "filterList.h"
 #include "launcher.h"
-#include "icons.h"
+#include "assetHandle.h"
 
 
 
@@ -29,7 +29,7 @@ launcher launch;
 filterList platformFilters;
 filterList userFilters;
 
-icons icon;
+assetHandle assets;
 
 
 
@@ -101,8 +101,8 @@ void initialize()
 
 	db.setFilePath(path, "database.db");
 	launch.init(db);
-	icon.init(db);
-	gameList.init(db, 1, 70, 500,900);
+	assets.init(db);
+	gameList.init(db, assets, 1, 70, 500,900);
 	platformFilters.init(db, 1, 40, 500, db.getPlatformFilterList(), "platform Filter List");
 	userFilters.init(db, 70, 1000, 500, db.getFilterList(), "User Filter List");
 	gameList.updateFilter(platformFilters.getFilterString());

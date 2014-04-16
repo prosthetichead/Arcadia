@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "dbHandle.h"
 #include "inputHandle.h"
+#include "assetHandle.h"
 
 
 class GameList
@@ -11,6 +12,8 @@ class GameList
 		sf::Font selectedFont;
 		sf::Font normalFont;
 		dbHandle db;
+		assetHandle assets;
+
 		sf::Text selectedText;
 		std::vector<dbHandle::gameListItem> listOfItems;
 		int selectedItemNum;
@@ -19,13 +22,13 @@ class GameList
 		int normalFontSize;
 		int selectedFontSize;
 
-		sf::Texture flagTexture;
 		bool selectedItemChange;
+
 
 	public:
 		GameList();
 		~GameList(void);
-		void GameList::init(dbHandle& db_obj, float posX, float posY, int width, float height);
+		void GameList::init(dbHandle& db_obj, assetHandle& icon_obj, float posX, float posY, int width, float height);
 		void GameList::update(inputHandle::inputState inputStates);
 		void GameList::draw(sf::RenderWindow& window);
 		void GameList::updateFilter(std::string filterString);

@@ -13,10 +13,11 @@ GameList::~GameList(void)
 }
 
 
-void GameList::init(dbHandle& db_obj,  float posX, float posY, int width, float height)
+void GameList::init(dbHandle &db_obj, assetHandle &asset_obj,  float posX, float posY, int width, float height)
 {
 	//setup Database handeler
 	db = db_obj;
+	assets = asset_obj;
 		
 	//setup rectangle 
 	rectangle.setSize(sf::Vector2f(width, height));
@@ -33,10 +34,6 @@ void GameList::init(dbHandle& db_obj,  float posX, float posY, int width, float 
 	selectedText.setFont(selectedFont);
 	selectedText.setCharacterSize(selectedFontSize);
 	selectedText.setColor(sf::Color::Red);
-
-
-
-	flagTexture.loadFromFile(db.exe_path + "\\assets\\icons\\FLAG_NO_FLAG.png");
 
 }
 
@@ -90,9 +87,9 @@ void GameList::draw(sf::RenderWindow& window)
 
 
 	
-	//sf::Sprite flagSprite;
-	//flagSprite.setTexture(flagTexture);
-	//flagSprite.setPosition(selectedText.getPosition().x - 20, selectedText.getPosition().y + 6);
+	sf::Sprite flagSprite;
+	flagSprite.setTexture(assets.getTextureAsset("NES"));
+	flagSprite.setPosition(selectedText.getPosition().x - 20, selectedText.getPosition().y + 6);
 
 	int numNormalItems = (rectangle.getSize().y - selectedFontSize) / normalFontSize;
 	if (numNormalItems > listOfItems.size())
@@ -101,7 +98,7 @@ void GameList::draw(sf::RenderWindow& window)
 	
 	//window.draw(rectangle);	
 	window.draw(selectedText);
-	//window.draw(flagSprite);
+	window.draw(flagSprite);
 
 	for(int i=0; i < numNormalItems/2; ++i)
 	{
@@ -112,6 +109,7 @@ void GameList::draw(sf::RenderWindow& window)
 		dbHandle::gameListItem item = listOfItems.at(itemNum);
 
 		sf::Text normalText;
+
 
 		//flagSprite.setPosition(normalPosX, normalPosY - (i*normalFontSize)+4);
 		//window.draw(flagSprite);
