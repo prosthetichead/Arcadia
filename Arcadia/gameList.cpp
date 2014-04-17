@@ -88,7 +88,10 @@ void GameList::draw(sf::RenderWindow& window)
 
 	
 	sf::Sprite flagSprite;
-	flagSprite.setTexture(assets.getTextureAsset("NES"));
+	sf::Texture empty;
+	empty.create(16,11);
+	flagSprite.setTexture(empty);
+	flagSprite.setTexture(assets.getTextureAsset(listOfItems.at(selectedItemNum).region));
 	flagSprite.setPosition(selectedText.getPosition().x - 20, selectedText.getPosition().y + 6);
 
 	int numNormalItems = (rectangle.getSize().y - selectedFontSize) / normalFontSize;
@@ -110,9 +113,9 @@ void GameList::draw(sf::RenderWindow& window)
 
 		sf::Text normalText;
 
-
-		//flagSprite.setPosition(normalPosX, normalPosY - (i*normalFontSize)+4);
-		//window.draw(flagSprite);
+		flagSprite.setTexture(assets.getTextureAsset(item.region));
+		flagSprite.setPosition(normalPosX, normalPosY - (i*normalFontSize)+4);
+		window.draw(flagSprite);
 
 		normalText.setFont(normalFont);
 		normalText.setCharacterSize(normalFontSize);
@@ -133,6 +136,10 @@ void GameList::draw(sf::RenderWindow& window)
 		dbHandle::gameListItem item = listOfItems.at(itemNum);
 
 		sf::Text normalText;
+
+		flagSprite.setTexture(assets.getTextureAsset(item.region));
+		flagSprite.setPosition(normalPosX, normalPosY + (i*normalFontSize)+4);
+		window.draw(flagSprite);
 
 		normalText.setFont(normalFont);
 		normalText.setCharacterSize(normalFontSize);

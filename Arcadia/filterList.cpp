@@ -12,10 +12,11 @@ filterList::~filterList(void)
 {
 }
 
-void filterList::init(dbHandle& db_obj, float posX, float posY, int width, std::vector<dbHandle::filterListItem> listItems, std::string name)
+void filterList::init(dbHandle& db_obj, assetHandle& asset_obj, float posX, float posY, int width, std::vector<dbHandle::filterListItem> listItems, std::string name)
 {
 	//setup Database handeler
 	db = db_obj;
+	assets= asset_obj;
 	
 	filterListName = name;
 
@@ -57,12 +58,12 @@ void filterList::draw(sf::RenderWindow& window)
 	//window.draw(rectangle);
 
 	sf::Sprite selectedSprite;
-	sf::Texture selectedTexture;
+	//sf::Texture selectedTexture;
 	
 	dbHandle::filterListItem selectedItem = listOfItems.at(selectedItemNum);
 
-	selectedTexture.loadFromFile(selectedItem.filterIcon);
-	selectedSprite.setTexture(selectedTexture);
+	//selectedTexture.loadFromFile(selectedItem.filterIcon);
+	selectedSprite.setTexture(assets.getTextureAsset("NES"));
 	float selectedPosX = rectangle.getSize().x/2;
 	float selectedPosY = rectangle.getPosition().y;
 

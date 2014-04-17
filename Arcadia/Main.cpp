@@ -103,12 +103,12 @@ void initialize()
 	launch.init(db);
 	assets.init(db);
 	gameList.init(db, assets, 1, 70, 500,900);
-	platformFilters.init(db, 1, 40, 500, db.getPlatformFilterList(), "platform Filter List");
-	userFilters.init(db, 70, 1000, 500, db.getFilterList(), "User Filter List");
+	platformFilters.init(db, assets, 1, 40, 500, db.getPlatformFilterList(), "platform Filter List");
+	userFilters.init(db, assets, 70, 1000, 500, db.getFilterList(), "User Filter List");
 	gameList.updateFilter(platformFilters.getFilterString());
 
 	window.create(sf::VideoMode(1400, 1050), "Arcadia");
-	//window.setVerticalSyncEnabled(true);
+	window.setVerticalSyncEnabled(true);
 
 	movie.resizeToFrame(500,100,640,480,true);
 	movie.play();
