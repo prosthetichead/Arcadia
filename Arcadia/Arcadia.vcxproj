@@ -83,6 +83,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dbHandle.cpp" />
+    <ClCompile Include="GameInfo.cpp" />
     <ClCompile Include="gameList.cpp" />
     <ClCompile Include="assetHandle.cpp" />
     <ClCompile Include="inputHandle.cpp" />
@@ -93,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dbHandle.h" />
+    <ClInclude Include="GameInfo.h" />
     <ClInclude Include="gameList.h" />
     <ClInclude Include="filterList.h" />
     <ClInclude Include="assetHandle.h" />

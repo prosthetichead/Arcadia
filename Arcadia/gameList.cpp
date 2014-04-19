@@ -22,18 +22,18 @@ void GameList::init(dbHandle &db_obj, assetHandle &asset_obj,  float posX, float
 	//setup rectangle 
 	rectangle.setSize(sf::Vector2f(width, height));
 	rectangle.setPosition(posX, posY);
-	rectangle.setFillColor(sf::Color::Color(0,0,0,40));
+	rectangle.setFillColor(sf::Color::Color(0,0,0,150));
 	rectangle.setOutlineColor(sf::Color::White);
-	rectangle.setOutlineThickness(1);
+	rectangle.setOutlineThickness(0);
 	
 	selectedFont.loadFromFile(db.exe_path + "\\assets\\fonts\\Teknik-Bold.ttf");
 	normalFont.loadFromFile(db.exe_path + "\\assets\\fonts\\Teknik-Bold.ttf");
 	normalFontSize = 14;
-	selectedFontSize = 20;
+	selectedFontSize = 16;
 	
 	selectedText.setFont(selectedFont);
 	selectedText.setCharacterSize(selectedFontSize);
-	selectedText.setColor(sf::Color::Red);
+	selectedText.setColor(sf::Color::Green);
 
 }
 
@@ -41,7 +41,6 @@ void GameList::updateFilter(std::string filterString)
 {
 	selectedItemNum = 0;
 	listOfItems = db.getGamesListQuery(filterString);
-
 }
 
 dbHandle::gameListItem  GameList::getCurrentItem()
@@ -74,8 +73,10 @@ void GameList::update(inputHandle::inputState inputStates)
 	// Run only if Selected Item is changed
 	if (selectedItemChange)
 	{
-		selectedText.setString(listOfItems.at(selectedItemNum).title);
+		
 	}
+
+	selectedText.setString(listOfItems.at(selectedItemNum).title);
 		
 }
 
@@ -99,7 +100,7 @@ void GameList::draw(sf::RenderWindow& window)
 		numNormalItems = listOfItems.size();
 	float normalPosX = rectangle.getPosition().x, normalPosY = selectedPosY - selectedFontSize;
 	
-	//window.draw(rectangle);	
+	window.draw(rectangle);	
 	window.draw(selectedText);
 	window.draw(flagSprite);
 

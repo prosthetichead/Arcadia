@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
-#include <sfeMovie\Movie.hpp>
 #include <iostream>
 #include <windows.h>
+#include "GameInfo.h"
 #include "gameList.h"
 #include "dbHandle.h"
 #include "inputHandle.h"
@@ -19,9 +19,9 @@ void draw();
 
 bool pause = false;
 
-sfe::Movie movie;
 sf::RenderWindow window;
 sf::Event event;
+GameInfo gameInfo;
 GameList gameList;
 dbHandle db;
 inputHandle ih;
@@ -46,6 +46,8 @@ void activateDebugConsole()
 	freopen("CONOUT$", "w",stderr);
 	printf( "--DEBUG CONSOLE-- \n" );
 }
+
+// Get the EXE path
 std::string getExePath()
   {
 	char appPath[MAX_PATH];//always use MAX_PATH for filepaths
@@ -97,21 +99,24 @@ int main()
 void initialize()
 {	
 
-	movie.openFromFile("c:\\Adventure Island (USA).mp4");
+	//movie.openFromFile("c:\\Adventure Island (USA).mp4");
 
 	db.setFilePath(path, "database.db");
 	launch.init(db);
 	assets.init(db);
+	
 	gameList.init(db, assets, 1, 70, 500,900);
+	gameInfo.init(db, 0, 0, 1400, 1050);
 	platformFilters.init(db, assets, 1, 40, 500, db.getPlatformFilterList(), "platform Filter List");
 	userFilters.init(db, assets, 70, 1000, 500, db.getFilterList(), "User Filter List");
+
 	gameList.updateFilter(platformFilters.getFilterString());
 
 	window.create(sf::VideoMode(1400, 1050), "Arcadia");
 	window.setVerticalSyncEnabled(true);
 
-	movie.resizeToFrame(500,100,640,480,true);
-	movie.play();
+	//movie.resizeToFrame(500,100,640,480,true);
+	//movie.play();
 }
 
 void update()
@@ -144,9 +149,10 @@ void update()
 
 
 	gameList.update(inputStates);
+	gameInfo.update(gameList.getCurrentItem());
 	launch.update(inputStates, gameList.getCurrentItem());
 
-	movie.update();
+	//movie.update();
 }
 
 void draw()
@@ -154,11 +160,13 @@ void draw()
 
 	window.clear(sf::Color::Black);
 
+	gameInfo.draw(window);
 	gameList.draw(window);
 	platformFilters.draw(window);
 	userFilters.draw(window);
 
-	window.draw(movie);
+
+	//window.draw(movie);
 	
 
 	window.display();

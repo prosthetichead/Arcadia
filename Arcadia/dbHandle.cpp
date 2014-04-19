@@ -53,6 +53,17 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 	sqlite3pp::query::iterator intBegin = qry.begin();
 	sqlite3pp::query::iterator intEnd = qry.end();
 	results.reserve(std::distance(intBegin, intEnd));
+	if (std::distance(intBegin, intEnd) == 0)
+	{
+		dbHandle::gameListItem item;
+		item.gameID = -1;
+		item.platform = -1;
+		item.region = "NO_RELEASE";
+		item.title = "No Games To Display";
+
+		results.push_back(item);
+	}
+
 	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
 	{
 			dbHandle::gameListItem newItem;
@@ -71,6 +82,7 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 			results.push_back(newItem);
 	}
 	db.disconnect();
+
 	return results;
 }
 
@@ -80,7 +92,7 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 	
 	//Add the all items filter as first filter
 	dbHandle::filterListItem newItemAll;
-	newItemAll.filterIcon = exe_path + "\\assets\\icons\\PLATFORM_ALL.PNG";
+	newItemAll.filterIcon = "ALL";
 	newItemAll.filterString = " ";
 	newItemAll.title = "All Platforms";
 	filterList.push_back(newItemAll);
@@ -95,7 +107,7 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 		std::string platform_alias = (*i).get<const char*>(2);
 		newItem.filterString = "and platform_id = " + platform_ID;
 		newItem.title = (*i).get<const char*>(1);
-		newItem.filterIcon = exe_path + "\\assets\\icons\\PLATFORM_" + platform_alias + ".png"; 
+		newItem.filterIcon = platform_alias; 
 
 		filterList.push_back(newItem);
 		
@@ -110,7 +122,7 @@ std::vector<dbHandle::filterListItem> dbHandle::getFilterList()
 	
 	//Add the all items filter as first filter
 	dbHandle::filterListItem newItemAll;
-	newItemAll.filterIcon = exe_path + "\\assets\\icons\\PLATFORM_ALL.PNG";
+	newItemAll.filterIcon = "ALL";
 	newItemAll.filterString = " ";
 	newItemAll.title = "No Filter";
 	filterList.push_back(newItemAll);
@@ -123,7 +135,7 @@ std::vector<dbHandle::filterListItem> dbHandle::getFilterList()
 		dbHandle::filterListItem newItem;	
 		newItem.title = (*i).get<const char*>(0);
 		newItem.filterString = (*i).get<const char*>(1);
-		newItem.filterIcon = exe_path + "\\assets\\icons\\" + (*i).get<const char*>(2);
+		newItem.filterIcon = (*i).get<const char*>(2);
 
 		filterList.push_back(newItem);
 		

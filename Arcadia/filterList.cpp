@@ -58,12 +58,10 @@ void filterList::draw(sf::RenderWindow& window)
 	//window.draw(rectangle);
 
 	sf::Sprite selectedSprite;
-	//sf::Texture selectedTexture;
-	
+
 	dbHandle::filterListItem selectedItem = listOfItems.at(selectedItemNum);
 
-	//selectedTexture.loadFromFile(selectedItem.filterIcon);
-	selectedSprite.setTexture(assets.getTextureAsset("NES"));
+	selectedSprite.setTexture(assets.getTextureAsset(listOfItems.at(selectedItemNum).filterIcon));
 	float selectedPosX = rectangle.getSize().x/2;
 	float selectedPosY = rectangle.getPosition().y;
 
@@ -102,16 +100,10 @@ void filterList::draw(sf::RenderWindow& window)
 		dbHandle::filterListItem itemRight = listOfItems.at(itemNumRight);
 		
 		sf::Sprite normalSpriteLeft;
-		sf::Texture normalTextureLeft;
-		
 		sf::Sprite normalSpriteRight;
-		sf::Texture normalTextureRight;
 		
-		normalTextureLeft.loadFromFile(itemLeft.filterIcon);
-		normalSpriteLeft.setTexture(normalTextureLeft);
-
-		normalTextureRight.loadFromFile(itemRight.filterIcon);
-		normalSpriteRight.setTexture(normalTextureRight);
+		normalSpriteLeft.setTexture(assets.getTextureAsset(itemLeft.filterIcon));
+		normalSpriteRight.setTexture(assets.getTextureAsset(itemRight.filterIcon));
 		
 		normalSpriteLeft.setOrigin(32/2, 32/2);
 		normalSpriteRight.setOrigin(32/2, 32/2);
