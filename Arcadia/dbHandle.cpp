@@ -1,5 +1,7 @@
 #include "dbHandle.h"
 
+
+
 using namespace std;
 
 dbHandle::dbHandle(void)
@@ -13,42 +15,22 @@ void dbHandle::setFilePath(std::string path, std::string fileName)
 	db_fileName = path + "\\" + fileName;
 }
 
-vector<dbHandle::gameListItem> dbHandle::getFullGamesList()
-{
-	vector<dbHandle::gameListItem> results;
-	results.reserve(400000);
-	sqlite3pp::database db(db_fileName.c_str());
-	sqlite3pp::query qry(db, "select games.name, games.game_id, games.region, platforms.alias, platforms.id from games, platforms where games.platform_id = platforms.id");
-	
-	sqlite3pp::query::iterator intBegin = qry.begin();
-	sqlite3pp::query::iterator intEnd = qry.end();
-
-	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
-	{
-			dbHandle::gameListItem newItem;
-			newItem.title = (*i).get<const char*>(0);
-			newItem.gameID = (*i).get<const char*>(1);
-			if ((*i).get<const char*>(2) == NULL)
-				newItem.region = "NULL";
-			else
-				newItem.region = (*i).get<const char*>(2);
-			if ((*i).get<const char*>(3) == NULL)
-				newItem.platform = "NULL";
-			else
-				newItem.platform = (*i).get<const char*>(3);
-			newItem.platformID =  (*i).get<const char*>(4);
-
-			results.push_back(newItem);
-	}
-	db.disconnect();
-	return results;
+/**
+ * Check if a file exists
+ * @return true if and only if the file exists, false else
+ */
+bool dbHandle::fileExists(const std::string& file) {
+    struct stat buf;
+    return (stat(file.c_str(), &buf) == 0);
 }
+
+
 
 vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStatment)
 {
 	vector<dbHandle::gameListItem> results;
 	sqlite3pp::database db(db_fileName.c_str());
-	std::string query = "select games.name, games.game_id, games.region, platforms.alias, platforms.id from games, platforms where games.platform_id = platforms.id and games.active = 1 " + whereStatment + " order by games.name"; 
+	std::string query = "select games.name, games.game_id, games.region, platforms.alias, platforms.id, platforms.videos_path, games.file_name from games, platforms where games.platform_id = platforms.id and games.active = 1 " + whereStatment + " order by games.name"; 
 	sqlite3pp::query qry(db, query.c_str());
 	sqlite3pp::query::iterator intBegin = qry.begin();
 	sqlite3pp::query::iterator intEnd = qry.end();
@@ -77,7 +59,16 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 				newItem.platform = "NULL";
 			else
 				newItem.platform = (*i).get<const char*>(3);
-			newItem.platformID =  (*i).get<const char*>(4);
+			newItem.platformID = (*i).get<const char*>(4);
+
+			newItem.videoPath = (*i).get<const char*>(5);
+			newItem.gameFileName = (*i).get<const char*>(6);
+
+			boost::replace_all(newItem.videoPath, "%PATH%", exe_path);
+			newItem.videoPath = newItem.videoPath + "\\" + newItem.gameFileName + ".mp4";
+			if ( !fileExists(newItem.videoPath) )
+				newItem.videoPath = "NULL";
+			
 
 			results.push_back(newItem);
 	}
@@ -174,9 +165,7 @@ std::string dbHandle::getLaunchCode(std::string platform_id, std::string game_id
 	boost::replace_all(load_string, "%GAME_PATH%", game_path);
 	boost::replace_all(load_string, "%ROMS_PATH%", roms_path);
 	boost::replace_all(load_string, "%FILE_NAME%", file_name + extension);
-
 	boost::replace_all(load_string, "%PATH%", exe_path);
-	cout << "STRING = " << load_string << endl;
 	
 	db.disconnect();
 	return load_string;
