@@ -71,6 +71,8 @@ int main()
 		
 		if((inputStates.exit_hold) && (launch.processRunning))
 			launch.terminate();
+		else if((inputStates.exit_hold) && (!launch.processRunning))
+			window.close();
 
 		while (window.pollEvent(event))
 		{
@@ -105,20 +107,25 @@ int main()
 void initialize()
 {	
 
-	//movie.openFromFile("c:\\Adventure Island (USA).mp4");
+	sf::VideoMode desktopMode = sf::VideoMode::getDesktopMode();
 
 	db.setFilePath(path, "database.db");
 	launch.init(db);
 	assets.init(db);
 	
-	gameList.init(db, assets, 1, 70, 500,900);
-	gameInfo.init(db, 0, 0, 1400, 1050);
-	platformFilters.init(db, assets, 1, 40, 500, db.getPlatformFilterList(), "platform Filter List");
-	userFilters.init(db, assets, 70, 1000, 500, db.getFilterList(), "User Filter List");
+	int gameListWidth = desktopMode.width * .35;
+
+	gameList.init(db, assets, 0, 70,  gameListWidth, desktopMode.height - 140);
+	gameInfo.init(db, 0, 0, desktopMode.width, desktopMode.height);
+	
+	platformFilters.init(db, assets, 1, 35,  gameListWidth, db.getPlatformFilterList(), "platform Filter List");
+	userFilters.init(db, assets, 70, desktopMode.height - 35,  gameListWidth, db.getFilterList(), "User Filter List");
 
 	gameList.updateFilter(platformFilters.getFilterString());
 
-	window.create(sf::VideoMode(1400, 1050), "Arcadia");
+
+	
+	window.create(desktopMode, "Arcadia", sf::Style::None);
 	window.setVerticalSyncEnabled(true);
 
 	//movie.resizeToFrame(500,100,640,480,true);

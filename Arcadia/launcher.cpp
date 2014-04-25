@@ -21,16 +21,24 @@ void launcher::init(dbHandle& db_obj)
 
 bool launcher::terminate()
 {
-	TerminateProcess(pi.hProcess, 1);
-	processRunning = false;
-	return true;
+	try
+	{
+		//PostThreadMessage(pi.dwThreadId,WM_QUIT, 0, 0);
+		TerminateProcess(pi.hProcess, 1);
+		processRunning = false;
+		return true;
+	}
+	catch (...)
+	{
+		std::cout << "WTF Just Happened?" << std::endl;
+	}
 }
 
 bool launcher::update(inputHandle::inputState inputStates, dbHandle::gameListItem gameItem)
 {
 	if(inputStates.start_game_press)
 	{
-		launchGame(db.getLaunchCode(gameItem.platformID, gameItem.gameID));
+		launchGame(db.getLaunchCode(gameItem.platformID, gameItem.fileName));
 	}
 	return true;
 }

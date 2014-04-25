@@ -45,11 +45,11 @@ void GameInfo::update(dbHandle::gameListItem gameItem)
 {
 	
 	movieStatus = movie->getStatus();
-
-	if (currentGameItem.gameID != gameItem.gameID)    // New Game Selected
+	std::cout << movieStatus << std::endl;
+	if (currentGameItem.platformID != gameItem.platformID || currentGameItem.fileName != gameItem.fileName)    // New Game Selected
 	{
 		delete movie;
-		movie = new sfe::Movie;
+		movie = new sfe::Movie;  // recreate movie
 
 		currentGameItem = gameItem;
 		hasMovieFile = false;
@@ -60,11 +60,29 @@ void GameInfo::update(dbHandle::gameListItem gameItem)
 			hasMovieFile = true;
 			movie->openFromFile(currentGameItem.videoPath);
 			movie->resizeToFrame(rectangle.getPosition().x + rectangle.getSize().x/2 , rectangle.getPosition().y + rectangle.getSize().y/2, 640,480,true);
-			
+			movieBorder.setPosition(movie->getPosition().x - 3,movie->getPosition().y - 3);
+			movieBorder.setSize(sf::Vector2f(movie->getSize().x + 3 , movie->getSize().y + 3));
+			movieBorder.setScale(movie->getScale());
+			movieBorder.setFillColor(sf::Color::Black);
 			movie->play();
 		}
 
-		// Reload Textures	
+		// Reload Textures
+
+		delete fanArt;
+		fanArt = new sf::Texture;
+		if (currentGameItem.fanArtPath != "NULL")
+		{
+			fanArt->loadFromFile(currentGameItem.fanArtPath);
+			rectangle.setTexture(fanArt);
+			rectangle.setFillColor(sf::Color::White);
+		}
+		else
+		{
+			rectangle.setTexture(NULL);
+			rectangle.setFillColor(sf::Color::Color(51,51,102,255));
+		}
+		
 		// chanage text
 	}
 
@@ -72,14 +90,20 @@ void GameInfo::update(dbHandle::gameListItem gameItem)
 	{
 		movie->update();
 	}
+	//if (hasMovieFile && movieStatus == movie->Stopped)
+	//{
+	//	movie->play();
+	//	movie->update();
+	//}
 }
 
 void GameInfo::draw(sf::RenderWindow& window)
 {
 	window.draw(rectangle);
-
-	if (hasMovieFile && movieStatus == movie->Playing)
+	
+	if (hasMovieFile)
 	{
+		window.draw(movieBorder);
 		window.draw(*movie);
 	}
 }

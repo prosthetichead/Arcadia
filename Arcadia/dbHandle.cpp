@@ -7,6 +7,10 @@ using namespace std;
 dbHandle::dbHandle(void)
 {
 	db_fileName = " ";
+
+	movie_file_exts.push_back(".mp4");
+	img_file_exts.push_back(".jpg");
+	img_file_exts.push_back(".png");
 }
 
 void dbHandle::setFilePath(std::string path, std::string fileName)
@@ -15,13 +19,20 @@ void dbHandle::setFilePath(std::string path, std::string fileName)
 	db_fileName = path + "\\" + fileName;
 }
 
-/**
- * Check if a file exists
- * @return true if and only if the file exists, false else
- */
-bool dbHandle::fileExists(const std::string& file) {
+std::string dbHandle::fileExists(std::string file, std::vector<std::string> file_exts)
+{
     struct stat buf;
-    return (stat(file.c_str(), &buf) == 0);
+	std::string returnString;
+
+	for (int i = 0; i < file_exts.size(); i++)
+	{
+		returnString = file + file_exts.at(i);
+		if (stat(returnString.c_str(), &buf) == 0)
+		{
+			return returnString;
+		}
+	}
+    return "NULL";
 }
 
 
@@ -30,7 +41,7 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 {
 	vector<dbHandle::gameListItem> results;
 	sqlite3pp::database db(db_fileName.c_str());
-	std::string query = "select games.name, games.game_id, games.region, platforms.alias, platforms.id, platforms.videos_path, games.file_name from games, platforms where games.platform_id = platforms.id and games.active = 1 " + whereStatment + " order by games.name"; 
+	std::string query = "select games.name, games.region, platforms.alias, platforms.id, platforms.videos_path, games.file_name, platforms.images_path from games, platforms where games.platform_id = platforms.id and games.active = 1 " + whereStatment + " order by games.name"; 
 	sqlite3pp::query qry(db, query.c_str());
 	sqlite3pp::query::iterator intBegin = qry.begin();
 	sqlite3pp::query::iterator intEnd = qry.end();
@@ -38,10 +49,11 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 	if (std::distance(intBegin, intEnd) == 0)
 	{
 		dbHandle::gameListItem item;
-		item.gameID = -1;
 		item.platform = -1;
-		item.region = "NO_RELEASE";
+		item.fileName = "";
+		item.region = "NULL";
 		item.title = "No Games To Display";
+		item.videoPath = "NULL";
 
 		results.push_back(item);
 	}
@@ -50,25 +62,30 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 	{
 			dbHandle::gameListItem newItem;
 			newItem.title = (*i).get<const char*>(0);
-			newItem.gameID = (*i).get<const char*>(1);
 			if ((*i).get<const char*>(2) == NULL)
 				newItem.region = "NULL";
 			else
-				newItem.region = (*i).get<const char*>(2);
-			if ((*i).get<const char*>(3) == NULL)
+				newItem.region = (*i).get<const char*>(1);
+			if ((*i).get<const char*>(2) == NULL)
 				newItem.platform = "NULL";
 			else
-				newItem.platform = (*i).get<const char*>(3);
-			newItem.platformID = (*i).get<const char*>(4);
+				newItem.platform = (*i).get<const char*>(2);
+			newItem.platformID = (*i).get<const char*>(3);
 
-			newItem.videoPath = (*i).get<const char*>(5);
-			newItem.gameFileName = (*i).get<const char*>(6);
+			newItem.videoPath = (*i).get<const char*>(4);
+			newItem.fileName = (*i).get<const char*>(5);
+			std::string image_path = (*i).get<const char*>(6);
 
-			boost::replace_all(newItem.videoPath, "%PATH%", exe_path);
-			newItem.videoPath = newItem.videoPath + "\\" + newItem.gameFileName + ".mp4";
-			if ( !fileExists(newItem.videoPath) )
-				newItem.videoPath = "NULL";
+
 			
+			boost::replace_all(newItem.videoPath, "%PATH%", exe_path);
+			newItem.videoPath = newItem.videoPath + "\\" + newItem.fileName;
+			newItem.videoPath = fileExists(newItem.videoPath, movie_file_exts);
+			
+			boost::replace_all(image_path, "%PATH%", exe_path);
+			newItem.fanArtPath = image_path + "\\fanart\\" + newItem.fileName;
+			newItem.fanArtPath = fileExists(newItem.fanArtPath, img_file_exts);
+
 
 			results.push_back(newItem);
 	}
@@ -135,34 +152,35 @@ std::vector<dbHandle::filterListItem> dbHandle::getFilterList()
 	return filterList;	
 }
 
-std::string dbHandle::getLaunchCode(std::string platform_id, std::string game_id)
+std::string dbHandle::getLaunchCode(std::string platform_id, std::string file_name)
 {
 	sqlite3pp::database db(db_fileName.c_str());
-	std::string query = "select load_string, game_path, roms_path, file_name, extension from games, platforms where platforms.id = '" + platform_id + "' and game_id = '" + game_id + "'"; 
+	std::string query = "select load_string, game_load_string, roms_path, extension from games, platforms where platforms.id = :platform_id and file_name = :file_name";
 	sqlite3pp::query qry(db, query.c_str());
+	qry.bind(":platform_id", platform_id.c_str());
+	qry.bind(":file_name", file_name.c_str());
+
+	
 	std::string load_string = "";
-	std::string game_path = "";
+	std::string game_load_string = "";
 	std::string roms_path = "";
-	std::string file_name = "";
 	std::string extension = "";
 	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
 	{
 		if ((*i).get<const char*>(0) != NULL)
 			load_string = (*i).get<const char*>(0);
 		if ((*i).get<const char*>(1) != NULL)
-			game_path = (*i).get<const char*>(1);
+			game_load_string = (*i).get<const char*>(1);
 		if ((*i).get<const char*>(2) != NULL)
 			roms_path = (*i).get<const char*>(2);		
 		if ((*i).get<const char*>(3) != NULL)
-			file_name = (*i).get<const char*>(3);
-		if ((*i).get<const char*>(3) != NULL)
 		{
-			extension = (*i).get<const char*>(4);
+			extension = (*i).get<const char*>(3);
 			extension = "." + extension;
 		}
 	}
 	
-	boost::replace_all(load_string, "%GAME_PATH%", game_path);
+	boost::replace_all(load_string, "%GAME_LOAD_STRING%", game_load_string);
 	boost::replace_all(load_string, "%ROMS_PATH%", roms_path);
 	boost::replace_all(load_string, "%FILE_NAME%", file_name + extension);
 	boost::replace_all(load_string, "%PATH%", exe_path);

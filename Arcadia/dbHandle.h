@@ -12,19 +12,22 @@ class dbHandle
 {
 private:
 	std::string db_fileName;
-	bool dbHandle::fileExists(const std::string& file);
+	std::vector<std::string> movie_file_exts;
+	std::vector<std::string> img_file_exts;
+
+	std::string dbHandle::fileExists(std::string file, std::vector<std::string> file_exts);
 
 public:
 	std::string exe_path;
 
 	struct gameListItem {
 		std::string title;
-		std::string gameID;
-		std::string gameFileName;
+		std::string platformID;
+		std::string fileName;
 		std::string region;
 		std::string platform;
-		std::string platformID;
 		std::string videoPath;
+		std::string fanArtPath;
 	};
 	struct filterListItem {
 		std::string title;
