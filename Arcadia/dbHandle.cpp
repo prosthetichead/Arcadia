@@ -62,10 +62,12 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 	{
 			dbHandle::gameListItem newItem;
 			newItem.title = (*i).get<const char*>(0);
-			if ((*i).get<const char*>(2) == NULL)
+
+			if ((*i).get<const char*>(1) == NULL)
 				newItem.region = "NULL";
 			else
 				newItem.region = (*i).get<const char*>(1);
+
 			if ((*i).get<const char*>(2) == NULL)
 				newItem.platform = "NULL";
 			else
