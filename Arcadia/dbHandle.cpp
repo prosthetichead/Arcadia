@@ -41,7 +41,7 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 {
 	vector<dbHandle::gameListItem> results;
 	sqlite3pp::database db(db_fileName.c_str());
-	std::string query = "select games.name, games.region, platforms.alias, platforms.id, platforms.videos_path, games.file_name, platforms.images_path from games, platforms where games.platform_id = platforms.id and games.active = 1 " + whereStatment + " order by games.name"; 
+	std::string query = "select games.name, games.region, platforms.name, platforms.id, platforms.videos_path, games.file_name, platforms.images_path from games, platforms where games.platform_id = platforms.id and games.active = 1 " + whereStatment + " order by games.name"; 
 	sqlite3pp::query qry(db, query.c_str());
 	sqlite3pp::query::iterator intBegin = qry.begin();
 	sqlite3pp::query::iterator intEnd = qry.end();
@@ -63,19 +63,31 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 			dbHandle::gameListItem newItem;
 			newItem.title = (*i).get<const char*>(0);
 
+			// Region
 			if ((*i).get<const char*>(1) == NULL)
 				newItem.region = "NULL";
 			else
 				newItem.region = (*i).get<const char*>(1);
 
+			// Platform Name
 			if ((*i).get<const char*>(2) == NULL)
 				newItem.platform = "NULL";
 			else
 				newItem.platform = (*i).get<const char*>(2);
-			newItem.platformID = (*i).get<const char*>(3);
 
-			newItem.videoPath = (*i).get<const char*>(4);
+			// Platform ID
+			newItem.platformID = (*i).get<const char*>(3);
+			// File Name
 			newItem.fileName = (*i).get<const char*>(5);
+
+
+
+			// Video Path
+			if ((*i).get<const char*>(4) == NULL)
+				newItem.videoPath = "";
+			else
+				newItem.videoPath = (*i).get<const char*>(4);
+
 			std::string image_path = (*i).get<const char*>(6);
 
 
@@ -108,21 +120,22 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 	filterList.push_back(newItemAll);
 
 	sqlite3pp::database db(db_fileName.c_str());
-	std::string query = "select distinct platforms.id, platforms.name, platforms.alias from platforms, games where games.platform_id = platforms.id and games.active = 1";
+	std::string query = "select distinct platforms.id, platforms.name, platforms.icon_id from platforms, games where games.platform_id = platforms.id and games.active = 1";
 	sqlite3pp::query qry(db, query.c_str());
 	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
 	{
 		dbHandle::filterListItem newItem;
-		std::string platform_ID = (*i).get<const char*>(0);
-		std::string platform_alias = (*i).get<const char*>(2);
-		newItem.filterString = "and platform_id = " + platform_ID;
+		std::string platform_id = (*i).get<const char*>(0);
+		std::string icon_id = (*i).get<const char*>(2);
+
+		newItem.filterString = "and platform_id = " + platform_id;
 		newItem.title = (*i).get<const char*>(1);
-		newItem.filterIcon = platform_alias; 
+		newItem.filterIcon = icon_id; 
 
 		filterList.push_back(newItem);
-		
 	}
 	db.disconnect();
+
 	return filterList;	
 }
 
@@ -138,7 +151,7 @@ std::vector<dbHandle::filterListItem> dbHandle::getFilterList()
 	filterList.push_back(newItemAll);
 
 	sqlite3pp::database db(db_fileName.c_str());
-	std::string query = "select name, filter_string, icon  from filters";
+	std::string query = "select name, filter_string, icon_id  from filters";
 	sqlite3pp::query qry(db, query.c_str());
 	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
 	{
@@ -191,6 +204,8 @@ std::string dbHandle::getLaunchCode(std::string platform_id, std::string file_na
 	return load_string;
 }
 
+
+
 std::vector<dbHandle::assetItem> dbHandle::getIconPaths()
 {
 	std::vector<dbHandle::assetItem> list;
@@ -211,6 +226,8 @@ std::vector<dbHandle::assetItem> dbHandle::getIconPaths()
 		list.push_back(item);
 	}	
 
+
+	std::cout << "Completed icon Paths Load" << std::endl;
 	return list;
 	
 }
