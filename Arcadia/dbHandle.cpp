@@ -126,7 +126,11 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 	{
 		dbHandle::filterListItem newItem;
 		std::string platform_id = (*i).get<const char*>(0);
-		std::string icon_id = (*i).get<const char*>(2);
+		std::string icon_id = "";
+		if ((*i).get<const char*>(2) != NULL)
+			 icon_id = (*i).get<const char*>(2);
+		else
+			icon_id = "ERROR";
 
 		newItem.filterString = "and platform_id = " + platform_id;
 		newItem.title = (*i).get<const char*>(1);
