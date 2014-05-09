@@ -28,6 +28,8 @@ public:
 		std::string platform;
 		std::string videoPath;
 		std::string fanArtPath;
+		std::string screenPath;
+		std::string clearLogoPath;
 	};
 	struct filterListItem {
 		std::string title;

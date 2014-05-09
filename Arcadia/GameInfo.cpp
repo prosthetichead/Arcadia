@@ -15,16 +15,22 @@ GameInfo::~GameInfo(void)
 void GameInfo::init(dbHandle &db_obj, float posX, float posY, int width, float height)
 {
 	db = db_obj;
+	sf::VideoMode desktopMode = sf::VideoMode::getDesktopMode();
 
 	hasMovieFile = false;
 
-	rectangle.setSize(sf::Vector2f(width, height));
-	rectangle.setPosition(posX, posY);
-	rectangle.setFillColor(sf::Color::Color(45,33,100,255));
-	rectangle.setOutlineColor(sf::Color::White);
-	rectangle.setOutlineThickness(0);
+	rectangleInfo.setSize(sf::Vector2f(width,height));
+	rectangleInfo.setPosition(posX,posY);
 
-	
+	rectangleFanArt.setSize(sf::Vector2f(desktopMode.width, desktopMode.height));
+	rectangleFanArt.setPosition(0, 0);
+	rectangleFanArt.setFillColor(sf::Color::White);
+	rectangleFanArt.setOutlineColor(sf::Color::White);
+	rectangleFanArt.setOutlineThickness(0);
+
+	rectangleFanArtDarken = rectangleFanArt;
+	rectangleFanArtDarken.setFillColor(sf::Color::Color(0,0,0,200));
+
 	movie = new sfe::Movie;
 
 }
@@ -45,7 +51,6 @@ void GameInfo::update(dbHandle::gameListItem gameItem)
 {
 	
 	movieStatus = movie->getStatus();
-	std::cout << movieStatus << std::endl;
 	if (currentGameItem.platformID != gameItem.platformID || currentGameItem.fileName != gameItem.fileName)    // New Game Selected
 	{
 		delete movie;
@@ -59,7 +64,7 @@ void GameInfo::update(dbHandle::gameListItem gameItem)
 		{
 			hasMovieFile = true;
 			movie->openFromFile(currentGameItem.videoPath);
-			movie->resizeToFrame(rectangle.getPosition().x + rectangle.getSize().x/2 , rectangle.getPosition().y + rectangle.getSize().y/2, 640,480,true);
+			movie->resizeToFrame(rectangleFanArt.getPosition().x + rectangleFanArt.getSize().x/2 , rectangleFanArt.getPosition().y + rectangleFanArt.getSize().y/2, 640,480,true);
 			movieBorder.setPosition(movie->getPosition().x - 3,movie->getPosition().y - 3);
 			movieBorder.setSize(sf::Vector2f(movie->getSize().x + 3 , movie->getSize().y + 3));
 			movieBorder.setScale(movie->getScale());
@@ -71,18 +76,24 @@ void GameInfo::update(dbHandle::gameListItem gameItem)
 
 		delete fanArt;
 		fanArt = new sf::Texture;
-		if (currentGameItem.fanArtPath != "NULL")
-		{
+		if (currentGameItem.fanArtPath != "NULL") {
 			fanArt->loadFromFile(currentGameItem.fanArtPath);
-			rectangle.setTexture(fanArt);
-			rectangle.setFillColor(sf::Color::White);
+			rectangleFanArt.setTexture(fanArt);
+			rectangleFanArt.setFillColor(sf::Color::Color(255,255,255,255));
 		}
-		else
+		else {
+			rectangleFanArt.setTexture(NULL);
+			rectangleFanArt.setFillColor(sf::Color::Color(0,0,0,255));
+		}
+
+		if (currentGameItem.clearLogoPath != "NULL")
 		{
-			rectangle.setTexture(NULL);
-			rectangle.setFillColor(sf::Color::Color(51,51,102,255));
+			std::cout << currentGameItem.clearLogoPath << std::endl;
+			clearLogo.loadFromFile(currentGameItem.clearLogoPath);
 		}
-		
+		else 
+			clearLogo.create(1,1); // Create and empty Texture
+
 		// chanage text
 	}
 
@@ -99,8 +110,16 @@ void GameInfo::update(dbHandle::gameListItem gameItem)
 
 void GameInfo::draw(sf::RenderWindow& window)
 {
-	window.draw(rectangle);
-	
+	sf::Sprite spriteClearLogo;
+	spriteClearLogo.setTexture(clearLogo);
+	spriteClearLogo.setPosition(rectangleInfo.getPosition().x + rectangleInfo.getSize().x/2, 100);
+	spriteClearLogo.setOrigin(spriteClearLogo.getGlobalBounds().width/2, spriteClearLogo.getGlobalBounds().height/2);
+
+
+	window.draw(rectangleFanArt);
+	window.draw(rectangleFanArtDarken);
+	window.draw(spriteClearLogo);
+
 	if (hasMovieFile)
 	{
 		window.draw(movieBorder);

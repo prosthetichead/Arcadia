@@ -19,6 +19,12 @@ void dbHandle::setFilePath(std::string path, std::string fileName)
 	db_fileName = path + "\\" + fileName;
 }
 
+
+/******  
+*   File Exists
+*	Checks using the file path and extentions list if a file with the given extention exists.
+*	
+*/
 std::string dbHandle::fileExists(std::string file, std::vector<std::string> file_exts)
 {
     struct stat buf;
@@ -39,6 +45,7 @@ std::string dbHandle::fileExists(std::string file, std::vector<std::string> file
 
 vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStatment)
 {
+	std::cout << whereStatment << std::endl;
 	vector<dbHandle::gameListItem> results;
 	sqlite3pp::database db(db_fileName.c_str());
 	std::string query = "select games.name, games.region, platforms.name, platforms.id, platforms.videos_path, games.file_name, platforms.images_path from games, platforms where games.platform_id = platforms.id and games.active = 1 " + whereStatment + " order by games.name"; 
@@ -84,22 +91,26 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 
 			// Video Path
 			if ((*i).get<const char*>(4) == NULL)
-				newItem.videoPath = "";
+				newItem.videoPath = "NULL";
 			else
+			{
 				newItem.videoPath = (*i).get<const char*>(4);
+				boost::replace_all(newItem.videoPath, "%PATH%", exe_path);
+				newItem.videoPath = newItem.videoPath + "\\" + newItem.fileName;
+				newItem.videoPath = fileExists(newItem.videoPath, movie_file_exts);
+			}
 
 			std::string image_path = (*i).get<const char*>(6);
-
-
-			
-			boost::replace_all(newItem.videoPath, "%PATH%", exe_path);
-			newItem.videoPath = newItem.videoPath + "\\" + newItem.fileName;
-			newItem.videoPath = fileExists(newItem.videoPath, movie_file_exts);
-			
 			boost::replace_all(image_path, "%PATH%", exe_path);
+			
 			newItem.fanArtPath = image_path + "\\fanart\\" + newItem.fileName;
 			newItem.fanArtPath = fileExists(newItem.fanArtPath, img_file_exts);
 
+			newItem.screenPath = image_path + "\\screen\\" + newItem.fileName;
+			newItem.screenPath = fileExists(newItem.screenPath, img_file_exts);
+
+			newItem.clearLogoPath = image_path + "\\clearlogo\\" + newItem.fileName;
+			newItem.clearLogoPath = fileExists(newItem.clearLogoPath, img_file_exts);
 
 			results.push_back(newItem);
 	}
@@ -115,7 +126,7 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 	//Add the all items filter as first filter
 	dbHandle::filterListItem newItemAll;
 	newItemAll.filterIcon = "ALL";
-	newItemAll.filterString = " ";
+	newItemAll.filterString = "NULL";
 	newItemAll.title = "All Platforms";
 	filterList.push_back(newItemAll);
 
@@ -132,7 +143,7 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 		else
 			icon_id = "ERROR";
 
-		newItem.filterString = "and platform_id = " + platform_id;
+		newItem.filterString = "platform_id = " + platform_id;
 		newItem.title = (*i).get<const char*>(1);
 		newItem.filterIcon = icon_id; 
 
@@ -150,7 +161,7 @@ std::vector<dbHandle::filterListItem> dbHandle::getFilterList()
 	//Add the all items filter as first filter
 	dbHandle::filterListItem newItemAll;
 	newItemAll.filterIcon = "ALL";
-	newItemAll.filterString = " ";
+	newItemAll.filterString = "NULL";
 	newItemAll.title = "No Filter";
 	filterList.push_back(newItemAll);
 
@@ -217,7 +228,7 @@ std::vector<dbHandle::assetItem> dbHandle::getIconPaths()
 	sqlite3pp::database db(db_fileName.c_str());
 	
 	std::string query = "select id, file_path from assets";
-	sqlite3pp::query qry(db, query.c_str());
+	sqlite3pp::query qry(db, query.c_str()); 
 
 	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
 	{
