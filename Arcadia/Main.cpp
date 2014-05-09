@@ -66,7 +66,7 @@ int main()
 
 	while (window.isOpen())
    {	
-
+	   std::cout << "HERE" << std::endl;
 		inputStates = ih.update(); //Get Input States
 		
 		if((inputStates.exit_hold) && (launch.processRunning))
@@ -124,8 +124,11 @@ void initialize()
 
 	gameList.updateFilter(platformFilters.getFilterString());
 
+	window.create(desktopMode, "Arcadia", sf::Style::Default);
+
 
 	
+
 	window.create(desktopMode, "Arcadia", sf::Style::None);
 	window.setVerticalSyncEnabled(true);
 
@@ -159,6 +162,7 @@ void update()
 		newFilter = true;		
 	}
 	if(newFilter)
+		std::cout << platformFilters.getFilterString() + userFilters.getFilterString() << std::endl;
 		gameList.updateFilter(platformFilters.getFilterString() + userFilters.getFilterString());	
 
 
@@ -166,7 +170,6 @@ void update()
 	gameInfo.update(gameList.getCurrentItem());
 	launch.update(inputStates, gameList.getCurrentItem());
 
-	//movie.update();
 }
 
 void draw()

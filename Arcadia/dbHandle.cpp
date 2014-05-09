@@ -39,6 +39,7 @@ std::string dbHandle::fileExists(std::string file, std::vector<std::string> file
 
 vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStatment)
 {
+	std::cout << whereStatment << std::endl;
 	vector<dbHandle::gameListItem> results;
 	sqlite3pp::database db(db_fileName.c_str());
 	std::string query = "select games.name, games.region, platforms.name, platforms.id, platforms.videos_path, games.file_name, platforms.images_path from games, platforms where games.platform_id = platforms.id and games.active = 1 " + whereStatment + " order by games.name"; 
@@ -115,7 +116,7 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 	//Add the all items filter as first filter
 	dbHandle::filterListItem newItemAll;
 	newItemAll.filterIcon = "ALL";
-	newItemAll.filterString = " ";
+	newItemAll.filterString = "NULL";
 	newItemAll.title = "All Platforms";
 	filterList.push_back(newItemAll);
 
@@ -132,7 +133,7 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 		else
 			icon_id = "ERROR";
 
-		newItem.filterString = "and platform_id = " + platform_id;
+		newItem.filterString = "platform_id = " + platform_id;
 		newItem.title = (*i).get<const char*>(1);
 		newItem.filterIcon = icon_id; 
 
@@ -150,7 +151,7 @@ std::vector<dbHandle::filterListItem> dbHandle::getFilterList()
 	//Add the all items filter as first filter
 	dbHandle::filterListItem newItemAll;
 	newItemAll.filterIcon = "ALL";
-	newItemAll.filterString = " ";
+	newItemAll.filterString = "NULL";
 	newItemAll.title = "No Filter";
 	filterList.push_back(newItemAll);
 
@@ -217,7 +218,7 @@ std::vector<dbHandle::assetItem> dbHandle::getIconPaths()
 	sqlite3pp::database db(db_fileName.c_str());
 	
 	std::string query = "select id, file_path from assets";
-	sqlite3pp::query qry(db, query.c_str());
+	sqlite3pp::query qry(db, query.c_str()); 
 
 	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
 	{
