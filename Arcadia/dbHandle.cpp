@@ -19,12 +19,6 @@ void dbHandle::setFilePath(std::string path, std::string fileName)
 	db_fileName = path + "\\" + fileName;
 }
 
-
-/******  
-*   File Exists
-*	Checks using the file path and extentions list if a file with the given extention exists.
-*	
-*/
 std::string dbHandle::fileExists(std::string file, std::vector<std::string> file_exts)
 {
     struct stat buf;
@@ -90,26 +84,22 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 
 			// Video Path
 			if ((*i).get<const char*>(4) == NULL)
-				newItem.videoPath = "NULL";
+				newItem.videoPath = "";
 			else
-			{
 				newItem.videoPath = (*i).get<const char*>(4);
-				boost::replace_all(newItem.videoPath, "%PATH%", exe_path);
-				newItem.videoPath = newItem.videoPath + "\\" + newItem.fileName;
-				newItem.videoPath = fileExists(newItem.videoPath, movie_file_exts);
-			}
 
 			std::string image_path = (*i).get<const char*>(6);
-			boost::replace_all(image_path, "%PATH%", exe_path);
+
+
 			
+			boost::replace_all(newItem.videoPath, "%PATH%", exe_path);
+			newItem.videoPath = newItem.videoPath + "\\" + newItem.fileName;
+			newItem.videoPath = fileExists(newItem.videoPath, movie_file_exts);
+			
+			boost::replace_all(image_path, "%PATH%", exe_path);
 			newItem.fanArtPath = image_path + "\\fanart\\" + newItem.fileName;
 			newItem.fanArtPath = fileExists(newItem.fanArtPath, img_file_exts);
 
-			newItem.screenPath = image_path + "\\screen\\" + newItem.fileName;
-			newItem.screenPath = fileExists(newItem.screenPath, img_file_exts);
-
-			newItem.clearLogoPath = image_path + "\\clearlogo\\" + newItem.fileName;
-			newItem.clearLogoPath = fileExists(newItem.clearLogoPath, img_file_exts);
 
 			results.push_back(newItem);
 	}

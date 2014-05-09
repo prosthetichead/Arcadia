@@ -26,14 +26,15 @@ void GameList::init(dbHandle &db_obj, assetHandle &asset_obj,  float posX, float
 	rectangle.setOutlineColor(sf::Color::White);
 	rectangle.setOutlineThickness(0);
 	
-	selectedFont.loadFromFile(db.exe_path + "\\assets\\fonts\\Teknik-bold.ttf");
-	normalFont.loadFromFile(db.exe_path + "\\assets\\fonts\\Teknik-Regular.ttf");
-	normalFontSize = 18;
-	selectedFontSize = 24;
+	selectedFont.loadFromFile(db.exe_path + "\\assets\\fonts\\Teknik-Bold.ttf");
+	normalFont.loadFromFile(db.exe_path + "\\assets\\fonts\\Teknik-Bold.ttf");
+	normalFontSize = 14;
+	selectedFontSize = 16;
 	
 	selectedText.setFont(selectedFont);
 	selectedText.setCharacterSize(selectedFontSize);
-	selectedText.setColor(sf::Color::White);
+	selectedText.setColor(sf::Color::Green);
+
 }
 
 void GameList::updateFilter(std::string filterString)
@@ -81,46 +82,29 @@ void GameList::update(inputHandle::inputState inputStates)
 
 void GameList::draw(sf::RenderWindow& window)
 {
-	//window.draw(rectangle);
-
-	int selectedFontPadding = selectedFontSize+20;
-	int normalFontSize_Padding = normalFontSize+10;
-	float selectedFontSizeHalf = selectedFontSize/2;
 	int selectedPosX = rectangle.getPosition().x + 30;
-	int selectedPosY = (rectangle.getSize().y / 2) + rectangle.getPosition().y;
+	int selectedPosY = (rectangle.getSize().y / 2) + rectangle.getPosition().y - selectedFontSize/2;
 	selectedText.setPosition(selectedPosX, selectedPosY);
-	selectedText.setOrigin(0,selectedFontSize/2);
-	window.draw(selectedText);
 
-	sf::RectangleShape line(sf::Vector2f(rectangle.getSize().x, 2));
-	line.setPosition(selectedPosX - 10, selectedPosY - (selectedFontSizeHalf + selectedFontPadding/4));
-	window.draw(line);
-	line.setPosition(selectedPosX - 10, selectedPosY + (selectedFontSizeHalf + selectedFontPadding/4));
-	window.draw(line);
 
 	
+	sf::Sprite flagSprite;
+	sf::Texture empty;
+	empty.create(16,11);
+	flagSprite.setTexture(empty);
+	flagSprite.setTexture(assets.getTextureAsset(listOfItems.at(selectedItemNum).region));
+	flagSprite.setPosition(selectedText.getPosition().x - 20, selectedText.getPosition().y + 6);
 
-
-	//sf::Sprite flagSprite;
-	//sf::Texture empty;
-	//empty.create(16,11);
-	//flagSprite.setTexture(empty);
-	//flagSprite.setTexture(assets.getTextureAsset(listOfItems.at(selectedItemNum).region));
-	//flagSprite.setPosition(selectedText.getPosition().x - 20, selectedText.getPosition().y + 6);
-
-	int numNormalItems = (rectangle.getSize().y - (selectedFontSize + selectedFontPadding)) / (normalFontSize_Padding);
+	int numNormalItems = (rectangle.getSize().y - selectedFontSize) / normalFontSize;
 	if (numNormalItems > listOfItems.size())
 		numNormalItems = listOfItems.size();
+	float normalPosX = rectangle.getPosition().x, normalPosY = selectedPosY - selectedFontSize;
 	
-	float normalPosX = rectangle.getPosition().x + 10;
-	float normalPosY = selectedPosY - (normalFontSize + selectedFontPadding);
-		
-	
-	//window.draw(flagSprite);
+	window.draw(rectangle);	
+	window.draw(selectedText);
+	window.draw(flagSprite);
 
-	int numItemsHalf = numNormalItems/2;
-
-	for(int i=0; i < numItemsHalf; ++i)
+	for(int i=0; i < numNormalItems/2; ++i)
 	{
 		int itemNum = selectedItemNum - i-1;
 		if (itemNum < 0)
@@ -130,21 +114,21 @@ void GameList::draw(sf::RenderWindow& window)
 
 		sf::Text normalText;
 
-		//flagSprite.setTexture(assets.getTextureAsset(item.region));
-		//flagSprite.setPosition(normalPosX, normalPosY - (i*normalFontSize)+4);
-		//window.draw(flagSprite);
+		flagSprite.setTexture(assets.getTextureAsset(item.region));
+		flagSprite.setPosition(normalPosX, normalPosY - (i*normalFontSize)+4);
+		window.draw(flagSprite);
 
 		normalText.setFont(normalFont);
 		normalText.setCharacterSize(normalFontSize);
-		normalText.setColor(sf::Color(sf::Color::Color(255,255,255,255 - i * (255/numItemsHalf))));
+		normalText.setColor(sf::Color(sf::Color::White));
 		normalText.setString(item.title);
-		normalText.setPosition(normalPosX, normalPosY - (i*normalFontSize_Padding));
+		normalText.setPosition(normalPosX + 20, normalPosY - (i*normalFontSize));
 		window.draw(normalText);
 	}
 
-	
-	normalPosY = selectedPosY + (selectedFontPadding);
-	for(int i=0; i < numItemsHalf; ++i)
+	normalPosX = rectangle.getPosition().x;
+	normalPosY = selectedPosY + selectedFontSize + 4;
+	for(int i=0; i < numNormalItems/2; ++i)
 	{
 		int itemNum = selectedItemNum + i + 1;
 		if (itemNum > listOfItems.size() - 1)
@@ -154,15 +138,15 @@ void GameList::draw(sf::RenderWindow& window)
 
 		sf::Text normalText;
 
-		//flagSprite.setTexture(assets.getTextureAsset(item.region));
-		//flagSprite.setPosition(normalPosX, normalPosY + (i*normalFontSize)+4);
-		//window.draw(flagSprite);
+		flagSprite.setTexture(assets.getTextureAsset(item.region));
+		flagSprite.setPosition(normalPosX, normalPosY + (i*normalFontSize)+4);
+		window.draw(flagSprite);
 
 		normalText.setFont(normalFont);
 		normalText.setCharacterSize(normalFontSize);
-		normalText.setColor(sf::Color(sf::Color::Color(255,255,255,255 - i * (255/numItemsHalf))));
+		normalText.setColor(sf::Color(sf::Color::White));
 		normalText.setString(item.title);
-		normalText.setPosition(normalPosX, normalPosY + (i*normalFontSize_Padding));
+		normalText.setPosition(normalPosX + 20, normalPosY + (i*normalFontSize));
 		window.draw(normalText);
 	}
 
