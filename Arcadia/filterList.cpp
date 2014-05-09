@@ -53,7 +53,7 @@ std::string filterList::getFilterString()
 	if (listOfItems.at(selectedItemNum).filterString == "NULL")
 		return " ";
 	else
-		return " and " + listOfItems.at(selectedItemNum).filterString;
+		return listOfItems.at(selectedItemNum).filterString;
 }
 
 void filterList::draw(sf::RenderWindow& window)
