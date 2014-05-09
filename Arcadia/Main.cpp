@@ -128,8 +128,16 @@ void initialize()
 
 
 	
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+	window.create(desktopMode, "Arcadia", sf::Style::Fullscreen);
+
+=======
+>>>>>>> a71cd55a2ad7459dc9ad1c79fdcff9e7aa418ed3
 	window.create(desktopMode, "Arcadia", sf::Style::None);
+>>>>>>> parent of 8d1aec3... Added clearlogo and improved layout
 	window.setVerticalSyncEnabled(true);
 
 	//movie.resizeToFrame(500,100,640,480,true);
