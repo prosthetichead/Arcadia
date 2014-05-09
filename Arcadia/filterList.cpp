@@ -50,7 +50,10 @@ void filterList::update(int move)
 
 std::string filterList::getFilterString()
 {
-	return listOfItems.at(selectedItemNum).filterString;
+	if (listOfItems.at(selectedItemNum).filterString == "NULL")
+		return " ";
+	else
+		return " and " + listOfItems.at(selectedItemNum).filterString;
 }
 
 void filterList::draw(sf::RenderWindow& window)

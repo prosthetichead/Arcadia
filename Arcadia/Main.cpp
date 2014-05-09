@@ -66,7 +66,7 @@ int main()
 
 	while (window.isOpen())
    {	
-
+	   std::cout << "HERE" << std::endl;
 		inputStates = ih.update(); //Get Input States
 		
 		if((inputStates.exit_hold) && (launch.processRunning))
@@ -125,6 +125,9 @@ void initialize()
 	gameList.updateFilter(platformFilters.getFilterString());
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 165aee21e6cd873ef12890b0ce9dddac0d9e6a3b
 	window.create(desktopMode, "Arcadia", sf::Style::Default);
 
 
@@ -139,11 +142,14 @@ void initialize()
 >>>>>>> a71cd55a2ad7459dc9ad1c79fdcff9e7aa418ed3
 	window.create(desktopMode, "Arcadia", sf::Style::None);
 >>>>>>> parent of 8d1aec3... Added clearlogo and improved layout
+<<<<<<< HEAD
 =======
 
 	
 	window.create(desktopMode, "Arcadia", sf::Style::None);
 >>>>>>> parent of 9557af4... errors
+=======
+>>>>>>> 165aee21e6cd873ef12890b0ce9dddac0d9e6a3b
 	window.setVerticalSyncEnabled(true);
 
 	//movie.resizeToFrame(500,100,640,480,true);
@@ -176,6 +182,7 @@ void update()
 		newFilter = true;		
 	}
 	if(newFilter)
+		std::cout << platformFilters.getFilterString() + userFilters.getFilterString() << std::endl;
 		gameList.updateFilter(platformFilters.getFilterString() + userFilters.getFilterString());	
 
 
