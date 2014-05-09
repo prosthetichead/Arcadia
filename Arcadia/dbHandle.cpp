@@ -172,6 +172,7 @@ std::vector<dbHandle::filterListItem> dbHandle::getFilterList()
 		dbHandle::filterListItem newItem;	
 		newItem.title = (*i).get<const char*>(0);
 		newItem.filterString = (*i).get<const char*>(1);
+		newItem.filterString = " and " + newItem.filterString; 
 		newItem.filterIcon = (*i).get<const char*>(2);
 
 		filterList.push_back(newItem);

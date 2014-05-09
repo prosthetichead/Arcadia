@@ -4,6 +4,9 @@ inputHandle::inputHandle(void)
 {
 	clear(); //resets the inputStates 
 	repeat_time  = 15;
+
+	inputStates.up_key = sf::Keyboard::Up;
+	inputStates.down_key = sf::Keyboard::Down;
 }
 
 
@@ -14,7 +17,10 @@ inputHandle::~inputHandle(void)
 
 inputHandle::inputState inputHandle::update()
 {
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+	//----------------------------------
+	// DIRECTIONS
+	//----------------------------------
+	if (sf::Keyboard::isKeyPressed(inputStates.up_key))
 	{
 		if (!repeat)
 		{
@@ -30,7 +36,7 @@ inputHandle::inputState inputHandle::update()
 				inputStates.up_hold = true;
 		}	
 	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+	else if (sf::Keyboard::isKeyPressed(inputStates.down_key))
 	{
 		if (!repeat)
 		{
@@ -150,6 +156,7 @@ inputHandle::inputState inputHandle::update()
 		}	
 	}
 
+
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))				//		START GAME
 	{
 		if (!repeat)
@@ -183,6 +190,23 @@ inputHandle::inputState inputHandle::update()
 				inputStates.exit_hold = true;
 		}	
 	}
+
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))				//		Set Fav
+	{
+		if (!repeat)
+		{
+			repeat = true;
+			inputStates.set_fav_press = true;
+			counter = 0;
+		}
+		else
+		{
+			inputStates.set_fav_press = false;
+			counter++;
+			if (counter > repeat_time)
+				inputStates.set_fav_press = true;
+		}	
+	}
 	else
 	{
 		clear();
@@ -213,6 +237,11 @@ void inputHandle::clear()
 
 	inputStates.start_game_press = false;
 	inputStates.start_game_hold = false;
+
+	inputStates.show_favs_press = false;
+	inputStates.show_favs_hold = false;
+	inputStates.set_fav_press = false;
+	inputStates.set_fav_hold = false;
 
 	inputStates.exit_press = false;
 	inputStates.exit_hold = false;
