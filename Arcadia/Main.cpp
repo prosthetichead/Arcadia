@@ -122,7 +122,13 @@ void initialize()
 
 	gameList.updateFilter(platformFilters.getFilterString());
 
+<<<<<<< HEAD
 	window.create(desktopMode, "Arcadia", sf::Style::Default);
+=======
+
+	
+	window.create(desktopMode, "Arcadia", sf::Style::Fullscreen);
+>>>>>>> 8dd7311ef6263af7d6d71a7409245ca88b9cf119
 	window.setVerticalSyncEnabled(true);
 }
 
