@@ -14,17 +14,14 @@ private:
 	int movieStatus;
 	
 	sf::Texture* fanArt;
-	sf::Texture clearLogo;
 	sf::Texture boxShoot;
 	sf::Texture screenShot;
 
 	sfe::Movie* movie;
 
-	sf::RectangleShape rectangleInfo;
-	sf::RectangleShape rectangleFanArt;
-	sf::RectangleShape rectangleFanArtDarken;
+	sf::RectangleShape rectangle;
 	sf::RectangleShape movieBorder;
-	
+
 	sf::Text description;
 	
 public:
