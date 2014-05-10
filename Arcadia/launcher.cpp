@@ -34,14 +34,14 @@ bool launcher::terminate()
 	}
 }
 
-bool launcher::update(inputHandle::inputState inputStates, dbHandle::gameListItem gameItem)
-{
-	if(inputStates.start_game_press)
-	{
-		launchGame(db.getLaunchCode(gameItem.platformID, gameItem.fileName));
-	}
-	return true;
-}
+//bool launcher::update()
+//{
+//	if(inputStates.start_game_press)
+//	{
+//		launchGame(db.getLaunchCode(gameItem.platformID, gameItem.fileName));
+//	}
+//	return true;
+//}
 
 bool launcher::launchGame(std::string commandString)
 {

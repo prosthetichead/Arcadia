@@ -241,8 +241,31 @@ std::vector<dbHandle::assetItem> dbHandle::getIconPaths()
 		list.push_back(item);
 	}	
 
-
+	db.disconnect();
 	std::cout << "Completed icon Paths Load" << std::endl;
 	return list;
-	
+}
+
+dbHandle::inputItem dbHandle::getInputItem(int input)
+{
+	dbHandle::inputItem item;
+	sqlite3pp::database db(db_fileName.c_str());
+
+	std::string query = "select id, name, input_type, keyboard_key_id, buttonNumber from inputs where id = :inputID";
+	sqlite3pp::query qry(db, query.c_str());
+	qry.bind(":inputID", input);
+
+	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
+	{
+		item.inputName = (*i).get<const char*>(1);
+		item.inputType = (*i).get<const char*>(2);
+
+		int key_id = (*i).get<int>(3); 
+		item.key = (sf::Keyboard::Key)key_id;
+	}
+
+	return item;
+
+	db.disconnect();
+
 }

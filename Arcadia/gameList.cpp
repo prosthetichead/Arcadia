@@ -13,12 +13,12 @@ GameList::~GameList(void)
 }
 
 
-void GameList::init(dbHandle &db_obj, assetHandle &asset_obj,  float posX, float posY, int width, float height)
+void GameList::init(dbHandle &db_obj, assetHandle &asset_obj, float posX, float posY, int width, float height)
 {
 	//setup Database handeler
 	db = db_obj;
 	assets = asset_obj;
-		
+
 	//setup rectangle 
 	rectangle.setSize(sf::Vector2f(width, height));
 	rectangle.setPosition(posX, posY);
@@ -47,15 +47,15 @@ dbHandle::gameListItem  GameList::getCurrentItem()
 	return listOfItems.at(selectedItemNum);
 }
 
-void GameList::update(inputHandle::inputState inputStates)
+void GameList::update(inputHandle& ih)
 {
 	selectedItemChange = false;
-	if (inputStates.up_press || inputStates.up_hold)
+	if (ih.inputPress(inputHandle::inputs::up) || ih.inputHold(inputHandle::inputs::up))
 	{
 		selectedItemNum--;
 		selectedItemChange = true;
 	}
-	else if (inputStates.down_press || inputStates.down_hold)
+	else if (ih.inputPress(inputHandle::inputs::down) || ih.inputHold(inputHandle::inputs::down))
 	{
 		selectedItemNum++;
 		selectedItemChange = true;

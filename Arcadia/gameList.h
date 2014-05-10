@@ -28,8 +28,8 @@ class GameList
 	public:
 		GameList();
 		~GameList(void);
-		void GameList::init(dbHandle& db_obj, assetHandle& icon_obj, float posX, float posY, int width, float height);
-		void GameList::update(inputHandle::inputState inputStates);
+		void GameList::init(dbHandle& db_obj, assetHandle& icon_obj,  float posX, float posY, int width, float height);
+		void GameList::update(inputHandle& ih);
 		void GameList::draw(sf::RenderWindow& window);
 		void GameList::updateFilter(std::string filterString);
 		dbHandle::gameListItem  GameList::getCurrentItem();

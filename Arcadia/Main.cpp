@@ -34,8 +34,6 @@ assetHandle assets;
 
 
 std::string path;
-inputHandle::inputState inputStates;
-
 
 //turns on the debug console
 void activateDebugConsole()
@@ -66,13 +64,11 @@ int main()
 	while (window.isOpen())
    {	
 
-		inputStates = ih.update(); //Get Input States
+		ih.update(); //update inputs
 		
-		if((inputStates.exit_hold) && (launch.processRunning))
+		if(ih.inputHold(inputHandle::inputs::exit) && (launch.processRunning))
 			launch.terminate();
-		//else if((inputStates.exit_hold) && (!launch.processRunning))
-			//window.close();
-
+		
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
@@ -111,6 +107,7 @@ void initialize()
 	db.setFilePath(path, "database.db");
 	launch.init(db);
 	assets.init(db);
+	ih.init(db);
 	
 	int gameListWidth = desktopMode.width * .35;
 
@@ -133,22 +130,22 @@ void update()
 	
 
 	bool newFilter = false;
-	if (inputStates.platform_filter_left_press)
+	if (ih.inputPress(inputHandle::inputs::filter_1_left))
 	{
 		platformFilters.update(-1);
 		newFilter = true;		
 	}
-	if (inputStates.platform_filter_right_press)
+	if (ih.inputPress(inputHandle::inputs::filter_1_right))
 	{
 		platformFilters.update(+1);
 		newFilter = true;		
 	}
-	if (inputStates.user_filter_left_press)
+	if (ih.inputPress(inputHandle::inputs::filter_2_left))
 	{
 		userFilters.update(-1);
 		newFilter = true;	
 	}
-	if (inputStates.user_filter_right_press)
+	if (ih.inputPress(inputHandle::inputs::filter_2_right))
 	{
 		userFilters.update(+1);
 		newFilter = true;		
@@ -157,9 +154,9 @@ void update()
 		gameList.updateFilter(platformFilters.getFilterString() + userFilters.getFilterString());	
 
 
-	gameList.update(inputStates);
+	gameList.update(ih);
 	gameInfo.update(gameList.getCurrentItem());
-	launch.update(inputStates, gameList.getCurrentItem());
+	//launch.update(inputStates, gameList.getCurrentItem());
 
 	//movie.update();
 }
