@@ -47,7 +47,9 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 {
 	vector<dbHandle::gameListItem> results;
 	sqlite3pp::database db(db_fileName.c_str());
-	std::string query = "select games.name, games.region, platforms.name, platforms.id, platforms.videos_path, games.file_name, platforms.images_path from games, platforms where games.platform_id = platforms.id and games.active = 1 " + whereStatment + " order by games.name"; 
+			
+	std::string query = "select games.name, games.file_name, platforms.id, platforms.name from games, platforms, genres where games.genre_id = genres.id and games.platform_id = platforms.id and games.active = 1 " + whereStatment + " order by games.name"; 
+
 	sqlite3pp::query qry(db, query.c_str());
 	sqlite3pp::query::iterator intBegin = qry.begin();
 	sqlite3pp::query::iterator intEnd = qry.end();
@@ -55,67 +57,72 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 	if (std::distance(intBegin, intEnd) == 0)
 	{
 		dbHandle::gameListItem item;
-		item.platform = -1;
+		item.platformID= -1;
 		item.fileName = "";
-		item.region = "NULL";
 		item.title = "No Games To Display";
-		item.videoPath = "NULL";
 
 		results.push_back(item);
 	}
 
 	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
 	{
+			// Tile / Name
 			dbHandle::gameListItem newItem;
 			newItem.title = (*i).get<const char*>(0);
 
-			// Region
-			if ((*i).get<const char*>(1) == NULL)
-				newItem.region = "NULL";
-			else
-				newItem.region = (*i).get<const char*>(1);
-
-			// Platform Name
-			if ((*i).get<const char*>(2) == NULL)
-				newItem.platform = "NULL";
-			else
-				newItem.platform = (*i).get<const char*>(2);
+			// File Name
+			newItem.fileName = (*i).get<const char*>(1);
 
 			// Platform ID
-			newItem.platformID = (*i).get<const char*>(3);
-			// File Name
-			newItem.fileName = (*i).get<const char*>(5);
+			newItem.platformID = (*i).get<const char*>(2);
+			
+			// platform Name
+			newItem.platformName = (*i).get<const char*>(3);
+
+
+
 
 
 
 			// Video Path
-			if ((*i).get<const char*>(4) == NULL)
-				newItem.videoPath = "NULL";
-			else
-			{
-				newItem.videoPath = (*i).get<const char*>(4);
-				boost::replace_all(newItem.videoPath, "%PATH%", exe_path);
-				newItem.videoPath = newItem.videoPath + "\\" + newItem.fileName;
-				newItem.videoPath = fileExists(newItem.videoPath, movie_file_exts);
-			}
-
-			std::string image_path = (*i).get<const char*>(6);
-			boost::replace_all(image_path, "%PATH%", exe_path);
-			
-			newItem.fanArtPath = image_path + "\\fanart\\" + newItem.fileName;
-			newItem.fanArtPath = fileExists(newItem.fanArtPath, img_file_exts);
-
-			newItem.screenPath = image_path + "\\screen\\" + newItem.fileName;
-			newItem.screenPath = fileExists(newItem.screenPath, img_file_exts);
-
-			newItem.clearLogoPath = image_path + "\\clearlogo\\" + newItem.fileName;
-			newItem.clearLogoPath = fileExists(newItem.clearLogoPath, img_file_exts);
+			//if ((*i).get<const char*>(4) == NULL)
+			//	newItem.videoPath = "NULL";
+			//else
+			//{
+			//	newItem.videoPath = (*i).get<const char*>(4);
+			//	boost::replace_all(newItem.videoPath, "%PATH%", exe_path);
+			//	newItem.videoPath = newItem.videoPath + "\\" + newItem.fileName;
+			//	newItem.videoPath = fileExists(newItem.videoPath, movie_file_exts);
+			//}
+			//std::string image_path = (*i).get<const char*>(6);
+			//boost::replace_all(image_path, "%PATH%", exe_path);
+			//newItem.fanArtPath = image_path + "\\fanart\\" + newItem.fileName;
+			//newItem.fanArtPath = fileExists(newItem.fanArtPath, img_file_exts);
+			//newItem.screenPath = image_path + "\\screen\\" + newItem.fileName;
+			//newItem.screenPath = fileExists(newItem.screenPath, img_file_exts);
+			//newItem.clearLogoPath = image_path + "\\clearlogo\\" + newItem.fileName;
+			//newItem.clearLogoPath = fileExists(newItem.clearLogoPath, img_file_exts);
 
 			results.push_back(newItem);
 	}
 	db.disconnect();
 
 	return results;
+}
+
+// Get detailed info strut based on a game list item
+dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem )
+{
+	gameInfoItem infoItem;
+	sqlite3pp::database db(db_fileName.c_str());
+	std::string query = "select platforms.videos_path "
+						" ,platforms.images_path "
+						" ,games.description "
+						" ,games.region "
+						" from games, platforms, genres "
+						" where games.genre_id = genres.id and games.platform_id = platforms.id and games.platform_id = :platform_id and games.file_name = :file_name"; 
+	
+	db.disconnect();
 }
 
 std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()

@@ -13,10 +13,12 @@ private:
 	bool hasMovieFile;
 	int movieStatus;
 	
-	sf::Texture* fanArt;
+	sf::Texture *fanArt;
 	sf::Texture clearLogo;
 	sf::Texture boxShoot;
 	sf::Texture screenShot;
+	sf::Texture developerLogo;
+	sf::Texture publisherLogo;
 
 	sfe::Movie* movie;
 

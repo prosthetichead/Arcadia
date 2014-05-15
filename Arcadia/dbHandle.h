@@ -22,24 +22,41 @@ public:
 
 	struct gameListItem {
 		std::string title;
-		std::string platformID;
 		std::string fileName;
-		std::string region;
-		std::string platform;
+		std::string platformID;
+		std::string platformName;
+	};
+
+	struct gameInfoItem {
 		std::string videoPath;
 		std::string fanArtPath;
 		std::string screenPath;
 		std::string clearLogoPath;
-	};
+
+		std::string description;
+		std::string region;
+		std::string release_year;
+		std::string rating;
+		std::string players;
+		bool co_op;
+		std::string publisher;
+		std::string developer;
+		double user_stars;
+		double gamedb_stars;
+
+	};	
+
 	struct filterListItem {
 		std::string title;
 		std::string filterIcon;
 		std::string filterString;
 	};
+
 	struct assetItem {
 		std::string id;
 		std::string path;
 	};
+
 	struct inputItem
 	{
 		std::string inputName;
@@ -53,11 +70,11 @@ public:
 		int counter;
 		int repeat_time;
 	};
-	
 
 	dbHandle(void);
 	void setFilePath(std::string path, std::string fileName);
 	std::vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStatment);
+	gameInfoItem dbHandle::getGameInfo( gameListItem );
 	std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList();
 	std::vector<dbHandle::filterListItem> dbHandle::getFilterList();
 	std::string dbHandle::getLaunchCode(std::string platform_id, std::string game_id);

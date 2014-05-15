@@ -61,6 +61,8 @@ void filterList::draw(sf::RenderWindow& window)
 	//window.draw(rectangle);
 
 	sf::Sprite selectedSprite;
+	int normalPading = 10;
+	int selectedPadding = 15;
 
 	dbHandle::filterListItem selectedItem = listOfItems.at(selectedItemNum);
 
@@ -69,7 +71,7 @@ void filterList::draw(sf::RenderWindow& window)
 	float selectedPosY = rectangle.getPosition().y;
 
 	if (selectedScale < 2) 
-		selectedScale = selectedScale + .4; 
+		selectedScale = selectedScale + .1; 
 	else 
 		selectedScale = 2;
 	if (newFilter)
@@ -79,7 +81,7 @@ void filterList::draw(sf::RenderWindow& window)
 	}
 
 
-	selectedSprite.setOrigin(32/2, 32/2);
+	selectedSprite.setOrigin(selectedSprite.getGlobalBounds().width/2, selectedSprite.getGlobalBounds().height/2);
 	selectedSprite.setScale(selectedScale, selectedScale);
 	selectedSprite.setPosition(selectedPosX, selectedPosY);	
 

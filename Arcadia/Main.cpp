@@ -155,7 +155,7 @@ void update()
 
 
 	gameList.update(ih);
-	gameInfo.update(gameList.getCurrentItem());
+//	gameInfo.update(gameList.getCurrentItem());
 	//launch.update(inputStates, gameList.getCurrentItem());
 
 	//movie.update();
