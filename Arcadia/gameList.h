@@ -11,8 +11,8 @@ class GameList
 		sf::RectangleShape rectangle;
 		sf::Font selectedFont;
 		sf::Font normalFont;
-		dbHandle db;
-		assetHandle assets;
+		dbHandle &db;
+		assetHandle &ah;
 
 		sf::Text selectedText;
 		std::vector<dbHandle::gameListItem> listOfItems;
@@ -26,10 +26,11 @@ class GameList
 
 
 	public:
-		GameList();
+		GameList(dbHandle &db_ref, assetHandle &ah_ref);
 		~GameList(void);
-		void GameList::init(dbHandle& db_obj, assetHandle& icon_obj,  float posX, float posY, int width, float height);
-		void GameList::update(inputHandle& ih);
+
+		void GameList::init(float posX, float posY, int width, float height);
+		bool GameList::update(inputHandle& ih);
 		void GameList::draw(sf::RenderWindow& window);
 		void GameList::updateFilter(std::string filterString);
 		dbHandle::gameListItem  GameList::getCurrentItem();

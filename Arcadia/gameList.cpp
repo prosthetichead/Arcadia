@@ -2,7 +2,7 @@
 
 using namespace std;
 
-GameList::GameList()
+GameList::GameList(dbHandle &db_ref, assetHandle &ah_ref): db(db_ref), ah(ah_ref)
 {	
 	selectedItemNum = 0;
 	counter = 0;
@@ -13,12 +13,8 @@ GameList::~GameList(void)
 }
 
 
-void GameList::init(dbHandle &db_obj, assetHandle &asset_obj, float posX, float posY, int width, float height)
+void GameList::init(float posX, float posY, int width, float height)
 {
-	//setup Database handeler
-	db = db_obj;
-	assets = asset_obj;
-
 	//setup rectangle 
 	rectangle.setSize(sf::Vector2f(width, height));
 	rectangle.setPosition(posX, posY);
@@ -47,7 +43,7 @@ dbHandle::gameListItem  GameList::getCurrentItem()
 	return listOfItems.at(selectedItemNum);
 }
 
-void GameList::update(inputHandle& ih)
+bool GameList::update(inputHandle& ih)
 {
 	selectedItemChange = false;
 	if (ih.inputPress(inputHandle::inputs::up) || ih.inputHold(inputHandle::inputs::up))
@@ -76,7 +72,8 @@ void GameList::update(inputHandle& ih)
 	}
 
 	selectedText.setString(listOfItems.at(selectedItemNum).title);
-		
+
+	return selectedItemChange;
 }
 
 void GameList::draw(sf::RenderWindow& window)

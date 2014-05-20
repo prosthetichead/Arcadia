@@ -14,9 +14,8 @@ private:
 
 public:
 	bool processRunning;
-	launcher(void);
+	launcher(dbHandle& db_ref);
 	~launcher(void);
-	void launcher::init(dbHandle& db_obj);
 //	bool update(inputHandle::inputState inputStates, dbHandle::gameListItem gameItem);
 	bool launcher::launchGame(std::string commandString);
 	bool launcher::terminate();

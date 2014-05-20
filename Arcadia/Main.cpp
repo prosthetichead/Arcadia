@@ -21,17 +21,16 @@ bool pause = false;
 
 sf::RenderWindow window;
 sf::Event event;
-GameInfo gameInfo;
-GameList gameList;
+
 dbHandle db;
-inputHandle ih;
-launcher launch;
-filterList platformFilters;
-filterList userFilters;
+assetHandle ah; //Dont use untill init
+inputHandle ih;  //Dont use untill init
 
-assetHandle assets;
-
-
+GameList gameList(db, ah);
+GameInfo gameInfo(db, ah);
+filterList platformFilters(db, ah);
+filterList userFilters(db, ah);
+launcher launch(db);
 
 std::string path;
 
@@ -57,7 +56,7 @@ std::string getExePath()
 
 int main()
 {
-	activateDebugConsole();  //turn on debug console
+	//activateDebugConsole();  //turn on debug console
 	path = getExePath();
 	initialize();
 
@@ -91,7 +90,7 @@ int main()
 		}
 		else
 		{
-			sf::sleep(sf::milliseconds(170));
+			sf::sleep(sf::milliseconds(170)); // slow down updating and drawing as do not have focus
 		}
 	}
     return 0;
@@ -103,32 +102,28 @@ void initialize()
 {	
 
 	sf::VideoMode desktopMode = sf::VideoMode::getDesktopMode();
-
 	db.setFilePath(path, "database.db");
-	launch.init(db);
-	assets.init(db);
+	ah.init(db);
 	ih.init(db);
 	
 	int gameListWidth = desktopMode.width * .35;
 
-	gameList.init(db, assets, 0, 70,  gameListWidth, desktopMode.height - 140);
-	gameInfo.init(db, gameListWidth, 0, desktopMode.width - gameListWidth, desktopMode.height);
+	gameList.init(0, 70,  gameListWidth, desktopMode.height - 140);
+	gameInfo.init(gameListWidth, 0, desktopMode.width - gameListWidth, desktopMode.height);
 			
-	platformFilters.init(db, assets, 1, 35,  gameListWidth, db.getPlatformFilterList(), "platform Filter List");
-	userFilters.init(db, assets, 70, desktopMode.height - 35,  gameListWidth, db.getFilterList(), "User Filter List");
-
-	gameList.updateFilter(platformFilters.getFilterString());
-
+	platformFilters.init(1, 35,  gameListWidth, db.getPlatformFilterList(), "platform Filter List");
+	userFilters.init(70, desktopMode.height - 35,  gameListWidth, db.getFilterList(), "User Filter List");
 
 	
+	gameList.updateFilter(platformFilters.getFilterString());
+	gameInfo.newGameInfo(gameList.getCurrentItem());
+
 	window.create(desktopMode, "Arcadia", sf::Style::Fullscreen);
 	window.setVerticalSyncEnabled(true);
 }
 
 void update()
 {
-	
-
 	bool newFilter = false;
 	if (ih.inputPress(inputHandle::inputs::filter_1_left))
 	{
@@ -154,11 +149,12 @@ void update()
 		gameList.updateFilter(platformFilters.getFilterString() + userFilters.getFilterString());	
 
 
-	gameList.update(ih);
-//	gameInfo.update(gameList.getCurrentItem());
-	//launch.update(inputStates, gameList.getCurrentItem());
-
-	//movie.update();
+	bool newGameSelected = gameList.update(ih);
+	//if(newGameSelected)
+	//{
+	//	gameInfo.newGameInfo(gameList.getCurrentItem());
+	//}
+	//gameInfo.update();
 }
 
 void draw()
@@ -166,14 +162,11 @@ void draw()
 
 	window.clear(sf::Color::Black);
 
-	gameInfo.draw(window);
+	//gameInfo.draw(window);
 	gameList.draw(window);
 	platformFilters.draw(window);
 	userFilters.draw(window);
-
-
-	//window.draw(movie);
-	
+		
 
 	window.display();
 }

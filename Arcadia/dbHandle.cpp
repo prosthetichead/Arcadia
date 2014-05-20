@@ -23,13 +23,14 @@ void dbHandle::setFilePath(std::string path, std::string fileName)
 /******  
 *   File Exists
 *	Checks using the file path and extentions list if a file with the given extention exists.
-*	
+*	and returns filename if it does
+*   else retuns NULL.
 */
 std::string dbHandle::fileExists(std::string file, std::vector<std::string> file_exts)
 {
     struct stat buf;
 	std::string returnString;
-
+	//boost::replace_all(file, "%PATH%", exe_path);
 	for (int i = 0; i < file_exts.size(); i++)
 	{
 		returnString = file + file_exts.at(i);
@@ -57,8 +58,8 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 	if (std::distance(intBegin, intEnd) == 0)
 	{
 		dbHandle::gameListItem item;
-		item.platformID= -1;
-		item.fileName = "";
+		item.platformID= "NULL";
+		item.fileName = "NULL";
 		item.title = "No Games To Display";
 
 		results.push_back(item);
@@ -79,30 +80,6 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 			// platform Name
 			newItem.platformName = (*i).get<const char*>(3);
 
-
-
-
-
-
-			// Video Path
-			//if ((*i).get<const char*>(4) == NULL)
-			//	newItem.videoPath = "NULL";
-			//else
-			//{
-			//	newItem.videoPath = (*i).get<const char*>(4);
-			//	boost::replace_all(newItem.videoPath, "%PATH%", exe_path);
-			//	newItem.videoPath = newItem.videoPath + "\\" + newItem.fileName;
-			//	newItem.videoPath = fileExists(newItem.videoPath, movie_file_exts);
-			//}
-			//std::string image_path = (*i).get<const char*>(6);
-			//boost::replace_all(image_path, "%PATH%", exe_path);
-			//newItem.fanArtPath = image_path + "\\fanart\\" + newItem.fileName;
-			//newItem.fanArtPath = fileExists(newItem.fanArtPath, img_file_exts);
-			//newItem.screenPath = image_path + "\\screen\\" + newItem.fileName;
-			//newItem.screenPath = fileExists(newItem.screenPath, img_file_exts);
-			//newItem.clearLogoPath = image_path + "\\clearlogo\\" + newItem.fileName;
-			//newItem.clearLogoPath = fileExists(newItem.clearLogoPath, img_file_exts);
-
 			results.push_back(newItem);
 	}
 	db.disconnect();
@@ -111,18 +88,88 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 }
 
 // Get detailed info strut based on a game list item
-dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem )
+dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 {
+	
 	gameInfoItem infoItem;
 	sqlite3pp::database db(db_fileName.c_str());
-	std::string query = "select platforms.videos_path "
-						" ,platforms.images_path "
+	std::string query = "select "
+						" platforms.images_path "
+						" ,platforms.videos_path "
 						" ,games.description "
-						" ,games.region "
-						" from games, platforms, genres "
-						" where games.genre_id = genres.id and games.platform_id = platforms.id and games.platform_id = :platform_id and games.file_name = :file_name"; 
-	
+						" ,regions.name "
+						" ,regions.icon_id "
+						" ,genres.genre_name "
+						" ,genres.icon_id "
+						" ,case when developer_id = 0 then games.developer else d_comp.name end " // Take the name from games table if its an unknow developer
+						" ,d_comp.icon_id "
+						" ,case when publisher_id = 0 then games.publisher else p_comp.name end " // Take the name from games table if its an unknow publisher
+						" ,p_comp.icon_id "
+						" from games, platforms, genres, regions, companies p_comp, companies d_comp "
+						" where p_comp.id = games.publisher_id and d_comp.id = games.developer_id and regions.id = games.region_id and games.genre_id = genres.id and games.platform_id = platforms.id and games.platform_id = :platform_id and games.file_name = :file_name"; 
+	sqlite3pp::query qry(db, query.c_str());
+	qry.bind(":platform_id", listItem.platformID.c_str());
+	qry.bind(":file_name", listItem.fileName.c_str());
+
+	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
+	{
+		// LOAD IMAGES
+		std::string images_path;
+		if ((*i).get<const char*>(0) == NULL)
+			images_path = "";
+		else
+		{
+			images_path = (*i).get<const char*>(0);
+			boost::replace_all(images_path, "%PATH%", exe_path);
+		}
+		infoItem.fanArtPath = fileExists(images_path + "\\fanart\\" + listItem.fileName , img_file_exts);  //Fan Art
+		infoItem.screenPath = fileExists(images_path + "\\screen\\" + listItem.fileName , img_file_exts);  //Screen Shot
+		infoItem.clearLogoPath = fileExists(images_path + "\\clearlogo\\" + listItem.fileName , img_file_exts);  //Clear logo
+
+		// LOAD VIDEO
+		std::string video_path;
+		if ((*i).get<const char*>(1) == NULL)
+			video_path = "NULL";
+		else
+		{
+			video_path = (*i).get<const char*>(1);	
+			boost::replace_all(video_path, "%PATH%", exe_path);
+			infoItem.videoPath = fileExists(video_path + "\\" + listItem.fileName, movie_file_exts);
+		}
+
+		// DESCRIPTION
+		if ((*i).get<const char*>(2) == NULL)
+			infoItem.description = " ";
+		else
+			infoItem.description = (*i).get<const char*>(2);
+
+		// REGION
+		infoItem.regionName = (*i).get<const char*>(3);
+		infoItem.regionIconID = (*i).get<const char*>(4);
+
+		// GENRE
+		infoItem.genreName = (*i).get<const char*>(5);
+		infoItem.genreIconID = (*i).get<const char*>(6);
+
+		// Developer - Publisher
+		if ((*i).get<const char*>(7) == NULL)
+			infoItem.developer = "";
+		else
+			infoItem.developer = (*i).get<const char*>(7);
+		infoItem.developerIconID = (*i).get<const char*>(8);
+		cout<<infoItem.developerIconID << endl;
+		if ((*i).get<const char*>(9) == NULL)
+			infoItem.publisher = "";
+		else
+			infoItem.publisher = (*i).get<const char*>(9);
+		infoItem.publisherIconID = (*i).get<const char*>(10);
+
+		
+
+	}
 	db.disconnect();
+
+	return infoItem;
 }
 
 std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
@@ -234,7 +281,7 @@ std::vector<dbHandle::assetItem> dbHandle::getIconPaths()
 
 	sqlite3pp::database db(db_fileName.c_str());
 	
-	std::string query = "select id, file_path from assets";
+	std::string query = "select id, file_path from image_assets where type = 'icon'";
 	sqlite3pp::query qry(db, query.c_str());
 
 	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
@@ -249,7 +296,6 @@ std::vector<dbHandle::assetItem> dbHandle::getIconPaths()
 	}	
 
 	db.disconnect();
-	std::cout << "Completed icon Paths Load" << std::endl;
 	return list;
 }
 

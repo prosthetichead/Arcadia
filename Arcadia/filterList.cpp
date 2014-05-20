@@ -1,9 +1,14 @@
 #include "filterList.h"
 
-filterList::filterList(void)
+filterList::filterList(dbHandle& db_ref, assetHandle& ah_ref): db(db_ref), ah(ah_ref)
 {
-	//newFilter = true;
-	selectedScale = 2;
+	newFilter = true;
+	
+	selectedSpriteSize = 64;
+	normalSpriteSize = 32;
+	normalPading = 10;
+	selectedPadding = 30;
+
 	selectedItemNum = 0;
 }
 
@@ -12,12 +17,8 @@ filterList::~filterList(void)
 {
 }
 
-void filterList::init(dbHandle& db_obj, assetHandle& asset_obj, float posX, float posY, int width, std::vector<dbHandle::filterListItem> listItems, std::string name)
+void filterList::init(float posX, float posY, int width, std::vector<dbHandle::filterListItem> listItems, std::string name)
 {
-	//setup Database handeler
-	db = db_obj;
-	assets= asset_obj;
-	
 	filterListName = name;
 
 	listOfItems = listItems; 
@@ -58,43 +59,48 @@ std::string filterList::getFilterString()
 
 void filterList::draw(sf::RenderWindow& window)
 {
-	//window.draw(rectangle);
-
 	sf::Sprite selectedSprite;
-	int normalPading = 10;
-	int selectedPadding = 15;
-
-	dbHandle::filterListItem selectedItem = listOfItems.at(selectedItemNum);
-
-	selectedSprite.setTexture(assets.getTextureAsset(listOfItems.at(selectedItemNum).filterIcon));
+	selectedSprite.setTexture(ah.getTextureAsset(listOfItems.at(selectedItemNum).filterIcon), true);
 	float selectedPosX = rectangle.getSize().x/2;
 	float selectedPosY = rectangle.getPosition().y;
 
-	if (selectedScale < 2) 
-		selectedScale = selectedScale + .1; 
-	else 
-		selectedScale = 2;
-	if (newFilter)
-	{
-		selectedScale = 1;
-		newFilter = false;
-	}
-
-
-	selectedSprite.setOrigin(selectedSprite.getGlobalBounds().width/2, selectedSprite.getGlobalBounds().height/2);
-	selectedSprite.setScale(selectedScale, selectedScale);
+	selectedSprite.setOrigin(selectedSprite.getLocalBounds().width/2, selectedSprite.getLocalBounds().height/2);
 	selectedSprite.setPosition(selectedPosX, selectedPosY);	
+	
+	//Work Out Scale to grow from normal to selected size
+	float selectedSpriteScaleX = selectedSpriteSize / selectedSprite.getLocalBounds().width;
+	float selectedSpriteScaleY = selectedSpriteSize / selectedSprite.getLocalBounds().height;
+	if(newFilter)
+	{
+		selectedSpriteCurrentScaleX = normalSpriteSize / selectedSprite.getLocalBounds().width;
+		selectedSpriteCurrentScaleY = normalSpriteSize / selectedSprite.getLocalBounds().height;
+		newFilter = false;
+	}	
 
-	int numNormalItems = (rectangle.getSize().x - 64) / 32;
-	float normalLeftPosX = selectedPosX - 32 - 16;
-	float normalRightPosX = selectedPosX + 32 + 16;
+	if(selectedSpriteCurrentScaleX < selectedSpriteScaleX)
+		selectedSpriteCurrentScaleX += .1;
+	else
+		selectedSpriteCurrentScaleX = selectedSpriteScaleX;
+
+	if(selectedSpriteCurrentScaleY < selectedSpriteScaleY)
+		selectedSpriteCurrentScaleY += .1;
+	else
+		selectedSpriteCurrentScaleY = selectedSpriteScaleY ;
+
+	selectedSprite.scale(selectedSpriteCurrentScaleX, selectedSpriteCurrentScaleY);
+
+	window.draw(selectedSprite);
+	
+	int numNormalItems = (rectangle.getSize().x - (selectedSpriteSize + (selectedPadding*2) ) ) / (normalSpriteSize + (normalPading*2) );
+	float normalLeftPosX = selectedPosX - (normalSpriteSize+selectedPadding);
+	float normalRightPosX = selectedPosX + (normalSpriteSize+selectedPadding);
 
 	if (numNormalItems > listOfItems.size())
 		numNormalItems = listOfItems.size();
 	for(int i=0; i < numNormalItems/2; ++i)
 	{
-		normalLeftPosX = normalLeftPosX - 32*i;
-		normalRightPosX = normalRightPosX + 32*i;
+		normalLeftPosX = normalLeftPosX - ((normalSpriteSize+normalPading) * i);
+		normalRightPosX = normalRightPosX + ((normalSpriteSize+normalPading) * i);
 		int itemNumLeft = selectedItemNum - i - 1;
 		int itemNumRight = selectedItemNum + i + 1;
 		if (itemNumLeft < 0)
@@ -107,20 +113,20 @@ void filterList::draw(sf::RenderWindow& window)
 		sf::Sprite normalSpriteLeft;
 		sf::Sprite normalSpriteRight;
 		
-		normalSpriteLeft.setTexture(assets.getTextureAsset(itemLeft.filterIcon));
-		normalSpriteRight.setTexture(assets.getTextureAsset(itemRight.filterIcon));
+		normalSpriteLeft.setTexture(ah.getTextureAsset(itemLeft.filterIcon));
+		normalSpriteRight.setTexture(ah.getTextureAsset(itemRight.filterIcon));
 		
-		normalSpriteLeft.setOrigin(32/2, 32/2);
-		normalSpriteRight.setOrigin(32/2, 32/2);
+		normalSpriteLeft.setOrigin(normalSpriteLeft.getLocalBounds().width/2, normalSpriteLeft.getLocalBounds().height/2);
+		normalSpriteRight.setOrigin(normalSpriteRight.getLocalBounds().width/2, normalSpriteRight.getLocalBounds().height/2);
 		normalSpriteLeft.setPosition(normalLeftPosX, selectedPosY);
 		normalSpriteRight.setPosition(normalRightPosX, selectedPosY);
+
+		normalSpriteLeft.setScale(normalSpriteSize / normalSpriteLeft.getLocalBounds().width, normalSpriteSize / normalSpriteLeft.getLocalBounds().height);
+		normalSpriteRight.setScale(normalSpriteSize / normalSpriteRight.getLocalBounds().width, normalSpriteSize / normalSpriteRight.getLocalBounds().height);
+
+
 		window.draw(normalSpriteLeft);
 		window.draw(normalSpriteRight);
 	}
-
-
-
-	
-	window.draw(selectedSprite);
 	
 }

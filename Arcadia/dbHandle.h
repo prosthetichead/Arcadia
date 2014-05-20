@@ -34,13 +34,24 @@ public:
 		std::string clearLogoPath;
 
 		std::string description;
-		std::string region;
+		
+		std::string regionName;
+		std::string regionIconID;
+
+		std::string genreName;
+		std::string genreIconID;
+
+		std::string developer;
+		std::string developerIconID;
+		std::string publisher;
+		std::string publisherIconID;
+
 		std::string release_year;
 		std::string rating;
 		std::string players;
 		bool co_op;
-		std::string publisher;
-		std::string developer;
+		
+		
 		double user_stars;
 		double gamedb_stars;
 

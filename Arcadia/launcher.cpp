@@ -3,7 +3,7 @@
 
 
 
-launcher::launcher(void)
+launcher::launcher(dbHandle& db_ref): db(db_ref)
 {
 	processRunning = false; 
 }
@@ -12,11 +12,6 @@ launcher::launcher(void)
 launcher::~launcher(void)
 {
 	//TerminateProcess(pi.hProcess, 1);
-}
-
-void launcher::init(dbHandle& db_obj)
-{
-	db = db_obj;
 }
 
 bool launcher::terminate()
