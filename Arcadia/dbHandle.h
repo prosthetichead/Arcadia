@@ -83,12 +83,13 @@ public:
 	};
 
 	dbHandle(void);
+	~dbHandle(void);
 	void setFilePath(std::string path, std::string fileName);
 	std::vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStatment);
 	gameInfoItem dbHandle::getGameInfo( gameListItem );
 	std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList();
 	std::vector<dbHandle::filterListItem> dbHandle::getFilterList();
-	std::string dbHandle::getLaunchCode(std::string platform_id, std::string game_id);
+	std::string dbHandle::getLaunchCode(std::string platform_id, std::string file_name);
 	std::vector<dbHandle::assetItem> dbHandle::getIconPaths();
 	inputItem dbHandle::getInputItem(int input);
 

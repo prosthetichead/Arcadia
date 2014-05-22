@@ -4,6 +4,8 @@
 
 using namespace std;
 
+sqlite3pp::database db(0);
+
 dbHandle::dbHandle(void)
 {
 	db_fileName = " ";
@@ -12,11 +14,17 @@ dbHandle::dbHandle(void)
 	img_file_exts.push_back(".jpg");
 	img_file_exts.push_back(".png");
 }
+dbHandle::~dbHandle(void)
+{
+	db.disconnect();
+}
 
 void dbHandle::setFilePath(std::string path, std::string fileName)
 {
 	exe_path = path;
 	db_fileName = path + "\\" + fileName;
+
+	db.connect(db_fileName.c_str());
 }
 
 
@@ -47,7 +55,7 @@ std::string dbHandle::fileExists(std::string file, std::vector<std::string> file
 vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStatment)
 {
 	vector<dbHandle::gameListItem> results;
-	sqlite3pp::database db(db_fileName.c_str());
+	//db.connect(db_fileName.c_str());
 			
 	std::string query = "select games.name, games.file_name, platforms.id, platforms.name from games, platforms, genres where games.genre_id = genres.id and games.platform_id = platforms.id and games.active = 1 " + whereStatment + " order by games.name"; 
 
@@ -82,7 +90,7 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 
 			results.push_back(newItem);
 	}
-	db.disconnect();
+	//db.disconnect();
 
 	return results;
 }
@@ -92,7 +100,8 @@ dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 {
 	
 	gameInfoItem infoItem;
-	sqlite3pp::database db(db_fileName.c_str());
+	//db.connect(db_fileName.c_str());
+	//db.connect(
 	std::string query = "select "
 						" platforms.images_path "
 						" ,platforms.videos_path "
@@ -167,7 +176,7 @@ dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 		
 
 	}
-	db.disconnect();
+	//db.disconnect();
 
 	return infoItem;
 }
@@ -183,7 +192,7 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 	newItemAll.title = "All Platforms";
 	filterList.push_back(newItemAll);
 
-	sqlite3pp::database db(db_fileName.c_str());
+	//db.connect(db_fileName.c_str());
 	std::string query = "select distinct platforms.id, platforms.name, platforms.icon_id from platforms, games where games.platform_id = platforms.id and games.active = 1";
 	sqlite3pp::query qry(db, query.c_str());
 	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
@@ -202,7 +211,7 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 
 		filterList.push_back(newItem);
 	}
-	db.disconnect();
+	//db.disconnect();
 
 	return filterList;	
 }
@@ -218,7 +227,7 @@ std::vector<dbHandle::filterListItem> dbHandle::getFilterList()
 	newItemAll.title = "No Filter";
 	filterList.push_back(newItemAll);
 
-	sqlite3pp::database db(db_fileName.c_str());
+	//db.connect(db_fileName.c_str());
 	std::string query = "select name, filter_string, icon_id  from filters";
 	sqlite3pp::query qry(db, query.c_str());
 	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
@@ -232,19 +241,18 @@ std::vector<dbHandle::filterListItem> dbHandle::getFilterList()
 		filterList.push_back(newItem);
 		
 	}
-	db.disconnect();
+	//db.disconnect();
 	return filterList;	
 }
 
 std::string dbHandle::getLaunchCode(std::string platform_id, std::string file_name)
 {
-	sqlite3pp::database db(db_fileName.c_str());
+	//db.connect(db_fileName.c_str());
 	std::string query = "select load_string, game_load_string, roms_path, extension from games, platforms where platforms.id = :platform_id and file_name = :file_name";
 	sqlite3pp::query qry(db, query.c_str());
 	qry.bind(":platform_id", platform_id.c_str());
 	qry.bind(":file_name", file_name.c_str());
 
-	
 	std::string load_string = "";
 	std::string game_load_string = "";
 	std::string roms_path = "";
@@ -268,8 +276,8 @@ std::string dbHandle::getLaunchCode(std::string platform_id, std::string file_na
 	boost::replace_all(load_string, "%ROMS_PATH%", roms_path);
 	boost::replace_all(load_string, "%FILE_NAME%", file_name + extension);
 	boost::replace_all(load_string, "%PATH%", exe_path);
-	
-	db.disconnect();
+	//db.disconnect;
+
 	return load_string;
 }
 
@@ -302,7 +310,7 @@ std::vector<dbHandle::assetItem> dbHandle::getIconPaths()
 dbHandle::inputItem dbHandle::getInputItem(int input)
 {
 	dbHandle::inputItem item;
-	sqlite3pp::database db(db_fileName.c_str());
+	db.connect(db_fileName.c_str());
 
 	std::string query = "select id, name, input_type, keyboard_key_id, buttonNumber from inputs where id = :inputID";
 	sqlite3pp::query qry(db, query.c_str());

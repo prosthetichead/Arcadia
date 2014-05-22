@@ -100,7 +100,6 @@ int main()
 //runs just once
 void initialize()
 {	
-
 	sf::VideoMode desktopMode = sf::VideoMode::getDesktopMode();
 	db.setFilePath(path, "database.db");
 	ah.init(db);
@@ -118,7 +117,7 @@ void initialize()
 	gameList.updateFilter(platformFilters.getFilterString());
 	gameInfo.newGameInfo(gameList.getCurrentItem());
 
-	window.create(desktopMode, "Arcadia", sf::Style::Fullscreen);
+	window.create(desktopMode, "Arcadia", sf::Style::Titlebar);
 	window.setVerticalSyncEnabled(true);
 }
 
@@ -147,6 +146,8 @@ void update()
 	}
 	if(newFilter)
 		gameList.updateFilter(platformFilters.getFilterString() + userFilters.getFilterString());	
+
+	std::cout << db.getLaunchCode(gameList.getCurrentItem().platformID, gameList.getCurrentItem().fileName) << std::endl;
 
 
 	bool newGameSelected = gameList.update(ih);
