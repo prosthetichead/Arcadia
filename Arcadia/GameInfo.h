@@ -31,7 +31,7 @@ private:
 	
 	sf::Text description;
 
-	int refresh_counter;
+	sf::Vector2i moviePostion;
 	
 public:
 	GameInfo(dbHandle &db_ref, assetHandle &ah_ref);
@@ -41,6 +41,7 @@ public:
 	void GameInfo::newGameInfo(dbHandle::gameListItem gameItem);
 	void GameInfo::draw(sf::RenderWindow &window);
 	void GameInfo::pauseMovie();
+	sf::Vector2i GameInfo::resizePreserveRatio(int org_width, int org_height, int new_width, int new_height);
 
 };
 

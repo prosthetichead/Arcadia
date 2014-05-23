@@ -117,7 +117,7 @@ void initialize()
 	gameList.updateFilter(platformFilters.getFilterString());
 	gameInfo.newGameInfo(gameList.getCurrentItem());
 
-	window.create(desktopMode, "Arcadia", sf::Style::Titlebar);
+	window.create(desktopMode, "Arcadia", sf::Style::Fullscreen);
 	window.setVerticalSyncEnabled(true);
 }
 
@@ -151,11 +151,11 @@ void update()
 
 
 	bool newGameSelected = gameList.update(ih);
-	//if(newGameSelected)
-	//{
-	//	gameInfo.newGameInfo(gameList.getCurrentItem());
-	//}
-	//gameInfo.update();
+	if(newGameSelected)
+	{
+		gameInfo.newGameInfo(gameList.getCurrentItem());
+	}
+	gameInfo.update();
 }
 
 void draw()
@@ -163,7 +163,7 @@ void draw()
 
 	window.clear(sf::Color::Black);
 
-	//gameInfo.draw(window);
+	gameInfo.draw(window);
 	gameList.draw(window);
 	platformFilters.draw(window);
 	userFilters.draw(window);
