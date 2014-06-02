@@ -22,10 +22,10 @@ void GameList::init(float posX, float posY, int width, float height)
 	rectangle.setOutlineColor(sf::Color::White);
 	rectangle.setOutlineThickness(0);
 	
-	selectedFont.loadFromFile(db.exe_path + "\\assets\\fonts\\Teknik-bold.ttf");
-	normalFont.loadFromFile(db.exe_path + "\\assets\\fonts\\Teknik-Regular.ttf");
-	normalFontSize = 18;
-	selectedFontSize = 24;
+	selectedFont.loadFromFile(db.exe_path + "\\assets\\fonts\\Teknik-Bold.ttf");
+	normalFont.loadFromFile(db.exe_path + "\\assets\\fonts\\Teknik-Bold.ttf");
+	normalFontSize = 14;
+	selectedFontSize = 30;
 	
 	selectedText.setFont(selectedFont);
 	selectedText.setCharacterSize(selectedFontSize);

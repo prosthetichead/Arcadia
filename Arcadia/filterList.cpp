@@ -61,7 +61,9 @@ void filterList::draw(sf::RenderWindow& window)
 {
 	sf::Sprite selectedSprite;
 	selectedSprite.setTexture(ah.getTextureAsset(listOfItems.at(selectedItemNum).filterIcon), true);
-	float selectedPosX = rectangle.getSize().x/2;
+
+
+	float selectedPosX = rectangle.getPosition().x + rectangle.getSize().x/2;
 	float selectedPosY = rectangle.getPosition().y;
 
 	selectedSprite.setOrigin(selectedSprite.getLocalBounds().width/2, selectedSprite.getLocalBounds().height/2);
@@ -90,17 +92,20 @@ void filterList::draw(sf::RenderWindow& window)
 	selectedSprite.scale(selectedSpriteCurrentScaleX, selectedSpriteCurrentScaleY);
 
 	window.draw(selectedSprite);
+
+	if (rectangle.getSize().x != 0)
+	{
 	
 	int numNormalItems = (rectangle.getSize().x - (selectedSpriteSize + (selectedPadding*2) ) ) / (normalSpriteSize + (normalPading*2) );
-	float normalLeftPosX = selectedPosX - (normalSpriteSize+selectedPadding);
-	float normalRightPosX = selectedPosX + (normalSpriteSize+selectedPadding);
+	float normalLeftPosX = selectedPosX - selectedPadding;
+	float normalRightPosX = selectedPosX + selectedPadding;
 
 	if (numNormalItems > listOfItems.size())
 		numNormalItems = listOfItems.size();
 	for(int i=0; i < numNormalItems/2; ++i)
 	{
-		normalLeftPosX = normalLeftPosX - ((normalSpriteSize+normalPading) * i);
-		normalRightPosX = normalRightPosX + ((normalSpriteSize+normalPading) * i);
+		normalLeftPosX = normalLeftPosX - ((normalSpriteSize+normalPading));
+		normalRightPosX = normalRightPosX + ((normalSpriteSize+normalPading));
 		int itemNumLeft = selectedItemNum - i - 1;
 		int itemNumRight = selectedItemNum + i + 1;
 		if (itemNumLeft < 0)
@@ -127,6 +132,7 @@ void filterList::draw(sf::RenderWindow& window)
 
 		window.draw(normalSpriteLeft);
 		window.draw(normalSpriteRight);
+	}
 	}
 	
 }

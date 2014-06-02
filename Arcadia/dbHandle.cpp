@@ -114,6 +114,7 @@ dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 						" ,d_comp.icon_id "
 						" ,case when publisher_id = 0 then games.publisher else p_comp.name end " // Take the name from games table if its an unknow publisher
 						" ,p_comp.icon_id "
+						" ,games.players "
 						" from games, platforms, genres, regions, companies p_comp, companies d_comp "
 						" where p_comp.id = games.publisher_id and d_comp.id = games.developer_id and regions.id = games.region_id and games.genre_id = genres.id and games.platform_id = platforms.id and games.platform_id = :platform_id and games.file_name = :file_name"; 
 	sqlite3pp::query qry(db, query.c_str());
@@ -173,6 +174,10 @@ dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 			infoItem.publisher = (*i).get<const char*>(9);
 		infoItem.publisherIconID = (*i).get<const char*>(10);
 
+		//players
+		infoItem.players = (*i).get<int>(11);
+
+
 		
 
 	}
@@ -187,12 +192,12 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 	
 	//Add the all items filter as first filter
 	dbHandle::filterListItem newItemAll;
-	newItemAll.filterIcon = "ALL";
+	newItemAll.filterIcon = "F_ALL";
 	newItemAll.filterString = " ";
 	newItemAll.title = "All Platforms";
 	filterList.push_back(newItemAll);
 
-	//db.connect(db_fileName.c_str());
+
 	std::string query = "select distinct platforms.id, platforms.name, platforms.icon_id from platforms, games where games.platform_id = platforms.id and games.active = 1";
 	sqlite3pp::query qry(db, query.c_str());
 	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
@@ -205,45 +210,79 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 		else
 			icon_id = "ERROR";
 
-		newItem.filterString = "and platform_id = " + platform_id;
+		newItem.filterString = " and platform_id = " + platform_id;
 		newItem.title = (*i).get<const char*>(1);
 		newItem.filterIcon = icon_id; 
 
 		filterList.push_back(newItem);
 	}
-	//db.disconnect();
 
 	return filterList;	
 }
 
-std::vector<dbHandle::filterListItem> dbHandle::getFilterList()
+std::vector<dbHandle::filterListItem> dbHandle::getCustomFilterList(std::string name, std::string sql, std::string games_column_name)
 {
 	vector<dbHandle::filterListItem> filterList;
-	
+
 	//Add the all items filter as first filter
 	dbHandle::filterListItem newItemAll;
-	newItemAll.filterIcon = "ALL";
-	newItemAll.filterString = " ";
-	newItemAll.title = "No Filter";
+	newItemAll.filterIcon = "F_ALL";
+	newItemAll.filterString = "";
+	newItemAll.title = "All " + name;
 	filterList.push_back(newItemAll);
 
-	//db.connect(db_fileName.c_str());
-	std::string query = "select name, filter_string, icon_id  from filters";
+	std::string query = sql; //"select distinct companies.id, companies.name, companies.icon_id from companies, games where games.developer_id = companies.id and games.active = 1";
 	sqlite3pp::query qry(db, query.c_str());
 	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
 	{
-		dbHandle::filterListItem newItem;	
-		newItem.title = (*i).get<const char*>(0);
-		newItem.filterString = (*i).get<const char*>(1);
-		newItem.filterString = " and " + newItem.filterString; 
-		newItem.filterIcon = (*i).get<const char*>(2);
+		dbHandle::filterListItem newItem;
+		std::string id_column = (*i).get<const char*>(0);
+		std::string icon_id = "";
+		if ((*i).get<const char*>(2) != NULL)
+			 icon_id = (*i).get<const char*>(2);
+		else
+			icon_id = "ERROR";
 
+		newItem.filterString = " and " + games_column_name + " = " + id_column;
+		newItem.title = (*i).get<const char*>(1);
+		newItem.filterIcon = icon_id; 
 		filterList.push_back(newItem);
-		
 	}
-	//db.disconnect();
+
 	return filterList;	
+
+		
 }
+
+
+//std::vector<dbHandle::filterListItem> dbHandle::getFilterList()
+//{
+//	vector<dbHandle::filterListItem> filterList;
+//	
+//	//Add the all items filter as first filter
+//	dbHandle::filterListItem newItemAll;
+//	newItemAll.filterIcon = "F_ALL";
+//	newItemAll.filterString = " ";
+//	newItemAll.title = "No Filter";
+//	filterList.push_back(newItemAll);
+//
+//	//db.connect(db_fileName.c_str());
+//	std::string query = "select name, filter_string, icon_id  from filters";
+//	sqlite3pp::query qry(db, query.c_str());
+//	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
+//	{
+//		dbHandle::filterListItem newItem;	
+//		newItem.title = (*i).get<const char*>(0);
+//		newItem.filterString = (*i).get<const char*>(1);
+//		newItem.filterString = " and " + newItem.filterString; 
+//		newItem.filterIcon = (*i).get<const char*>(2);
+//
+//		filterList.push_back(newItem);
+//		
+//	}
+//	//db.disconnect();
+//	return filterList;	
+//}
 
 std::string dbHandle::getLaunchCode(std::string platform_id, std::string file_name)
 {

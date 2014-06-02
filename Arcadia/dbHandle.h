@@ -48,7 +48,7 @@ public:
 
 		std::string release_year;
 		std::string rating;
-		std::string players;
+		int players;
 		bool co_op;
 		
 		
@@ -88,7 +88,7 @@ public:
 	std::vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStatment);
 	gameInfoItem dbHandle::getGameInfo( gameListItem );
 	std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList();
-	std::vector<dbHandle::filterListItem> dbHandle::getFilterList();
+	std::vector<dbHandle::filterListItem> dbHandle::getCustomFilterList(std::string name, std::string sql, std::string games_column_name);
 	std::string dbHandle::getLaunchCode(std::string platform_id, std::string file_name);
 	std::vector<dbHandle::assetItem> dbHandle::getIconPaths();
 	inputItem dbHandle::getInputItem(int input);

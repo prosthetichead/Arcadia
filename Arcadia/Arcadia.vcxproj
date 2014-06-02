@@ -82,6 +82,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FilterScreen.cpp" />
     <ClCompile Include="dbHandle.cpp" />
     <ClCompile Include="GameInfo.cpp" />
     <ClCompile Include="gameList.cpp" />
@@ -90,16 +91,19 @@
     <ClCompile Include="launcher.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="filterList.cpp" />
+    <ClCompile Include="MenuNavigation.cpp" />
     <ClCompile Include="sqlite3pp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="dbHandle.h" />
+    <ClInclude Include="FilterScreen.h" />
+    <ClInclude Include="DBHandle.h" />
     <ClInclude Include="GameInfo.h" />
     <ClInclude Include="gameList.h" />
-    <ClInclude Include="filterList.h" />
+    <ClInclude Include="FilterList.h" />
     <ClInclude Include="assetHandle.h" />
     <ClInclude Include="inputHandle.h" />
     <ClInclude Include="launcher.h" />
+    <ClInclude Include="MenuNavigation.h" />
     <ClInclude Include="sqlite3pp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

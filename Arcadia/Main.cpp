@@ -8,6 +8,7 @@
 #include "filterList.h"
 #include "launcher.h"
 #include "assetHandle.h"
+#include "FilterScreen.h"
 
 
 
@@ -18,6 +19,7 @@ void draw();
 
 
 bool pause = false;
+bool displayFilterScreen = false;
 
 sf::RenderWindow window;
 sf::Event event;
@@ -29,7 +31,7 @@ inputHandle ih;  //Dont use untill init
 GameList gameList(db, ah);
 GameInfo gameInfo(db, ah);
 filterList platformFilters(db, ah);
-filterList userFilters(db, ah);
+FilterScreen filterScreen(db, ah); 
 launcher launch(db);
 
 std::string path;
@@ -56,7 +58,7 @@ std::string getExePath()
 
 int main()
 {
-	//activateDebugConsole();  //turn on debug console
+	activateDebugConsole();  //turn on debug console
 	path = getExePath();
 	initialize();
 
@@ -111,9 +113,8 @@ void initialize()
 	gameInfo.init(gameListWidth, 0, desktopMode.width - gameListWidth, desktopMode.height);
 			
 	platformFilters.init(1, 35,  gameListWidth, db.getPlatformFilterList(), "platform Filter List");
-	userFilters.init(70, desktopMode.height - 35,  gameListWidth, db.getFilterList(), "User Filter List");
+	filterScreen.init(0,0,800,600);
 
-	
 	gameList.updateFilter(platformFilters.getFilterString());
 	gameInfo.newGameInfo(gameList.getCurrentItem());
 
@@ -123,39 +124,48 @@ void initialize()
 
 void update()
 {
-	bool newFilter = false;
-	if (ih.inputPress(inputHandle::inputs::filter_1_left))
-	{
-		platformFilters.update(-1);
-		newFilter = true;		
-	}
-	if (ih.inputPress(inputHandle::inputs::filter_1_right))
-	{
-		platformFilters.update(+1);
-		newFilter = true;		
-	}
+	
+
 	if (ih.inputPress(inputHandle::inputs::filter_2_left))
 	{
-		userFilters.update(-1);
-		newFilter = true;	
+		if(displayFilterScreen)
+			displayFilterScreen = false;
+		else
+			displayFilterScreen = true;
 	}
-	if (ih.inputPress(inputHandle::inputs::filter_2_right))
+
+	
+	if(!displayFilterScreen)
 	{
-		userFilters.update(+1);
-		newFilter = true;		
+		bool newFilter = false;
+		if (ih.inputPress(inputHandle::inputs::filter_1_left))
+		{
+			platformFilters.update(-1);
+			newFilter = true;		
+		}
+		if (ih.inputPress(inputHandle::inputs::filter_1_right))
+		{
+			platformFilters.update(+1);
+			newFilter = true;		
+		}
+		if(newFilter)
+			gameList.updateFilter(platformFilters.getFilterString());	
+
+		std::cout << db.getLaunchCode(gameList.getCurrentItem().platformID, gameList.getCurrentItem().fileName) << std::endl;
+
+
+		bool newGameSelected = gameList.update(ih);
+		if(newGameSelected)
+		{
+			gameInfo.newGameInfo(gameList.getCurrentItem());
+		}
+		gameInfo.update();
 	}
-	if(newFilter)
-		gameList.updateFilter(platformFilters.getFilterString() + userFilters.getFilterString());	
-
-	std::cout << db.getLaunchCode(gameList.getCurrentItem().platformID, gameList.getCurrentItem().fileName) << std::endl;
-
-
-	bool newGameSelected = gameList.update(ih);
-	if(newGameSelected)
+	else
 	{
-		gameInfo.newGameInfo(gameList.getCurrentItem());
+		filterScreen.update(ih);
 	}
-	gameInfo.update();
+
 }
 
 void draw()
@@ -166,8 +176,12 @@ void draw()
 	gameInfo.draw(window);
 	gameList.draw(window);
 	platformFilters.draw(window);
-	userFilters.draw(window);
-		
+	
+	if(displayFilterScreen)
+	{
+		filterScreen.draw(window);
+	}
+
 
 	window.display();
 }

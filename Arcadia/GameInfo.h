@@ -1,6 +1,7 @@
 #pragma once
-#include <SFML/Graphics.hpp>
+#include <SFML\Graphics.hpp>
 #include <sfeMovie\Movie.hpp>
+#include <boost\algorithm\string\split.hpp>
 #include "dbHandle.h"
 #include "assetHandle.h"
 
@@ -27,10 +28,27 @@ private:
 
 	sf::RectangleShape rectangleInfo;	//Rectangle of just the Info Area
 	sf::RectangleShape rectangleFanArt;	//Full Screen Rectangle
-	sf::RectangleShape movieBorder;		
-	
-	sf::Text description;
+	sf::RectangleShape movieBorder;	
+	sf::RectangleShape gameIconsBorder;
+	sf::RectangleShape descriptionBorder;
 
+	sf::View descriptionView;
+	
+	sf::Font descriptionFont;
+	sf::Text descriptionText;
+	int descriptionFontSize;
+	bool descriptionScroll;
+	bool descriptionPause;
+	float descriptionPauseTime;
+	float descriptionPauseCount;
+	float descriptionOffset;
+	float descriptionRequiredOffset;
+	bool resetOffset;
+
+	sf::Font yearFont;
+	sf::Text yearText;
+	int yearFontSize;
+	
 	sf::Vector2i moviePostion;
 	
 public:
@@ -41,7 +59,7 @@ public:
 	void GameInfo::newGameInfo(dbHandle::gameListItem gameItem);
 	void GameInfo::draw(sf::RenderWindow &window);
 	void GameInfo::pauseMovie();
-	sf::Vector2i GameInfo::resizePreserveRatio(int org_width, int org_height, int new_width, int new_height);
+	sf::Vector2i GameInfo::resizePreserveRatio(int org_width, int org_height, int new_width, int new_height, bool fit = true);
 
 };
 
