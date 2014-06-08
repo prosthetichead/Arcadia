@@ -5,6 +5,7 @@
 #include "MenuNavigation.h"
 #include "inputHandle.h"
 #include "FilterList.h"
+#include "OnScreenKeyboard.h"
 
 
 class FilterScreen
@@ -12,6 +13,8 @@ class FilterScreen
 private:
 	dbHandle &db;
 	assetHandle &ah;
+
+	OnScreenKeyboard osk;
 
 	MenuNavigation menuNav;
 
@@ -24,16 +27,26 @@ private:
 	std::string year_operation; // Greater_Then, Less_Then, Equal_Too, Not_Equal_Too
 
 	filterList developerFilter;
+	filterList publisherFilter;
+	filterList regionFilter;
+	filterList genreFilter;
 
-	sf::Texture screenTexture;
+	sf::Texture *screenTexture_p;
 	sf::Texture	pointerTexture;
+
+	std::string filterString;
+
+	void FilterScreen::updateFilterString();
+
+	bool showKeyboard;
 
 public:
 	FilterScreen(dbHandle &db_ref, assetHandle &ah_ref);
 	~FilterScreen(void);
 
+	std::string FilterScreen::getFilterString();
 	void FilterScreen::init(float posX, float posY, int width, float height);
-	void FilterScreen::update(inputHandle& ih);
+	bool FilterScreen::update(inputHandle& ih);
 	void FilterScreen::draw(sf::RenderWindow& window);
 };
 

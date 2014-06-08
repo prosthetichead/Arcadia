@@ -39,19 +39,19 @@ void MenuNavigation::addItem(std::string id, std::string left_id, std::string ri
 	std::pair<std::string, menuItem> pair (id,newItem);
 	menuTree.insert(pair);
 
-	if (selected_ID.empty())   // do we have a selected item yet? if not set it to this one
-		selected_ID = id;
+	if (current_ID.empty())   // do we have a selected item yet? if not set it to this one
+		current_ID = id;
 }
 
 bool MenuNavigation::move(movements movement)
 {
-	menuItem& currentItem = menuTree[selected_ID]; 
+	menuItem& currentItem = menuTree[current_ID]; 
 
 	switch (movement)
 	{
 	case MenuNavigation::left:
 		if(!currentItem.left_id.empty()){  // id is not empty
-			selected_ID = currentItem.left_id;
+			current_ID = currentItem.left_id;
 			return true;
 		}
 		else
@@ -59,7 +59,7 @@ bool MenuNavigation::move(movements movement)
 
 	case MenuNavigation::right:
 		if(!currentItem.right_id.empty()){  
-			selected_ID = currentItem.right_id;
+			current_ID = currentItem.right_id;
 			return true;
 		}
 		else
@@ -67,7 +67,7 @@ bool MenuNavigation::move(movements movement)
 
 	case MenuNavigation::up:
 		if(!currentItem.up_id.empty()){  
-			selected_ID = currentItem.up_id;
+			current_ID = currentItem.up_id;
 			return true;
 		}
 		else
@@ -75,7 +75,7 @@ bool MenuNavigation::move(movements movement)
 
 	case MenuNavigation::down:
 		if(!currentItem.down_id.empty()){ 
-			selected_ID = currentItem.down_id;
+			current_ID = currentItem.down_id;
 			return true;
 		}
 		else
@@ -86,13 +86,42 @@ bool MenuNavigation::move(movements movement)
 	}
 }
 
-int MenuNavigation::getSelectedPosX()
+std::vector<MenuNavigation::menuItem> MenuNavigation::getValueRefVector()
 {
-	menuItem& currentItem = menuTree[selected_ID];
+	std::vector<MenuNavigation::menuItem> valueVector;
+		
+	for(auto kv : menuTree) 
+	{
+		std::cout << kv.second.id << " POS X: " << kv.second.posX << " POS Y: " <<  kv.second.posY << std::endl;
+		valueVector.push_back(kv.second);
+	}
+
+	return valueVector;
+}
+
+
+int MenuNavigation::getCurrentPosX()
+{
+	menuItem& currentItem = menuTree[current_ID];
 	return currentItem.posX;
 }
-int MenuNavigation::getSelectedPosY()
+int MenuNavigation::getCurrentPosY()
 {
-	menuItem& currentItem = menuTree[selected_ID];
+	menuItem& currentItem = menuTree[current_ID];
 	return currentItem.posY;
+}
+std::string MenuNavigation::getCurrentType()
+{
+	menuItem& currentItem = menuTree[current_ID];
+	return currentItem.type;
+}
+std::string MenuNavigation::getCurrentValue()
+{
+	menuItem& currentItem = menuTree[current_ID];
+	return currentItem.value;
+}
+
+std::string MenuNavigation::getCurrentID()
+{
+	return current_ID;
 }

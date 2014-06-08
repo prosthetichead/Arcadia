@@ -135,7 +135,7 @@ void update()
 	}
 
 	
-	if(!displayFilterScreen)
+	if (!displayFilterScreen)
 	{
 		bool newFilter = false;
 		if (ih.inputPress(inputHandle::inputs::filter_1_left))
@@ -149,7 +149,7 @@ void update()
 			newFilter = true;		
 		}
 		if(newFilter)
-			gameList.updateFilter(platformFilters.getFilterString());	
+			gameList.updateFilter(platformFilters.getFilterString() + filterScreen.getFilterString());	
 
 		std::cout << db.getLaunchCode(gameList.getCurrentItem().platformID, gameList.getCurrentItem().fileName) << std::endl;
 
@@ -161,9 +161,13 @@ void update()
 		}
 		gameInfo.update();
 	}
-	else
+	else if (displayFilterScreen)
 	{
-		filterScreen.update(ih);
+		if (filterScreen.update(ih))
+		{
+			displayFilterScreen = false;
+			gameList.updateFilter(platformFilters.getFilterString() + filterScreen.getFilterString());
+		}
 	}
 
 }

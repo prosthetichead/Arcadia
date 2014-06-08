@@ -92,6 +92,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="filterList.cpp" />
     <ClCompile Include="MenuNavigation.cpp" />
+    <ClCompile Include="OnScreenKeyboard.cpp" />
     <ClCompile Include="sqlite3pp.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -104,6 +105,7 @@
     <ClInclude Include="inputHandle.h" />
     <ClInclude Include="launcher.h" />
     <ClInclude Include="MenuNavigation.h" />
+    <ClInclude Include="OnScreenKeyboard.h" />
     <ClInclude Include="sqlite3pp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
