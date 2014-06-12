@@ -12,6 +12,7 @@ FilterScreen::FilterScreen(dbHandle &db_ref, assetHandle &ah_ref):
 {
 	filterString = " ";
 	showKeyboard = false;
+	searchString = "";
 }
 
 
@@ -22,6 +23,8 @@ FilterScreen::~FilterScreen(void)
 void FilterScreen::updateFilterString()
 {
 	filterString = developerFilter.getFilterString() + publisherFilter.getFilterString() + regionFilter.getFilterString() + genreFilter.getFilterString();
+	if (!searchString.empty())
+		filterString += " and games.name like '%" + searchString +"%'";
 	std::cout << filterString << std::endl;
 }
 std::string FilterScreen::getFilterString()
@@ -70,6 +73,12 @@ void FilterScreen::init(float posX, float posY, int width, float height)
 
 	listItems = db.getCustomFilterList("genre", "select distinct genres.id, genres.genre_name, genres.icon_id from genres, games where games.genre_id = genres.id and games.active = 1", "games.genre_id");
 	genreFilter.init(610,150,0,listItems, "region");
+
+	textFont.loadFromFile(db.exe_path + "\\assets\\fonts\\ARCADE_PIX.TTF");
+	searchStringText.setFont(textFont);
+	searchStringText.setPosition(menuRect.getPosition().x + 427, menuRect.getPosition().y + 436);
+	searchStringText.setCharacterSize(16);
+	searchStringText.setString("nothing");
 }
 
 bool FilterScreen::update(inputHandle& ih)
@@ -80,6 +89,12 @@ bool FilterScreen::update(inputHandle& ih)
 		{
 			// returned true, close keyboard and get the search string
 			showKeyboard = false;
+			menuNav.selected = false;
+			searchString = osk.getEnteredText();
+			if (!searchString.empty())
+				searchStringText.setString(searchString);
+			else
+				searchStringText.setString("nothing");
 		}
 	}
 	else
@@ -173,6 +188,7 @@ void FilterScreen::draw(sf::RenderWindow& window)
 	publisherFilter.draw(window);
 	regionFilter.draw(window);
 	genreFilter.draw(window);
+	window.draw(searchStringText);
 	if(showKeyboard)
 	{
 		osk.draw(window);

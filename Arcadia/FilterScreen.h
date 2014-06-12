@@ -34,7 +34,11 @@ private:
 	sf::Texture *screenTexture_p;
 	sf::Texture	pointerTexture;
 
+	sf::Font textFont;
+	sf::Text searchStringText;
+
 	std::string filterString;
+	std::string searchString;
 
 	void FilterScreen::updateFilterString();
 
