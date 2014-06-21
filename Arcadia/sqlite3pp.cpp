@@ -27,9 +27,8 @@
 
 namespace sqlite3pp
 {
-
   null_type ignore;
-
+ 
   namespace
   {
     int busy_handler_impl(void* p, int cnt)
@@ -89,6 +88,12 @@ namespace sqlite3pp
 
     return sqlite3_open(dbname, &db_);
   }
+  //void database::enableREGEX()
+  //{
+	  //sqlite3_create_function(db_, "REGEXP", 2, SQLITE_ANY,0, &sqlite3_regexp,0,0);
+ // }
+
+
 
   int database::connect_v2(char const* dbname, int flags, char const* vfs)
   {
@@ -523,7 +528,7 @@ namespace sqlite3pp
 
   database_error::database_error(database& db) : std::runtime_error(sqlite3_errmsg(db.db_))
   {
+	 
   }
-
-
 }
+

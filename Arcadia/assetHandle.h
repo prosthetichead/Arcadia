@@ -14,5 +14,6 @@ public:
 	~assetHandle(void);
 	void assetHandle::init(dbHandle& db_obj);
 	sf::Texture& assetHandle::getTextureAsset(std::string id);
+	sf::Vector2i assetHandle::resizePreserveRatio(int org_width, int org_height, int new_width, int new_height, bool fit);
 };
 

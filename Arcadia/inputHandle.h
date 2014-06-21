@@ -14,12 +14,12 @@ public:
 		left,
 		right,
 		start_game,
-		filter_1_left,
-		filter_1_right,
-		filter_2_left,
-		filter_2_right,
-		show_favs,
+		platform_filter_left,
+		platform_filter_right,
+		filter_menu,
+		edit_game,
 		set_fav,
+		settings,
 		exit
 	};
 	inputHandle();	

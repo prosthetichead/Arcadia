@@ -32,6 +32,7 @@
 #include <boost/tuple/tuple.hpp>
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/function.hpp>
+#include <regex>
 
 namespace sqlite3pp
 {
@@ -65,6 +66,7 @@ namespace sqlite3pp
 
     int connect(char const* dbname);
     int connect_v2(char const* dbname, int flags, char const* vfs = 0);
+	//void enableREGEX();
     int disconnect();
 
     int attach(char const* dbname, char const* name);

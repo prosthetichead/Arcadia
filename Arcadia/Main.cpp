@@ -113,7 +113,7 @@ void initialize()
 	gameInfo.init(gameListWidth, 0, desktopMode.width - gameListWidth, desktopMode.height);
 			
 	platformFilters.init(1, 35,  gameListWidth, db.getPlatformFilterList(), "platform Filter List");
-	filterScreen.init(0,0,800,600);
+	filterScreen.init(desktopMode.width/2 - 800/2, desktopMode.height/2 - 600/2, 800,600);
 
 	gameList.updateFilter(platformFilters.getFilterString());
 	gameInfo.newGameInfo(gameList.getCurrentItem());
@@ -126,7 +126,7 @@ void update()
 {
 	
 
-	if (ih.inputPress(inputHandle::inputs::filter_2_left))
+	if (ih.inputPress(inputHandle::inputs::filter_menu))
 	{
 		if(displayFilterScreen)
 			displayFilterScreen = false;
@@ -138,27 +138,31 @@ void update()
 	if (!displayFilterScreen)
 	{
 		bool newFilter = false;
-		if (ih.inputPress(inputHandle::inputs::filter_1_left))
+		if (ih.inputPress(inputHandle::inputs::start_game))
+			launch.launchGame(db.getLaunchCode(gameList.getCurrentItem().platformID, gameList.getCurrentItem().fileName));
+
+		if (ih.inputPress(inputHandle::inputs::platform_filter_left))
 		{
 			platformFilters.update(-1);
 			newFilter = true;		
 		}
-		if (ih.inputPress(inputHandle::inputs::filter_1_right))
+		if (ih.inputPress(inputHandle::inputs::platform_filter_right))
 		{
 			platformFilters.update(+1);
 			newFilter = true;		
 		}
 		if(newFilter)
-			gameList.updateFilter(platformFilters.getFilterString() + filterScreen.getFilterString());	
-
-		std::cout << db.getLaunchCode(gameList.getCurrentItem().platformID, gameList.getCurrentItem().fileName) << std::endl;
-
-
-		bool newGameSelected = gameList.update(ih);
-		if(newGameSelected)
+		{
+			gameList.updateFilter(platformFilters.getFilterString() + filterScreen.getFilterString());
+			gameInfo.newGameInfo(gameList.getCurrentItem());
+		}
+		
+	
+		if(gameList.update(ih))  // If a new game is selected
 		{
 			gameInfo.newGameInfo(gameList.getCurrentItem());
 		}
+
 		gameInfo.update();
 	}
 	else if (displayFilterScreen)
@@ -167,6 +171,7 @@ void update()
 		{
 			displayFilterScreen = false;
 			gameList.updateFilter(platformFilters.getFilterString() + filterScreen.getFilterString());
+			gameInfo.newGameInfo(gameList.getCurrentItem());
 		}
 	}
 

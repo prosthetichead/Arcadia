@@ -24,7 +24,7 @@ void FilterScreen::updateFilterString()
 {
 	filterString = developerFilter.getFilterString() + publisherFilter.getFilterString() + regionFilter.getFilterString() + genreFilter.getFilterString();
 	if (!searchString.empty())
-		filterString += " and games.name like '%" + searchString +"%'";
+		filterString += " and games.name like '%" + searchString + "%' ";
 	std::cout << filterString << std::endl;
 }
 std::string FilterScreen::getFilterString()
@@ -63,22 +63,28 @@ void FilterScreen::init(float posX, float posY, int width, float height)
 	osk.init(300, 500);
 
 	std::vector<dbHandle::filterListItem> listItems = db.getCustomFilterList("developer", "select distinct companies.id, companies.name, companies.icon_id from companies, games where games.developer_id = companies.id and games.active = 1", "games.developer_id");
-	developerFilter.init(150,150,0,listItems, "developer");
-	
+	developerFilter.init(menuNav.getPosX("developer")+55, menuNav.getPosY("developer")+60,0, listItems, "developer");
+	developerFilter.setSelectedSize(85);
+
 	listItems = db.getCustomFilterList("publisher", "select distinct companies.id, companies.name, companies.icon_id from companies, games where games.publisher_id = companies.id and games.active = 1", "games.publisher_id");
-	publisherFilter.init(350,150,0,listItems, "publisher");
+	publisherFilter.init(menuNav.getPosX("publisher")+55, menuNav.getPosY("publisher")+60, 0, listItems, "publisher");
+	publisherFilter.setSelectedSize(85);
 
 	listItems = db.getCustomFilterList("region", "select distinct regions.id, regions.name, regions.icon_id from regions, games where games.region_id = regions.id and games.active = 1", "games.region_id");
-	regionFilter.init(500,150,0,listItems, "region");
+	regionFilter.init(menuNav.getPosX("region")+55, menuNav.getPosY("region")+60, 0, listItems, "region");
+	regionFilter.setSelectedSize(85);
 
 	listItems = db.getCustomFilterList("genre", "select distinct genres.id, genres.genre_name, genres.icon_id from genres, games where games.genre_id = genres.id and games.active = 1", "games.genre_id");
-	genreFilter.init(610,150,0,listItems, "region");
+	genreFilter.init(menuNav.getPosX("genre")+55, menuNav.getPosY("genre")+60,0,listItems, "region");
+	genreFilter.setSelectedSize(85);
 
 	textFont.loadFromFile(db.exe_path + "\\assets\\fonts\\ARCADE_PIX.TTF");
 	searchStringText.setFont(textFont);
 	searchStringText.setPosition(menuRect.getPosition().x + 427, menuRect.getPosition().y + 436);
 	searchStringText.setCharacterSize(16);
 	searchStringText.setString("nothing");
+
+	maxPlayers = db.getMaxPlayers();
 }
 
 bool FilterScreen::update(inputHandle& ih)
@@ -112,28 +118,41 @@ bool FilterScreen::update(inputHandle& ih)
 				 else if (ih.inputPress(inputHandle::inputs::right))
 					 developerFilter.update(1);
 			}		
-			if (menuNav.getCurrentID() == "publisher")
+			else if (menuNav.getCurrentID() == "publisher")
 			{
 				 if (ih.inputPress(inputHandle::inputs::left))
 					 publisherFilter.update(-1);
 				 else if (ih.inputPress(inputHandle::inputs::right))
 					 publisherFilter.update(1);
 			}
-			if (menuNav.getCurrentID() == "region") 
+			else if (menuNav.getCurrentID() == "region") 
 			{
 				 if (ih.inputPress(inputHandle::inputs::left))
 					 regionFilter.update(-1);
 				 else if (ih.inputPress(inputHandle::inputs::right))
 					 regionFilter.update(1);
 			}
-			if (menuNav.getCurrentID() == "genre") 
+			else if (menuNav.getCurrentID() == "genre") 
 			{
 				 if (ih.inputPress(inputHandle::inputs::left))
 					 genreFilter.update(-1);
 				 else if (ih.inputPress(inputHandle::inputs::right))
 					 genreFilter.update(1);
 			}
-			if (menuNav.getCurrentID() == "search")
+			else if (menuNav.getCurrentID() == "players") 
+			{
+				 if (ih.inputPress(inputHandle::inputs::left))
+					 players--;
+				 else if (ih.inputPress(inputHandle::inputs::right))
+					 players++;
+
+				 if (players < 0)
+					 players = 0;
+				 if (players > maxPlayers)
+					 players = maxPlayers;
+			}
+
+			else if (menuNav.getCurrentID() == "search")
 			{
 				showKeyboard = true;
 			}
@@ -182,6 +201,15 @@ void FilterScreen::draw(sf::RenderWindow& window)
 		pointerSprite.setOrigin(32,12);
 		pointerSprite.setPosition(menuNav.getCurrentPosX(), menuNav.getCurrentPosY());
 		window.draw(pointerSprite);
+	}
+
+	for(int i = 0; i < players ; i++)
+	{
+		sf::Vector2i playerPos(menuNav.getPosX("players"),menuNav.getPosY("players"));
+		sf::Sprite playerSprite;
+		playerSprite.setTexture(ah.getTextureAsset("PLAYERS"));
+		playerSprite.setPosition(playerPos.x + 25 + (playerSprite.getLocalBounds().width * i),playerPos.y + 40);
+		window.draw(playerSprite);
 	}
 
 	developerFilter.draw(window); //Draw the developer filter list.

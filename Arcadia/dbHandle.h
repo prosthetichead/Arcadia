@@ -6,8 +6,7 @@
 #include <boost/algorithm/string/replace.hpp>
 #include <sys/stat.h>
 #include <SFML/Window.hpp>
-
-
+#include <math.h>
 
 class dbHandle
 {
@@ -49,11 +48,24 @@ public:
 		std::string release_year;
 		std::string rating;
 		int players;
+		double user_stars;
+		double online_stars;
 		bool co_op;
 		
-		
-		double user_stars;
-		double gamedb_stars;
+
+		gameInfoItem()
+		{
+			videoPath = "NULL";
+			fanArtPath = "NULL";
+			screenPath = "NULL";
+			clearLogoPath = "NULL";
+			description = " ";
+
+			players = 0;
+			user_stars = 0;
+			online_stars = 0;
+			co_op = false;
+		}
 
 	};	
 
@@ -92,6 +104,7 @@ public:
 	std::string dbHandle::getLaunchCode(std::string platform_id, std::string file_name);
 	std::vector<dbHandle::assetItem> dbHandle::getIconPaths();
 	inputItem dbHandle::getInputItem(int input);
+	int dbHandle::getMaxPlayers();
 
 };
 

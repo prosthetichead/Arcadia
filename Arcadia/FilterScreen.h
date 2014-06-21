@@ -20,10 +20,15 @@ private:
 
 	sf::RectangleShape menuRect;
 	
-	std::string developer_id;
-	std::string publisher_id;
-	std::string genre_id;
+//	std::string developer_id;
+//	std::string publisher_id;
+//	std::string genre_id;
 	int year;
+
+	//std::vector<std::string> playersOporator;
+	int players; 
+	int maxPlayers;
+	
 	std::string year_operation; // Greater_Then, Less_Then, Equal_Too, Not_Equal_Too
 
 	filterList developerFilter;

@@ -29,7 +29,8 @@ private:
 	sf::RectangleShape rectangleInfo;	//Rectangle of just the Info Area
 	sf::RectangleShape rectangleFanArt;	//Full Screen Rectangle
 	sf::RectangleShape movieBorder;	
-	sf::RectangleShape gameIconsBorder;
+	sf::RectangleShape gameIconsBorderTop;
+	sf::RectangleShape gameIconsBorderBottom;
 	sf::RectangleShape descriptionBorder;
 
 	sf::View descriptionView;
@@ -59,7 +60,5 @@ public:
 	void GameInfo::newGameInfo(dbHandle::gameListItem gameItem);
 	void GameInfo::draw(sf::RenderWindow &window);
 	void GameInfo::pauseMovie();
-	sf::Vector2i GameInfo::resizePreserveRatio(int org_width, int org_height, int new_width, int new_height, bool fit = true);
-
 };
 

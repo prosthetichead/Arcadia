@@ -31,6 +31,11 @@ void filterList::init(float posX, float posY, int width, std::vector<dbHandle::f
 	rectangle.setOutlineThickness(1);
 }
 
+void filterList::setSelectedSize(int newSize)
+{
+	selectedSpriteSize = newSize;
+}
+
 void filterList::update(int move)
 {
 	
@@ -60,6 +65,7 @@ std::string filterList::getFilterString()
 void filterList::draw(sf::RenderWindow& window)
 {
 	sf::Sprite selectedSprite;
+	sf::Vector2i newSize;
 	selectedSprite.setTexture(ah.getTextureAsset(listOfItems.at(selectedItemNum).filterIcon), true);
 
 
@@ -70,8 +76,9 @@ void filterList::draw(sf::RenderWindow& window)
 	selectedSprite.setPosition(selectedPosX, selectedPosY);	
 	
 	//Work Out Scale to grow from normal to selected size
-	float selectedSpriteScaleX = selectedSpriteSize / selectedSprite.getLocalBounds().width;
-	float selectedSpriteScaleY = selectedSpriteSize / selectedSprite.getLocalBounds().height;
+	newSize = ah.resizePreserveRatio(selectedSprite.getLocalBounds().width, selectedSprite.getLocalBounds().height, selectedSpriteSize, selectedSpriteSize, true);
+	float selectedSpriteScaleX = newSize.x / selectedSprite.getLocalBounds().width;
+	float selectedSpriteScaleY = newSize.y / selectedSprite.getLocalBounds().height;
 	if(newFilter)
 	{
 		selectedSpriteCurrentScaleX = normalSpriteSize / selectedSprite.getLocalBounds().width;
@@ -90,6 +97,7 @@ void filterList::draw(sf::RenderWindow& window)
 		selectedSpriteCurrentScaleY = selectedSpriteScaleY ;
 
 	selectedSprite.scale(selectedSpriteCurrentScaleX, selectedSpriteCurrentScaleY);
+	
 
 	window.draw(selectedSprite);
 
@@ -126,13 +134,14 @@ void filterList::draw(sf::RenderWindow& window)
 		normalSpriteLeft.setPosition(normalLeftPosX, selectedPosY);
 		normalSpriteRight.setPosition(normalRightPosX, selectedPosY);
 
-		normalSpriteLeft.setScale(normalSpriteSize / normalSpriteLeft.getLocalBounds().width, normalSpriteSize / normalSpriteLeft.getLocalBounds().height);
-		normalSpriteRight.setScale(normalSpriteSize / normalSpriteRight.getLocalBounds().width, normalSpriteSize / normalSpriteRight.getLocalBounds().height);
+		newSize = ah.resizePreserveRatio(normalSpriteLeft.getLocalBounds().width, normalSpriteLeft.getLocalBounds().height, normalSpriteSize, normalSpriteSize, false);
+		normalSpriteLeft.setScale(newSize.x / normalSpriteLeft.getLocalBounds().width, newSize.y / normalSpriteLeft.getLocalBounds().height);
+		normalSpriteRight.setScale(newSize.x / normalSpriteRight.getLocalBounds().width, newSize.y / normalSpriteRight.getLocalBounds().height);
 
 
 		window.draw(normalSpriteLeft);
 		window.draw(normalSpriteRight);
 	}
-	}
-	
+
+}
 }

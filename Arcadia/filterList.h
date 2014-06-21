@@ -33,5 +33,6 @@ public:
 	void filterList::init(float posX, float posY, int width, std::vector<dbHandle::filterListItem> listItems, std::string name);
 	void filterList::addNewFilterItem(dbHandle::filterListItem);
 	std::string filterList::getFilterString();
+	void filterList::setSelectedSize(int newSize);
 };
 

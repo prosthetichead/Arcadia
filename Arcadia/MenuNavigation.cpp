@@ -125,3 +125,13 @@ std::string MenuNavigation::getCurrentID()
 {
 	return current_ID;
 }
+int MenuNavigation::getPosX(std::string id)
+{
+	menuItem& currentItem = menuTree[id];
+	return currentItem.posX;
+}
+int MenuNavigation::getPosY(std::string id)
+{
+	menuItem& currentItem = menuTree[id];
+	return currentItem.posY;
+}

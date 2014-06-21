@@ -1,4 +1,4 @@
-#include "dbHandle.h"
+#include "DBHandle.h"
 
 
 
@@ -25,6 +25,7 @@ void dbHandle::setFilePath(std::string path, std::string fileName)
 	db_fileName = path + "\\" + fileName;
 
 	db.connect(db_fileName.c_str());
+	//db.enableREGEX();
 }
 
 
@@ -55,8 +56,7 @@ std::string dbHandle::fileExists(std::string file, std::vector<std::string> file
 vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStatment)
 {
 	vector<dbHandle::gameListItem> results;
-	//db.connect(db_fileName.c_str());
-			
+
 	std::string query = "select games.name, games.file_name, platforms.id, platforms.name from games, platforms, genres where games.genre_id = genres.id and games.platform_id = platforms.id and games.active = 1 " + whereStatment + " order by games.name"; 
 
 	sqlite3pp::query qry(db, query.c_str());
@@ -90,7 +90,6 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 
 			results.push_back(newItem);
 	}
-	//db.disconnect();
 
 	return results;
 }
@@ -98,10 +97,12 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 // Get detailed info strut based on a game list item
 dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 {
-	
 	gameInfoItem infoItem;
-	//db.connect(db_fileName.c_str());
-	//db.connect(
+	if ((listItem.platformID == "NULL") && (listItem.fileName == "NULL"))
+	{
+		return infoItem;
+	}
+
 	std::string query = "select "
 						" platforms.images_path "
 						" ,platforms.videos_path "
@@ -115,6 +116,8 @@ dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 						" ,case when publisher_id = 0 then games.publisher else p_comp.name end " // Take the name from games table if its an unknow publisher
 						" ,p_comp.icon_id "
 						" ,games.players "
+						" ,games.users_stars "
+						" ,games.gamedb_stars "
 						" from games, platforms, genres, regions, companies p_comp, companies d_comp "
 						" where p_comp.id = games.publisher_id and d_comp.id = games.developer_id and regions.id = games.region_id and games.genre_id = genres.id and games.platform_id = platforms.id and games.platform_id = :platform_id and games.file_name = :file_name"; 
 	sqlite3pp::query qry(db, query.c_str());
@@ -149,7 +152,7 @@ dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 
 		// DESCRIPTION
 		if ((*i).get<const char*>(2) == NULL)
-			infoItem.description = " ";
+			infoItem.description = "";
 		else
 			infoItem.description = (*i).get<const char*>(2);
 
@@ -167,7 +170,6 @@ dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 		else
 			infoItem.developer = (*i).get<const char*>(7);
 		infoItem.developerIconID = (*i).get<const char*>(8);
-		cout<<infoItem.developerIconID << endl;
 		if ((*i).get<const char*>(9) == NULL)
 			infoItem.publisher = "";
 		else
@@ -177,11 +179,15 @@ dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 		//players
 		infoItem.players = (*i).get<int>(11);
 
-
-		
+		//User Stars
+		infoItem.user_stars =  (*i).get<double>(12);
+		infoItem.user_stars = floor(infoItem.user_stars * 2.0 + .5) / 2.0; // get it to .5
+		//online Stars 
+		infoItem.online_stars = (*i).get<double>(13);
+		infoItem.online_stars = infoItem.online_stars/2;  // Raiting is a score out of 10.
+		infoItem.online_stars = floor(infoItem.online_stars * 2.0 + .5) / 2.0; //Get it to .5
 
 	}
-	//db.disconnect();
 
 	return infoItem;
 }
@@ -254,36 +260,6 @@ std::vector<dbHandle::filterListItem> dbHandle::getCustomFilterList(std::string 
 		
 }
 
-
-//std::vector<dbHandle::filterListItem> dbHandle::getFilterList()
-//{
-//	vector<dbHandle::filterListItem> filterList;
-//	
-//	//Add the all items filter as first filter
-//	dbHandle::filterListItem newItemAll;
-//	newItemAll.filterIcon = "F_ALL";
-//	newItemAll.filterString = " ";
-//	newItemAll.title = "No Filter";
-//	filterList.push_back(newItemAll);
-//
-//	//db.connect(db_fileName.c_str());
-//	std::string query = "select name, filter_string, icon_id  from filters";
-//	sqlite3pp::query qry(db, query.c_str());
-//	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
-//	{
-//		dbHandle::filterListItem newItem;	
-//		newItem.title = (*i).get<const char*>(0);
-//		newItem.filterString = (*i).get<const char*>(1);
-//		newItem.filterString = " and " + newItem.filterString; 
-//		newItem.filterIcon = (*i).get<const char*>(2);
-//
-//		filterList.push_back(newItem);
-//		
-//	}
-//	//db.disconnect();
-//	return filterList;	
-//}
-
 std::string dbHandle::getLaunchCode(std::string platform_id, std::string file_name)
 {
 	//db.connect(db_fileName.c_str());
@@ -326,7 +302,7 @@ std::vector<dbHandle::assetItem> dbHandle::getIconPaths()
 {
 	std::vector<dbHandle::assetItem> list;
 
-	sqlite3pp::database db(db_fileName.c_str());
+	//sqlite3pp::database db(db_fileName.c_str());
 	
 	std::string query = "select id, file_path from image_assets where type = 'icon'";
 	sqlite3pp::query qry(db, query.c_str());
@@ -342,14 +318,14 @@ std::vector<dbHandle::assetItem> dbHandle::getIconPaths()
 		list.push_back(item);
 	}	
 
-	db.disconnect();
+	//db.disconnect();
 	return list;
 }
 
 dbHandle::inputItem dbHandle::getInputItem(int input)
 {
 	dbHandle::inputItem item;
-	db.connect(db_fileName.c_str());
+	//db.connect(db_fileName.c_str());
 
 	std::string query = "select id, name, input_type, keyboard_key_id, buttonNumber from inputs where id = :inputID";
 	sqlite3pp::query qry(db, query.c_str());
@@ -366,6 +342,22 @@ dbHandle::inputItem dbHandle::getInputItem(int input)
 
 	return item;
 
-	db.disconnect();
+	//db.disconnect();
 
+}
+
+int dbHandle::getMaxPlayers()
+{
+	int maxPlayers;
+	//db.connect(db_fileName.c_str());
+
+	std::string query = "select max(players) from games";
+	sqlite3pp::query qry(db, query.c_str());
+
+	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
+	{
+		maxPlayers = (*i).get<int>(0);
+	}
+
+	return maxPlayers;
 }
