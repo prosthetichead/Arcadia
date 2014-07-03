@@ -61,3 +61,28 @@ sf::Vector2i assetHandle::resizePreserveRatio(int org_width, int org_height, int
 
 	return new_size;
 }
+
+void assetHandle::draw5_Stars(double numStars, sf::Color color, int x, int y, sf::RenderWindow& window)
+{
+	sf::Sprite spriteStarEmpty;
+	spriteStarEmpty.setTexture(getTextureAsset("STAR_EMPTY"));
+	sf::Sprite spriteStarEmptyHalf;
+	spriteStarEmptyHalf.setTexture(getTextureAsset("STAR_EMPTY_HALF"));
+	for(int i=0; i < 5; i++)
+	{
+		spriteStarEmpty.setPosition(x + (20*i), y);
+		spriteStarEmpty.setColor(sf::Color::Color(86,86,86,255));
+		window.draw(spriteStarEmpty);
+		if ((numStars - (i)) == 0.5)
+		{
+			spriteStarEmptyHalf.setPosition(spriteStarEmpty.getPosition());
+			spriteStarEmptyHalf.setColor(color);
+			window.draw(spriteStarEmptyHalf);
+		}
+		if (numStars >= i+1)
+		{
+			spriteStarEmpty.setColor(color);
+			window.draw(spriteStarEmpty);
+		}
+	}
+}

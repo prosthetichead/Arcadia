@@ -31,6 +31,7 @@ public:
 		std::string fanArtPath;
 		std::string screenPath;
 		std::string clearLogoPath;
+		std::string platformIconID;
 
 		std::string description;
 		
@@ -51,7 +52,9 @@ public:
 		double user_stars;
 		double online_stars;
 		bool co_op;
-		
+
+		std::string playTime;
+		std::string lastPlayed;	
 
 		gameInfoItem()
 		{
@@ -65,6 +68,9 @@ public:
 			user_stars = 0;
 			online_stars = 0;
 			co_op = false;
+
+			playTime = "NULL";
+			lastPlayed = "NULL";
 		}
 
 	};	
@@ -105,6 +111,7 @@ public:
 	std::vector<dbHandle::assetItem> dbHandle::getIconPaths();
 	inputItem dbHandle::getInputItem(int input);
 	int dbHandle::getMaxPlayers();
+	void dbHandle::updateGamePlaytime(std::string platform_id, std::string file_name, double minsPlayed);
 
 };
 

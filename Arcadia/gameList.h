@@ -23,7 +23,7 @@ class GameList
 		int selectedFontSize;
 
 		bool selectedItemChange;
-
+		void GameList::nextLetter(int direction);
 
 	public:
 		GameList(dbHandle &db_ref, assetHandle &ah_ref);

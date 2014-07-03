@@ -57,9 +57,14 @@ void filterList::update(int move)
 std::string filterList::getFilterString()
 {
 	if (listOfItems.at(selectedItemNum).filterString == "NULL")
-		return " ";
+		return "";
 	else
 		return listOfItems.at(selectedItemNum).filterString;
+}
+
+std::string filterList::getSelectedTitle()
+{
+	return listOfItems.at(selectedItemNum).title;
 }
 
 void filterList::draw(sf::RenderWindow& window)

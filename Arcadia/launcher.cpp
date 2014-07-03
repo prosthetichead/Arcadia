@@ -3,8 +3,9 @@
 
 
 
-launcher::launcher(dbHandle& db_ref): db(db_ref)
+launcher::launcher(dbHandle* db_ref)
 {
+	db = db_ref;
 	processRunning = false; 
 }
 
@@ -21,6 +22,11 @@ bool launcher::terminate()
 		//PostThreadMessage(pi.dwThreadId,WM_QUIT, 0, 0);
 		TerminateProcess(pi.hProcess, 1);
 		processRunning = false;
+		endTime = time(NULL);
+		totalSeconds = endTime - startTime;
+		double newMins = totalSeconds/60;
+		std::cout << newMins << std::endl;
+		db->updateGamePlaytime(currentPlatformID, currentFileName, newMins);
 		return true;
 	}
 	catch (...)
@@ -29,21 +35,13 @@ bool launcher::terminate()
 	}
 }
 
-//bool launcher::update()
-//{
-//	if(inputStates.start_game_press)
-//	{
-//		launchGame(db.getLaunchCode(gameItem.platformID, gameItem.fileName));
-//	}
-//	return true;
-//}
-
-bool launcher::launchGame(std::string commandString)
+bool launcher::launchGame(std::string platform_id, std::string file_name)
 {
+	std::string commandString = db->getLaunchCode(platform_id, file_name);
+	std::cout << commandString << std::endl;
 	if (processRunning)
 	{
-		TerminateProcess(pi.hProcess, 1);
-		processRunning = false;
+		terminate();
 	}
 
 	std::wstring test;
@@ -71,11 +69,11 @@ bool launcher::launchGame(std::string commandString)
 			return false;
 		}
 
-	//dwExitCode = WaitForSingleObject(pi.hProcess, (1000));
 	processRunning = true;
-	
-	//TerminateProcess(pi.hProcess, dwExitCode);
-	
+	startTime = time(NULL);
+	currentPlatformID = platform_id;
+	currentFileName = file_name;
+
 	return true;
 }
 

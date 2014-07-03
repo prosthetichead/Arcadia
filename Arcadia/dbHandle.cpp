@@ -118,6 +118,10 @@ dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 						" ,games.players "
 						" ,games.users_stars "
 						" ,games.gamedb_stars "
+						" ,platforms.icon_id "
+						" ,games.minutes_played "
+						" ,strftime('%d/%m/%Y', games.last_played) "
+						" ,release_year "
 						" from games, platforms, genres, regions, companies p_comp, companies d_comp "
 						" where p_comp.id = games.publisher_id and d_comp.id = games.developer_id and regions.id = games.region_id and games.genre_id = genres.id and games.platform_id = platforms.id and games.platform_id = :platform_id and games.file_name = :file_name"; 
 	sqlite3pp::query qry(db, query.c_str());
@@ -181,12 +185,30 @@ dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 
 		//User Stars
 		infoItem.user_stars =  (*i).get<double>(12);
-		infoItem.user_stars = floor(infoItem.user_stars * 2.0 + .5) / 2.0; // get it to .5
+		//infoItem.user_stars = //floor(infoItem.user_stars * 2.0 + .5) / 2.0; // get it to .5
 		//online Stars 
 		infoItem.online_stars = (*i).get<double>(13);
-		infoItem.online_stars = infoItem.online_stars/2;  // Raiting is a score out of 10.
-		infoItem.online_stars = floor(infoItem.online_stars * 2.0 + .5) / 2.0; //Get it to .5
+		//infoItem.online_stars = infoItem.online_stars/2;  // Raiting is a score out of 10.
+		//infoItem.online_stars = //floor(infoItem.online_stars * 2.0 + .5) / 2.0; //Get it to .5
+		//platform Icon ID
+		infoItem.platformIconID = (*i).get<const char*>(14);
+		//played time
+		double mins_played = (*i).get<double>(15);
+		if (mins_played > 60) 
+			infoItem.playTime =  std::to_string((int)mins_played/60) + " Hours";
+		else if (mins_played < 60)
+			infoItem.playTime = std::to_string((int)mins_played) + " Minites";
+		else if ((int)mins_played == 0)
+			infoItem.playTime = "NULL";
 
+		//last played
+		if ((*i).get<const char*>(16) == NULL)
+			infoItem.lastPlayed = "NULL";
+		else
+			infoItem.lastPlayed = (*i).get<const char*>(16);
+
+		//release year
+		infoItem.release_year = (*i).get<const char*>(17);
 	}
 
 	return infoItem;
@@ -283,7 +305,8 @@ std::string dbHandle::getLaunchCode(std::string platform_id, std::string file_na
 		if ((*i).get<const char*>(3) != NULL)
 		{
 			extension = (*i).get<const char*>(3);
-			extension = "." + extension;
+			if (!extension.empty())
+				extension = "." + extension;
 		}
 	}
 	
@@ -360,4 +383,13 @@ int dbHandle::getMaxPlayers()
 	}
 
 	return maxPlayers;
+}
+
+void dbHandle::updateGamePlaytime(std::string platform_id, std::string file_name, double minsPlayed)
+{
+	sqlite3pp::command cmd(db, "UPDATE games set minutes_played = minutes_played + :newMinsPlayed, last_played = date('now') where platform_id = :platform_id and file_name = :file_name");
+	cmd.bind(":newMinsPlayed", minsPlayed);
+	cmd.bind(":platform_id", platform_id.c_str());
+	cmd.bind(":file_name", file_name.c_str());
+	cmd.execute();
 }

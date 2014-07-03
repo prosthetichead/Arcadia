@@ -25,7 +25,7 @@ void GameList::init(float posX, float posY, int width, float height)
 	selectedFont.loadFromFile(db.exe_path + "\\assets\\fonts\\Teknik-Bold.ttf");
 	normalFont.loadFromFile(db.exe_path + "\\assets\\fonts\\Teknik-Bold.ttf");
 	normalFontSize = 14;
-	selectedFontSize = 30;
+	selectedFontSize = 20;
 	
 	selectedText.setFont(selectedFont);
 	selectedText.setCharacterSize(selectedFontSize);
@@ -56,8 +56,38 @@ bool GameList::update(inputHandle& ih)
 		selectedItemNum++;
 		selectedItemChange = true;
 	}
-	else
-		counter = 0;
+	else if (ih.inputPress(inputHandle::inputs::right))
+	{
+		std::string firstLetter = listOfItems.at(selectedItemNum).title;
+		firstLetter = firstLetter.at(0);
+		for (int i=selectedItemNum; i < listOfItems.size(); i++)
+		{
+			std::string newFirstLetter = listOfItems.at(i).title;
+			newFirstLetter = newFirstLetter.at(0);
+			if (firstLetter != newFirstLetter)
+			{
+				selectedItemNum = i;
+				break;
+			}
+		}
+		selectedItemChange = true;
+	}
+	else if (ih.inputPress(inputHandle::inputs::left))
+	{
+		std::string firstLetter = listOfItems.at(selectedItemNum).title;
+		firstLetter = firstLetter.at(0);
+		for (int i=selectedItemNum; i >= 0; i--)
+		{
+			std::string newFirstLetter = listOfItems.at(i).title;
+			newFirstLetter = newFirstLetter.at(0);
+			if (firstLetter != newFirstLetter)
+			{
+				selectedItemNum = i;
+				break;
+			}
+		}
+		selectedItemChange = true;
+	}
 	
 	//Lock selectedItemNum To size of the vector
 	if (selectedItemNum < 0)
@@ -71,10 +101,11 @@ bool GameList::update(inputHandle& ih)
 		
 	}
 
-	selectedText.setString(listOfItems.at(selectedItemNum).title);
+	selectedText.setString(listOfItems.at(selectedItemNum).title.substr(0,50));
 
 	return selectedItemChange;
 }
+
 
 void GameList::draw(sf::RenderWindow& window)
 {
@@ -84,26 +115,22 @@ void GameList::draw(sf::RenderWindow& window)
 	int normalFontSize_Padding = normalFontSize+10;
 	float selectedFontSizeHalf = selectedFontSize/2;
 	int selectedPosX = rectangle.getPosition().x + 30;
-	int selectedPosY = (rectangle.getSize().y / 2) + rectangle.getPosition().y;
-	selectedText.setPosition(selectedPosX, selectedPosY);
+	int selectedPosY = ((rectangle.getSize().y / 2) + rectangle.getPosition().y);
+	
+	selectedText.setPosition(selectedPosX + 2, selectedPosY );
 	selectedText.setOrigin(0,selectedFontSize/2);
+	selectedText.setColor(sf::Color::Color(0,102,153,255));
+	window.draw(selectedText);
+	selectedText.setPosition(selectedPosX , selectedPosY -2);
+	selectedText.setColor(sf::Color::White);
 	window.draw(selectedText);
 
 	sf::RectangleShape line(sf::Vector2f(rectangle.getSize().x, 2));
+	line.setFillColor(sf::Color::Color(0,102,153,255));
 	line.setPosition(selectedPosX - 10, selectedPosY - (selectedFontSizeHalf + selectedFontPadding/4));
 	window.draw(line);
 	line.setPosition(selectedPosX - 10, selectedPosY + (selectedFontSizeHalf + selectedFontPadding/4));
 	window.draw(line);
-
-	
-
-
-	//sf::Sprite flagSprite;
-	//sf::Texture empty;
-	//empty.create(16,11);
-	//flagSprite.setTexture(empty);
-	//flagSprite.setTexture(assets.getTextureAsset(listOfItems.at(selectedItemNum).region));
-	//flagSprite.setPosition(selectedText.getPosition().x - 20, selectedText.getPosition().y + 6);
 
 	int numNormalItems = (rectangle.getSize().y - (selectedFontSize + selectedFontPadding)) / (normalFontSize_Padding);
 	if (numNormalItems > listOfItems.size())
@@ -127,10 +154,6 @@ void GameList::draw(sf::RenderWindow& window)
 
 		sf::Text normalText;
 
-		//flagSprite.setTexture(assets.getTextureAsset(item.region));
-		//flagSprite.setPosition(normalPosX, normalPosY - (i*normalFontSize)+4);
-		//window.draw(flagSprite);
-
 		normalText.setFont(normalFont);
 		normalText.setCharacterSize(normalFontSize);
 		normalText.setColor(sf::Color(sf::Color::Color(255,255,255,255 - i * (255/numItemsHalf))));
@@ -150,10 +173,6 @@ void GameList::draw(sf::RenderWindow& window)
 		dbHandle::gameListItem item = listOfItems.at(itemNum);
 
 		sf::Text normalText;
-
-		//flagSprite.setTexture(assets.getTextureAsset(item.region));
-		//flagSprite.setPosition(normalPosX, normalPosY + (i*normalFontSize)+4);
-		//window.draw(flagSprite);
 
 		normalText.setFont(normalFont);
 		normalText.setCharacterSize(normalFontSize);

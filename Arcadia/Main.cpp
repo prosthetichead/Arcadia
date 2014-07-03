@@ -29,10 +29,10 @@ assetHandle ah; //Dont use untill init
 inputHandle ih;  //Dont use untill init
 
 GameList gameList(db, ah);
-GameInfo gameInfo(db, ah);
+GameInfo gameInfo(&db, &ah);
 filterList platformFilters(db, ah);
 FilterScreen filterScreen(db, ah); 
-launcher launch(db);
+launcher launch(&db);
 
 std::string path;
 
@@ -67,9 +67,10 @@ int main()
 
 		ih.update(); //update inputs
 		
-		if(ih.inputHold(inputHandle::inputs::exit) && (launch.processRunning))
+		if(ih.inputPress(inputHandle::inputs::exit) && (launch.processRunning))
+		{
 			launch.terminate();
-		
+		}
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
@@ -81,6 +82,9 @@ int main()
 			}
 			if (event.type == sf::Event::GainedFocus)
 			{
+				sf::VideoMode desktopMode = sf::VideoMode::getDesktopMode();
+				window.create(desktopMode, "Arcadia", sf::Style::Fullscreen);
+				window.setVerticalSyncEnabled(true);
 				pause = false;
 				gameInfo.pauseMovie();
 			}
@@ -116,7 +120,6 @@ void initialize()
 	filterScreen.init(desktopMode.width/2 - 800/2, desktopMode.height/2 - 600/2, 800,600);
 
 	gameList.updateFilter(platformFilters.getFilterString());
-	gameInfo.newGameInfo(gameList.getCurrentItem());
 
 	window.create(desktopMode, "Arcadia", sf::Style::Fullscreen);
 	window.setVerticalSyncEnabled(true);
@@ -124,7 +127,6 @@ void initialize()
 
 void update()
 {
-	
 
 	if (ih.inputPress(inputHandle::inputs::filter_menu))
 	{
@@ -139,8 +141,10 @@ void update()
 	{
 		bool newFilter = false;
 		if (ih.inputPress(inputHandle::inputs::start_game))
-			launch.launchGame(db.getLaunchCode(gameList.getCurrentItem().platformID, gameList.getCurrentItem().fileName));
-
+		{
+			launch.launchGame(gameList.getCurrentItem().platformID, gameList.getCurrentItem().fileName);
+			std::cout << db.getLaunchCode(gameList.getCurrentItem().platformID, gameList.getCurrentItem().fileName) << std::endl;
+		}
 		if (ih.inputPress(inputHandle::inputs::platform_filter_left))
 		{
 			platformFilters.update(-1);
@@ -154,16 +158,14 @@ void update()
 		if(newFilter)
 		{
 			gameList.updateFilter(platformFilters.getFilterString() + filterScreen.getFilterString());
-			gameInfo.newGameInfo(gameList.getCurrentItem());
 		}
 		
 	
 		if(gameList.update(ih))  // If a new game is selected
 		{
-			gameInfo.newGameInfo(gameList.getCurrentItem());
 		}
 
-		gameInfo.update();
+		gameInfo.update(gameList.getCurrentItem());
 	}
 	else if (displayFilterScreen)
 	{
@@ -171,7 +173,7 @@ void update()
 		{
 			displayFilterScreen = false;
 			gameList.updateFilter(platformFilters.getFilterString() + filterScreen.getFilterString());
-			gameInfo.newGameInfo(gameList.getCurrentItem());
+			gameInfo.update(gameList.getCurrentItem());
 		}
 	}
 

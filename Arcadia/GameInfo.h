@@ -9,13 +9,15 @@
 class GameInfo
 {
 private:
-	dbHandle &db;
-	assetHandle &ah;
+	dbHandle* db;
+	assetHandle* ah;
 	dbHandle::gameListItem currentGameItem;
 	dbHandle::gameInfoItem currentGameInfo;
+	dbHandle::gameListItem newGameItem;
 
 	bool hasMovieFile;
 	int movieStatus;
+	int gameChangedCounter;
 	
 	sf::Texture fanArt;
 	sf::Texture clearLogo;
@@ -49,15 +51,20 @@ private:
 	sf::Font yearFont;
 	sf::Text yearText;
 	int yearFontSize;
+
+	sf::Font playTimeFont;
+	sf::Text playTimeText;
 	
 	sf::Vector2i moviePostion;
+
+	void GameInfo::newGameInfo(dbHandle::gameListItem gameItem);
 	
 public:
-	GameInfo(dbHandle &db_ref, assetHandle &ah_ref);
+	GameInfo(dbHandle* db_ref, assetHandle* ah_ref);
 	~GameInfo(void);
-	void GameInfo::init(float posX, float posY, int width, float height);
-	void GameInfo::update();
-	void GameInfo::newGameInfo(dbHandle::gameListItem gameItem);
+	void GameInfo::init(float posX, float posY, float width, float height);
+	void GameInfo::update(dbHandle::gameListItem gameItem);
+	
 	void GameInfo::draw(sf::RenderWindow &window);
 	void GameInfo::pauseMovie();
 };

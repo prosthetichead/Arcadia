@@ -20,16 +20,18 @@ private:
 
 	sf::RectangleShape menuRect;
 	
-//	std::string developer_id;
-//	std::string publisher_id;
-//	std::string genre_id;
-	int year;
+	
 
-	//std::vector<std::string> playersOporator;
 	int players; 
 	int maxPlayers;
 	
-	std::string year_operation; // Greater_Then, Less_Then, Equal_Too, Not_Equal_Too
+	int co_op; //(-1, 0, 1)
+	int favourite; //(-1, 0, 1)
+	int year_operation; // -1 no filter, 0 Greater_Then, 1 Less_Then, 2 Equal_Too, 3 Not_Equal_Too
+	int year;
+	double userStars;
+	double onlineStars;
+	bool userSelected;
 
 	filterList developerFilter;
 	filterList publisherFilter;
@@ -41,6 +43,7 @@ private:
 
 	sf::Font textFont;
 	sf::Text searchStringText;
+	sf::Text largeText;
 
 	std::string filterString;
 	std::string searchString;
@@ -48,6 +51,8 @@ private:
 	void FilterScreen::updateFilterString();
 
 	bool showKeyboard;
+
+	std::string filterDescription;
 
 public:
 	FilterScreen(dbHandle &db_ref, assetHandle &ah_ref);
