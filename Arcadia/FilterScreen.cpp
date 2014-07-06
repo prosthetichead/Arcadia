@@ -102,7 +102,7 @@ void FilterScreen::init(float posX, float posY, int width, float height)
 	
 	screenTexture_p = new sf::Texture();
 	screenTexture_p->loadFromFile(db.exe_path + "\\assets\\system\\filterMenu.png");
-	pointerTexture.loadFromFile(db.exe_path + "\\assets\\system\\pointer.png");
+	//pointerTexture.loadFromFile();
 	menuRect.setTexture(screenTexture_p);
 
 	osk.init(300, 500);
@@ -317,7 +317,7 @@ void FilterScreen::draw(sf::RenderWindow& window)
 	if(!menuNav.selected) // Nothing is selected yet, show the pointer
 	{
 		sf::Sprite pointerSprite;
-		pointerSprite.setTexture(pointerTexture);
+		pointerSprite.setTexture(ah.getTextureAsset("POINTER"));
 		pointerSprite.setOrigin(32,12);
 		pointerSprite.setPosition(menuNav.getCurrentPosX(), menuNav.getCurrentPosY());
 		window.draw(pointerSprite);
@@ -409,9 +409,6 @@ void FilterScreen::draw(sf::RenderWindow& window)
 		window.draw(largeText);
 	}
 
-
-	////// TODO: move some of this to the assetHandle Class??
-	//////////// its duplicated in the gameinfo class.
 // Draw Stars
 	if (userStars > -0.5)
 		ah.draw5_Stars(userStars, sf::Color::Color(246,235,20,255), menuNav.getPosX("stars")+10, menuNav.getPosY("stars")+40, window);
@@ -429,10 +426,6 @@ void FilterScreen::draw(sf::RenderWindow& window)
 		largeText.setPosition(menuNav.getPosX("stars")+10, menuNav.getPosY("stars")+60);
 		window.draw(largeText);
 	}
-	
-
-
-
 
 //fliter lists
 	developerFilter.draw(window); //Draw the developer filter list.

@@ -30,7 +30,8 @@ class MenuNavigation
 		
 		bool MenuNavigation::move(movements movement);
 		void MenuNavigation::addItem(std::string id, std::string left_id, std::string right_id, std::string up_id, std::string down_id, std::string type, std::string value, int posX, int posY);	
-		std::vector<MenuNavigation::menuItem> MenuNavigation::getValueRefVector();
+		std::vector<MenuNavigation::menuItem> MenuNavigation::getVector();
+		std::vector<std::string> MenuNavigation::getIDVector();
 
 
 		std::string MenuNavigation::getCurrentType();
@@ -39,10 +40,10 @@ class MenuNavigation
 		int MenuNavigation::getCurrentPosX();
 		int MenuNavigation::getCurrentPosY();
 
-		std::string MenuNavigation::getType(std::string id);
-		std::string MenuNavigation::getValue(std::string id);
+
 		int MenuNavigation::getPosX(std::string id);
 		int MenuNavigation::getPosY(std::string id);
+		menuItem& MenuNavigation::getMenuItem(std::string id);
 
 	private:
 		std::string current_ID;

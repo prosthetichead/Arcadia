@@ -109,7 +109,7 @@ void OnScreenKeyboard::init(float posX, float posY)
 
 
 
-	KeyboardItemRefs = menuNav.getValueRefVector();
+	KeyboardItemRefs = menuNav.getVector();
 
 
 }

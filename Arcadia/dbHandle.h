@@ -7,6 +7,9 @@
 #include <sys/stat.h>
 #include <SFML/Window.hpp>
 #include <math.h>
+#include <curl/curl.h> 
+#include "tinyxml2.h"
+#include <regex>
 
 class dbHandle
 {
@@ -24,6 +27,14 @@ public:
 		std::string fileName;
 		std::string platformID;
 		std::string platformName;
+
+		gameListItem()
+		{
+			title = "No Game To Display";
+			fileName = "NULL";
+			platformID = "NULL";
+			platformName = "NULL";
+		}
 	};
 
 	struct gameInfoItem {
@@ -100,6 +111,12 @@ public:
 		int repeat_time;
 	};
 
+	struct findGameResultItem
+	{
+		std::string gameName;
+		std::string gameDB_ID;
+	};
+
 	dbHandle(void);
 	~dbHandle(void);
 	void setFilePath(std::string path, std::string fileName);
@@ -112,6 +129,9 @@ public:
 	inputItem dbHandle::getInputItem(int input);
 	int dbHandle::getMaxPlayers();
 	void dbHandle::updateGamePlaytime(std::string platform_id, std::string file_name, double minsPlayed);
+	std::string dbHandle::getHTMLdata(std::string URL);
+	std::vector<dbHandle::findGameResultItem> dbHandle::findGame_onGameDb( gameListItem );
+
 
 };
 

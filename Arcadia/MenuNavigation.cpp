@@ -86,19 +86,28 @@ bool MenuNavigation::move(movements movement)
 	}
 }
 
-std::vector<MenuNavigation::menuItem> MenuNavigation::getValueRefVector()
+std::vector<MenuNavigation::menuItem> MenuNavigation::getVector()
 {
 	std::vector<MenuNavigation::menuItem> valueVector;
 		
 	for(auto kv : menuTree) 
 	{
-		std::cout << kv.second.id << " POS X: " << kv.second.posX << " POS Y: " <<  kv.second.posY << std::endl;
 		valueVector.push_back(kv.second);
 	}
 
 	return valueVector;
 }
+std::vector<std::string> MenuNavigation::getIDVector()
+{
+	std::vector<std::string> idVector;
+		
+	for(auto kv : menuTree) 
+	{
+		idVector.push_back(kv.second.id);
+	}
 
+	return idVector;
+}
 
 int MenuNavigation::getCurrentPosX()
 {
@@ -134,4 +143,8 @@ int MenuNavigation::getPosY(std::string id)
 {
 	menuItem& currentItem = menuTree[id];
 	return currentItem.posY;
+}
+MenuNavigation::menuItem& MenuNavigation::getMenuItem(std::string id)
+{
+	return menuTree[id];
 }

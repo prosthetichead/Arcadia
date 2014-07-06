@@ -5,10 +5,11 @@
 #include "gameList.h"
 #include "dbHandle.h"
 #include "inputHandle.h"
-#include "filterList.h"
+#include "FilterList.h"
 #include "launcher.h"
 #include "assetHandle.h"
 #include "FilterScreen.h"
+#include "SettingsScreen.h"
 
 
 
@@ -20,6 +21,7 @@ void draw();
 
 bool pause = false;
 bool displayFilterScreen = false;
+bool displaySettingsScreen = false;
 
 sf::RenderWindow window;
 sf::Event event;
@@ -30,11 +32,13 @@ inputHandle ih;  //Dont use untill init
 
 GameList gameList(db, ah);
 GameInfo gameInfo(&db, &ah);
-filterList platformFilters(db, ah);
-FilterScreen filterScreen(db, ah); 
+FilterList platformFilters(db, ah);
+FilterScreen filterScreen(db, ah);
+SettingsScreen settingsScreen(db, ah);
 launcher launch(&db);
 
 std::string path;
+sf::RectangleShape hideScreen;
 
 //turns on the debug console
 void activateDebugConsole()
@@ -113,12 +117,18 @@ void initialize()
 	
 	int gameListWidth = desktopMode.width * .35;
 
+	hideScreen.setSize(sf::Vector2f(desktopMode.width, desktopMode.height));
+	hideScreen.setPosition(0,0);
+	hideScreen.setFillColor(sf::Color::Color(0,0,0,180));
+
 	gameList.init(0, 70,  gameListWidth, desktopMode.height - 140);
 	gameInfo.init(gameListWidth, 0, desktopMode.width - gameListWidth, desktopMode.height);
 			
 	platformFilters.init(1, 35,  gameListWidth, db.getPlatformFilterList(), "platform Filter List");
-	filterScreen.init(desktopMode.width/2 - 800/2, desktopMode.height/2 - 600/2, 800,600);
 
+	filterScreen.init(desktopMode.width/2 - 800/2, desktopMode.height/2 - 600/2, 800,600);
+	settingsScreen.init(desktopMode.width/2,  desktopMode.height/2);
+	
 	gameList.updateFilter(platformFilters.getFilterString());
 
 	window.create(desktopMode, "Arcadia", sf::Style::Fullscreen);
@@ -127,19 +137,30 @@ void initialize()
 
 void update()
 {
-
-	if (ih.inputPress(inputHandle::inputs::filter_menu))
+	if (displayFilterScreen)
 	{
-		if(displayFilterScreen)
+		if (filterScreen.update(ih))  // only returns true once done. Maybe change to a enum? so we can tell if it was accept or cancel pressed?
+		{
 			displayFilterScreen = false;
-		else
-			displayFilterScreen = true;
+			gameList.updateFilter(platformFilters.getFilterString() + filterScreen.getFilterString());
+			gameInfo.update(gameList.getCurrentItem());
+		}
 	}
-
-	
-	if (!displayFilterScreen)
+	else if (displaySettingsScreen)
 	{
-		bool newFilter = false;
+		if(settingsScreen.update(ih))
+		{
+			displaySettingsScreen = false;
+		}
+
+	}
+	else /// no screen to show run a normal update
+	{
+		if (ih.inputPress(inputHandle::inputs::filter_menu))
+			displayFilterScreen = true;
+		else if (ih.inputPress(inputHandle::inputs::settings))
+			displaySettingsScreen = true;
+
 		if (ih.inputPress(inputHandle::inputs::start_game))
 		{
 			launch.launchGame(gameList.getCurrentItem().platformID, gameList.getCurrentItem().fileName);
@@ -148,33 +169,17 @@ void update()
 		if (ih.inputPress(inputHandle::inputs::platform_filter_left))
 		{
 			platformFilters.update(-1);
-			newFilter = true;		
+			gameList.updateFilter(platformFilters.getFilterString() + filterScreen.getFilterString());		
 		}
 		if (ih.inputPress(inputHandle::inputs::platform_filter_right))
 		{
 			platformFilters.update(+1);
-			newFilter = true;		
-		}
-		if(newFilter)
-		{
-			gameList.updateFilter(platformFilters.getFilterString() + filterScreen.getFilterString());
-		}
-		
+			gameList.updateFilter(platformFilters.getFilterString() + filterScreen.getFilterString());		
+		}		
 	
-		if(gameList.update(ih))  // If a new game is selected
-		{
-		}
 
+		gameList.update(ih);
 		gameInfo.update(gameList.getCurrentItem());
-	}
-	else if (displayFilterScreen)
-	{
-		if (filterScreen.update(ih))
-		{
-			displayFilterScreen = false;
-			gameList.updateFilter(platformFilters.getFilterString() + filterScreen.getFilterString());
-			gameInfo.update(gameList.getCurrentItem());
-		}
 	}
 
 }
@@ -190,10 +195,14 @@ void draw()
 	
 	if(displayFilterScreen)
 	{
+		window.draw(hideScreen);
 		filterScreen.draw(window);
 	}
-
-
+	else if(displaySettingsScreen)
+	{
+		window.draw(hideScreen);
+		settingsScreen.draw(window);
+	}
 	window.display();
 }
 

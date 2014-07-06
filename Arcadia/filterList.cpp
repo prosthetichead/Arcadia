@@ -1,6 +1,6 @@
-#include "filterList.h"
+#include "FilterList.h"
 
-filterList::filterList(dbHandle& db_ref, assetHandle& ah_ref): db(db_ref), ah(ah_ref)
+FilterList::FilterList(dbHandle& db_ref, assetHandle& ah_ref): db(db_ref), ah(ah_ref)
 {
 	newFilter = true;
 	
@@ -13,13 +13,13 @@ filterList::filterList(dbHandle& db_ref, assetHandle& ah_ref): db(db_ref), ah(ah
 }
 
 
-filterList::~filterList(void)
+FilterList::~FilterList(void)
 {
 }
 
-void filterList::init(float posX, float posY, int width, std::vector<dbHandle::filterListItem> listItems, std::string name)
+void FilterList::init(float posX, float posY, int width, std::vector<dbHandle::filterListItem> listItems, std::string name)
 {
-	filterListName = name;
+	FilterListName = name;
 
 	listOfItems = listItems; 
 		
@@ -31,18 +31,18 @@ void filterList::init(float posX, float posY, int width, std::vector<dbHandle::f
 	rectangle.setOutlineThickness(1);
 }
 
-void filterList::setSelectedSize(int newSize)
+void FilterList::setSelectedSize(int newSize)
 {
 	selectedSpriteSize = newSize;
 }
 
-void filterList::update(int move)
+void FilterList::update(int move)
 {
 	
 	newFilter = false;
 	if (move != 0)
 	{
-		std::cout << filterListName << " - Moved " << move << std::endl;
+		std::cout << FilterListName << " - Moved " << move << std::endl;
 		selectedItemNum = selectedItemNum + move;
 		newFilter = true;
 	}
@@ -54,7 +54,7 @@ void filterList::update(int move)
 		selectedItemNum = 0;
 }
 
-std::string filterList::getFilterString()
+std::string FilterList::getFilterString()
 {
 	if (listOfItems.at(selectedItemNum).filterString == "NULL")
 		return "";
@@ -62,12 +62,12 @@ std::string filterList::getFilterString()
 		return listOfItems.at(selectedItemNum).filterString;
 }
 
-std::string filterList::getSelectedTitle()
+std::string FilterList::getSelectedTitle()
 {
 	return listOfItems.at(selectedItemNum).title;
 }
 
-void filterList::draw(sf::RenderWindow& window)
+void FilterList::draw(sf::RenderWindow& window)
 {
 	sf::Sprite selectedSprite;
 	sf::Vector2i newSize;

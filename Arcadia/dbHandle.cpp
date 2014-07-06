@@ -66,10 +66,6 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 	if (std::distance(intBegin, intEnd) == 0)
 	{
 		dbHandle::gameListItem item;
-		item.platformID= "NULL";
-		item.fileName = "NULL";
-		item.title = "No Games To Display";
-
 		results.push_back(item);
 	}
 
@@ -392,4 +388,75 @@ void dbHandle::updateGamePlaytime(std::string platform_id, std::string file_name
 	cmd.bind(":platform_id", platform_id.c_str());
 	cmd.bind(":file_name", file_name.c_str());
 	cmd.execute();
+}
+
+static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
+{
+    ((std::string*)userp)->append((char*)contents, size * nmemb);
+    return size * nmemb;
+}
+
+std::string dbHandle::getHTMLdata(std::string URL)
+{
+	CURL *curl;
+    CURLcode res;
+	std::string readBuffer;
+
+    curl = curl_easy_init();
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, URL);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+		 curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        res = curl_easy_perform(curl);
+
+        /* always cleanup */
+        curl_easy_cleanup(curl);
+    }
+	return readBuffer;
+}
+
+std::vector<dbHandle::findGameResultItem> dbHandle::findGame_onGameDb( dbHandle::gameListItem list_item )
+{
+	
+	std::string searchString = regex_replace(list_item.title,  regex("\([^)]+\)"), "");
+	searchString = regex_replace(searchString, regex("[^a-zA-Z0-9 ]"), "");
+
+	std::string platformName = list_item.platformName;
+	std::string url = "http://thegamesdb.net/api/GetGamesList.php?name=" + searchString + "&platform=" + platformName;
+	url = regex_replace(url, regex(" "), "%20");
+
+	std::string xmlData = getHTMLdata(url);
+	tinyxml2::XMLDocument doc;
+	doc.Parse(xmlData.c_str());
+	tinyxml2::XMLNode *rootnode = doc.RootElement();
+
+	std::vector<dbHandle::findGameResultItem> result;
+	dbHandle::findGameResultItem item;
+	
+	for(tinyxml2::XMLElement* elem = rootnode->FirstChildElement(); elem != NULL; elem = elem->NextSiblingElement())
+	{
+		std::string elemName = elem->Value();
+		if (elemName == "Game")
+		{
+			item.gameDB_ID = "0";
+			item.gameName = "NULL";
+			for(tinyxml2::XMLElement* gameElem = elem->FirstChildElement(); gameElem != NULL; gameElem = gameElem->NextSiblingElement())
+			{
+				std::string gameElemName = gameElem->Value();
+				if (gameElemName == "id")
+				{
+					item.gameDB_ID = gameElem->GetText();
+				}
+				if (gameElemName == "GameTitle")
+				{
+					std::string gameTitle = regex_replace(gameElem->GetText(), regex("[^a-zA-Z0-9 ]"), "");  //strip special chars from title
+					item.gameName = gameTitle;
+				}
+			}
+			result.push_back(item);
+			std::cout << item.gameDB_ID << " - " << item.gameName << std::endl;
+		}
+	}
+	
+	return result;
 }

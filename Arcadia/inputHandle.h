@@ -17,9 +17,9 @@ public:
 		platform_filter_left,
 		platform_filter_right,
 		filter_menu,
-		edit_game,
-		set_fav,
 		settings,
+		set_fav,
+		set_stars,
 		exit
 	};
 	inputHandle();	

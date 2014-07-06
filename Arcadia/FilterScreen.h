@@ -33,10 +33,10 @@ private:
 	double onlineStars;
 	bool userSelected;
 
-	filterList developerFilter;
-	filterList publisherFilter;
-	filterList regionFilter;
-	filterList genreFilter;
+	FilterList developerFilter;
+	FilterList publisherFilter;
+	FilterList regionFilter;
+	FilterList genreFilter;
 
 	sf::Texture *screenTexture_p;
 	sf::Texture	pointerTexture;

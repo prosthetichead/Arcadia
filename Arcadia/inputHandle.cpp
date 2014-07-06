@@ -25,11 +25,11 @@ void inputHandle::init(dbHandle &db_obj)
 	inputStates.push_back(item);
 	item = db_obj.getInputItem(inputs::filter_menu);
 	inputStates.push_back(item);
-	item = db_obj.getInputItem(inputs::edit_game);
+	item = db_obj.getInputItem(inputs::settings);
 	inputStates.push_back(item);
 	item = db_obj.getInputItem(inputs::set_fav);
 	inputStates.push_back(item);
-	item = db_obj.getInputItem(inputs::settings);
+	item = db_obj.getInputItem(inputs::set_stars);
 	inputStates.push_back(item);
 	item = db_obj.getInputItem(inputs::exit);
 	inputStates.push_back(item);
