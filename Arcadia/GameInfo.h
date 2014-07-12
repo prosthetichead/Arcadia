@@ -25,6 +25,8 @@ private:
 	sf::Texture screenShot;
 	sf::Texture developerLogo;
 	sf::Texture publisherLogo;
+	sf::RenderTexture scrollingTextTexture;
+
 
 	sfe::Movie* movie;
 
@@ -35,7 +37,7 @@ private:
 	sf::RectangleShape gameIconsBorderBottom;
 	sf::RectangleShape descriptionBorder;
 
-	sf::View descriptionView;
+	//sf::View descriptionView;
 	
 	sf::Font descriptionFont;
 	sf::Text descriptionText;

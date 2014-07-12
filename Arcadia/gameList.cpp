@@ -13,23 +13,20 @@ GameList::~GameList(void)
 }
 
 
-void GameList::init(float posX, float posY, int width, float height)
+void GameList::init(SkinHandle& sh)//float posX, float posY, int width, float height)
 {
 	//setup rectangle 
-	rectangle.setSize(sf::Vector2f(width, height));
-	rectangle.setPosition(posX, posY);
-	rectangle.setFillColor(sf::Color::Color(0,0,0,150));
-	rectangle.setOutlineColor(sf::Color::White);
-	rectangle.setOutlineThickness(0);
+	rectangle.setSize(sh.game_list_settings.size); //sf::Vector2f(width, height));
+	rectangle.setPosition(sh.game_list_settings.position);
 	
-	selectedFont.loadFromFile(db.exe_path + "\\assets\\fonts\\Teknik-Bold.ttf");
-	normalFont.loadFromFile(db.exe_path + "\\assets\\fonts\\Teknik-Bold.ttf");
-	normalFontSize = 14;
-	selectedFontSize = 20;
+	selectedFont = sh.game_list_settings.fontSelected;
+	normalFont = sh.game_list_settings.fontSelected;
+	normalFontSize = sh.game_list_settings.fontNormalSize;
+	selectedFontSize = sh.game_list_settings.fontSelectedSize;
 	
 	selectedText.setFont(selectedFont);
 	selectedText.setCharacterSize(selectedFontSize);
-	selectedText.setColor(sf::Color::White);
+	selectedText.setColor(sh.game_list_settings.fontSelectedColor);
 }
 
 void GameList::updateFilter(std::string filterString)

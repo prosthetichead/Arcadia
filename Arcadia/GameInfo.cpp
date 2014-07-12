@@ -9,7 +9,7 @@ GameInfo::GameInfo(dbHandle* db_ref, assetHandle* ah_ref)
 	resetOffset = false;
 	descriptionScroll = false;
 	descriptionPause = false;
-	descriptionPauseTime = 500;
+	descriptionPauseTime = 50;
 	descriptionPauseCount = 0;
 	gameChangedCounter = 0;
 }
@@ -65,11 +65,11 @@ void GameInfo::init(float posX, float posY, float width, float height)
 	gameIconsBorderBottom.setPosition(moviePostion.x - (movieBorder.getSize().x/2), moviePostion.y + (movieBorder.getSize().y/2));
 
 	descriptionBorder.setSize(sf::Vector2f(movie_width,240));
-	descriptionBorder.setPosition(moviePostion.x - (movieBorder.getSize().x/2), moviePostion.y + (movieBorder.getSize().y/2) + gameIconsBorderTop.getSize().y);
+	descriptionBorder.setPosition(500,600);//moviePostion.x - (movieBorder.getSize().x/2), moviePostion.y + (movieBorder.getSize().y/2) + gameIconsBorderTop.getSize().y);
 	descriptionBorder.setOutlineThickness(1);
-	descriptionView.reset(sf::FloatRect(0, 0, desktopMode.width, desktopMode.height));
-	descriptionView.setViewport(sf::FloatRect(descriptionBorder.getPosition().x / desktopMode.width, descriptionBorder.getPosition().y / desktopMode.height, 1, 1));
 	
+	scrollingTextTexture.create(descriptionBorder.getSize().x,descriptionBorder.getSize().y);
+
 	descriptionFont.loadFromFile(db->exe_path + "\\assets\\fonts\\ARCADE_PIX.TTF");
 	descriptionFontSize = 18;
 	descriptionText.setFont(descriptionFont);
@@ -188,7 +188,7 @@ void GameInfo::newGameInfo(dbHandle::gameListItem gameItem)
 			}
 		}
 		descriptionText.setString(new_str);  //currentGameInfo.description);
-		descriptionView.reset(sf::FloatRect(0, 0, rectangleFanArt.getSize().x, rectangleFanArt.getSize().y)); //Reset the description view (uses retangle fan art to get full screen size)
+		//descriptionView.reset(sf::FloatRect(0, 0, rectangleFanArt.getSize().x, rectangleFanArt.getSize().y)); //Reset the description view (uses retangle fan art to get full screen size)
 		descriptionOffset = 0;
 		resetOffset = false;
 		if (descriptionText.getLocalBounds().height > descriptionBorder.getSize().y)
@@ -307,29 +307,22 @@ void GameInfo::draw(sf::RenderWindow& window)
 		window.draw(spriteScreenShot);
 	}
 	
-
+	scrollingTextTexture.clear(sf::Color::Transparent);
 	if (descriptionScroll)
 	{
 		if (!descriptionPause)
 		{
 			if (descriptionOffset < descriptionRequiredOffset && !resetOffset)
-			{
-				descriptionView.move(0, .1);
 				descriptionOffset += .1;
-			}
 			else if (descriptionOffset >= descriptionRequiredOffset && !resetOffset)
 			{
 				resetOffset = true;
 				descriptionPause = true;
 				descriptionPauseCount = 0;
-				descriptionView.move(0, -.1);
 				descriptionOffset -= .1;
 			}
 			else if (resetOffset && descriptionOffset > 0)
-			{
-				descriptionView.move(0, -.1);
 				descriptionOffset -= .1;
-			}
 			else if (resetOffset &&  descriptionOffset <= 0)
 			{
 				resetOffset = false;
@@ -345,11 +338,12 @@ void GameInfo::draw(sf::RenderWindow& window)
 		}
 		
 	}
-	window.setView(descriptionView);
-	descriptionText.setPosition(0,0);//descriptionBorder.getPosition().x, descriptionBorder.getPosition().y); 
-	window.draw(descriptionText);
-	window.setView(window.getDefaultView());
-
+	descriptionText.setPosition(0,0 - descriptionOffset);
+	scrollingTextTexture.draw(descriptionText);
+	scrollingTextTexture.display();
+	sf::Sprite scrollingTextSprite(scrollingTextTexture.getTexture());
+	scrollingTextSprite.setPosition(descriptionBorder.getPosition());
+	window.draw(scrollingTextSprite);
 }
 
 

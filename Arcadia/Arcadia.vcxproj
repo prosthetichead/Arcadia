@@ -95,6 +95,7 @@
     <ClCompile Include="SettingsScreen.cpp" />
     <ClCompile Include="MenuNavigation.cpp" />
     <ClCompile Include="OnScreenKeyboard.cpp" />
+    <ClCompile Include="SkinHandle.cpp" />
     <ClCompile Include="sqlite3pp.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
   </ItemGroup>
@@ -110,6 +111,7 @@
     <ClInclude Include="SettingsScreen.h" />
     <ClInclude Include="MenuNavigation.h" />
     <ClInclude Include="OnScreenKeyboard.h" />
+    <ClInclude Include="SkinHandle.h" />
     <ClInclude Include="sqlite3pp.h" />
     <ClInclude Include="tinyxml2.h" />
   </ItemGroup>

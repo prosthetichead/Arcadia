@@ -10,6 +10,7 @@
 #include "assetHandle.h"
 #include "FilterScreen.h"
 #include "SettingsScreen.h"
+#include "SkinHandle.h"
 
 
 
@@ -29,6 +30,7 @@ sf::Event event;
 dbHandle db;
 assetHandle ah; //Dont use untill init
 inputHandle ih;  //Dont use untill init
+SkinHandle sh; //Dont use untill init
 
 GameList gameList(db, ah);
 GameInfo gameInfo(&db, &ah);
@@ -86,7 +88,7 @@ int main()
 			}
 			if (event.type == sf::Event::GainedFocus)
 			{
-				sf::VideoMode desktopMode = sf::VideoMode::getDesktopMode();
+				sf::VideoMode desktopMode = sf::VideoMode(sh.resolution.x, sh.resolution.y);
 				window.create(desktopMode, "Arcadia", sf::Style::Fullscreen);
 				window.setVerticalSyncEnabled(true);
 				pause = false;
@@ -110,18 +112,22 @@ int main()
 //runs just once
 void initialize()
 {	
-	sf::VideoMode desktopMode = sf::VideoMode::getDesktopMode();
+	
+	
 	db.setFilePath(path, "database.db");
 	ah.init(db);
 	ih.init(db);
-	
+	sh.init(db);
+
+	sf::VideoMode desktopMode = sf::VideoMode(sh.resolution.x,sh.resolution.y);
+
 	int gameListWidth = desktopMode.width * .35;
 
 	hideScreen.setSize(sf::Vector2f(desktopMode.width, desktopMode.height));
 	hideScreen.setPosition(0,0);
 	hideScreen.setFillColor(sf::Color::Color(0,0,0,180));
 
-	gameList.init(0, 70,  gameListWidth, desktopMode.height - 140);
+	gameList.init(sh);//0, 70,  gameListWidth, desktopMode.height - 140);
 	gameInfo.init(gameListWidth, 0, desktopMode.width - gameListWidth, desktopMode.height);
 			
 	platformFilters.init(1, 35,  gameListWidth, db.getPlatformFilterList(), "platform Filter List");
