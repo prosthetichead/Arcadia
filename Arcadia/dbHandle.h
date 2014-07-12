@@ -131,7 +131,5 @@ public:
 	void dbHandle::updateGamePlaytime(std::string platform_id, std::string file_name, double minsPlayed);
 	std::string dbHandle::getHTMLdata(std::string URL);
 	std::vector<dbHandle::findGameResultItem> dbHandle::findGame_onGameDb( gameListItem );
-
-
 };
 
