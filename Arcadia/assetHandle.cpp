@@ -21,6 +21,37 @@ void assetHandle::init(dbHandle& db_obj)
 		std::pair<std::string,sf::Texture> pair (items.at(i).id,texture);
 		textureMap.insert(pair);
 	}
+
+	loadFonts(db_obj.exe_path + "\\assets\\fonts");
+}
+
+void assetHandle::loadFonts(std::string path)
+{
+	const std::string target_path = path;
+	
+	boost::filesystem::directory_iterator end_itr; // Default ctor yields past-the-end
+	for( boost::filesystem::directory_iterator i( target_path ); i != end_itr; ++i )
+	{
+	    // Skip if not a file
+	    if( !boost::filesystem::is_regular_file( i->status() ) ) continue;
+	
+	    // Skip if no match
+		std::string extension = i->path().extension().string();
+		boost::to_upper(extension);
+	    if( extension != ".TTF" ) continue;
+	
+	    // File matches, store it
+	    sf::Font font;
+		font.loadFromFile(i->path().string());
+
+		std::string fontID = i->path().filename().string();
+		boost::to_upper(fontID);
+		std::pair<std::string,sf::Font> pair(fontID, font);
+		fontMap.insert(pair);
+
+		std::cout << i->path().filename().string() << std::endl;
+	}
+
 }
 
 sf::Texture& assetHandle::getTextureAsset(std::string id)
@@ -36,6 +67,15 @@ sf::Texture& assetHandle::getTextureAsset(std::string id)
 		if(iter != textureMap.end()) return iter->second;
 	}
 
+}
+
+sf::Font& assetHandle::getFontAsset(std::string id)
+{
+	boost::to_upper(id);
+	boost::unordered_map<std::string,sf::Font>::iterator iter = fontMap.find(id);
+	if(iter != fontMap.end()) return iter->second;
+	else
+		return emptyFont;
 }
 
 

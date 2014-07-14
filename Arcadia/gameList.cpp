@@ -15,18 +15,17 @@ GameList::~GameList(void)
 
 void GameList::init(SkinHandle& sh)//float posX, float posY, int width, float height)
 {
+	settings = &sh.game_list_settings;
+
 	//setup rectangle 
-	rectangle.setSize(sh.game_list_settings.size); //sf::Vector2f(width, height));
-	rectangle.setPosition(sh.game_list_settings.position);
+	rectangle.setSize(settings->size);
+	rectangle.setPosition(settings->position);
 	
-	selectedFont = sh.game_list_settings.fontSelected;
-	normalFont = sh.game_list_settings.fontSelected;
-	normalFontSize = sh.game_list_settings.fontNormalSize;
-	selectedFontSize = sh.game_list_settings.fontSelectedSize;
-	
-	selectedText.setFont(selectedFont);
-	selectedText.setCharacterSize(selectedFontSize);
-	selectedText.setColor(sh.game_list_settings.fontSelectedColor);
+	//setup fonts
+	selectedText.setFont( ah.getFontAsset(settings->selected_font.fontName) );
+	selectedText.setCharacterSize(settings->selected_font.size);
+	normalText.setFont( ah.getFontAsset(settings->normal_font.fontName) );
+	normalText.setCharacterSize(settings->normal_font.size);
 }
 
 void GameList::updateFilter(std::string filterString)
@@ -108,18 +107,20 @@ void GameList::draw(sf::RenderWindow& window)
 {
 	//window.draw(rectangle);
 
-	int selectedFontPadding = selectedFontSize+20;
-	int normalFontSize_Padding = normalFontSize+10;
-	float selectedFontSizeHalf = selectedFontSize/2;
+	int selectedFontPadding = selectedText.getCharacterSize() + 20;
+	int normalFontSize_Padding = normalText.getCharacterSize() + 10;
+
+	float selectedFontSizeHalf = selectedText.getCharacterSize() / 2;
 	int selectedPosX = rectangle.getPosition().x + 30;
 	int selectedPosY = ((rectangle.getSize().y / 2) + rectangle.getPosition().y);
 	
-	selectedText.setPosition(selectedPosX + 2, selectedPosY );
-	selectedText.setOrigin(0,selectedFontSize/2);
+	
+	selectedText.setOrigin(0, selectedFontSizeHalf );
+	selectedText.setPosition(selectedPosX , selectedPosY );
 	selectedText.setColor(sf::Color::Color(0,102,153,255));
 	window.draw(selectedText);
-	selectedText.setPosition(selectedPosX , selectedPosY -2);
-	selectedText.setColor(sf::Color::White);
+	selectedText.setPosition(selectedPosX -2, selectedPosY -2);
+	selectedText.setColor(settings->selected_font.color);
 	window.draw(selectedText);
 
 	sf::RectangleShape line(sf::Vector2f(rectangle.getSize().x, 2));
@@ -129,16 +130,13 @@ void GameList::draw(sf::RenderWindow& window)
 	line.setPosition(selectedPosX - 10, selectedPosY + (selectedFontSizeHalf + selectedFontPadding/4));
 	window.draw(line);
 
-	int numNormalItems = (rectangle.getSize().y - (selectedFontSize + selectedFontPadding)) / (normalFontSize_Padding);
+	int numNormalItems = (rectangle.getSize().y - (selectedText.getCharacterSize() + selectedFontPadding)) / (normalFontSize_Padding);
 	if (numNormalItems > listOfItems.size())
 		numNormalItems = listOfItems.size();
 	
 	float normalPosX = rectangle.getPosition().x + 10;
-	float normalPosY = selectedPosY - (normalFontSize + selectedFontPadding);
+	float normalPosY = selectedPosY - (normalText.getCharacterSize() + selectedFontPadding);
 		
-	
-	//window.draw(flagSprite);
-
 	int numItemsHalf = numNormalItems/2;
 
 	for(int i=0; i < numItemsHalf; ++i)
@@ -149,11 +147,9 @@ void GameList::draw(sf::RenderWindow& window)
 
 		dbHandle::gameListItem item = listOfItems.at(itemNum);
 
-		sf::Text normalText;
-
-		normalText.setFont(normalFont);
-		normalText.setCharacterSize(normalFontSize);
-		normalText.setColor(sf::Color(sf::Color::Color(255,255,255,255 - i * (255/numItemsHalf))));
+		sf::Color newNormalColor = settings->normal_font.color;
+		newNormalColor.a = 255 - i * (255/numItemsHalf);
+		normalText.setColor(newNormalColor);
 		normalText.setString(item.title);
 		normalText.setPosition(normalPosX, normalPosY - (i*normalFontSize_Padding));
 		window.draw(normalText);
@@ -169,11 +165,9 @@ void GameList::draw(sf::RenderWindow& window)
 			
 		dbHandle::gameListItem item = listOfItems.at(itemNum);
 
-		sf::Text normalText;
-
-		normalText.setFont(normalFont);
-		normalText.setCharacterSize(normalFontSize);
-		normalText.setColor(sf::Color(sf::Color::Color(255,255,255,255 - i * (255/numItemsHalf))));
+		sf::Color newNormalColor = settings->normal_font.color;
+		newNormalColor.a = 255 - i * (255/numItemsHalf);
+		normalText.setColor(newNormalColor);
 		normalText.setString(item.title);
 		normalText.setPosition(normalPosX, normalPosY + (i*normalFontSize_Padding));
 		window.draw(normalText);

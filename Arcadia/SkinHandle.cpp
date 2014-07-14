@@ -24,6 +24,27 @@ void SkinHandle::init(dbHandle& db)
 	loadLayout();
 }
 
+SkinHandle::Font_Item SkinHandle::read_font_elem(tinyxml2::XMLElement* elem)
+{
+	SkinHandle::Font_Item font_item;
+	font_item.fontName = elem->Attribute("file");
+	font_item.size = atoi(elem->Attribute("size"));
+	font_item.color = sf::Color::Color(atoi(elem->Attribute("red")), atoi(elem->Attribute("green")), atoi(elem->Attribute("blue")), atoi(elem->Attribute("alpha")) );
+	
+	for(tinyxml2::XMLElement* fontElem = elem->FirstChildElement(); fontElem != NULL; fontElem = fontElem->NextSiblingElement())
+	{
+		std::string elemName = fontElem->Value();
+		if (elemName== "shadow")
+		{
+			font_item.shadow = true;
+			font_item.shadowColor = sf::Color::Color(atoi(fontElem->Attribute("red")), atoi(fontElem->Attribute("green")), atoi(fontElem->Attribute("blue")), atoi(fontElem->Attribute("alpha")) );
+			font_item.shadowOffset = atoi(fontElem->Attribute("offset"));
+		}
+	}
+
+	return font_item;
+}
+
 void SkinHandle::loadLayout()
 {
 	tinyxml2::XMLDocument doc;
@@ -38,30 +59,38 @@ void SkinHandle::loadLayout()
 		std::string elemName = elem->Value();
 		if (elemName == "game_list")
 		{
+			game_list_settings.size.x = atof(elem->Attribute("size_x"));
+			game_list_settings.size.y = atof(elem->Attribute("size_y"));
+			game_list_settings.position.x = atof(elem->Attribute("pos_x"));
+			game_list_settings.position.y = atof(elem->Attribute("pos_y"));
+
 			for(tinyxml2::XMLElement* gameElem = elem->FirstChildElement(); gameElem != NULL; gameElem = gameElem->NextSiblingElement())
 			{
 				std::string gameElemName = gameElem->Value();
-				if (gameElemName == "width")
-					game_list_settings.size.x = atof(gameElem->GetText());
-				if (gameElemName == "height")
-					game_list_settings.size.y = atof(gameElem->GetText());
-				if (gameElemName == "pos_x")
-					game_list_settings.position.x = atof(gameElem->GetText());
-				if (gameElemName == "pos_y")
-					game_list_settings.position.y = atof(gameElem->GetText());
-				if (gameElemName == "selected_font")
+
+				if (gameElemName == "selected_item")
 				{
-					game_list_settings.fontSelected.loadFromFile(exe_path + "\\assets\\fonts\\" + gameElem->GetText());
-					game_list_settings.fontSelectedSize = atoi(gameElem->Attribute("size"));
-					game_list_settings.fontSelectedColor = sf::Color::Color(atoi(gameElem->Attribute("red")), atoi(gameElem->Attribute("green")), atoi(gameElem->Attribute("blue")), atoi(gameElem->Attribute("alpha")) );
+					for(tinyxml2::XMLElement* selectedElem = gameElem->FirstChildElement(); selectedElem != NULL; selectedElem = selectedElem->NextSiblingElement())
+					{
+						std::string selectedElemName = selectedElem->Value();
+						if (selectedElemName == "font")
+							game_list_settings.selected_font = read_font_elem(selectedElem);						
+					}
 				}
-				if (gameElemName == "normal_font")
+				if (gameElemName == "normal_item")
 				{
-					game_list_settings.fontNormal.loadFromFile(exe_path + "\\assets\\fonts\\" + gameElem->GetText());
-					game_list_settings.fontNormalSize = atoi(gameElem->Attribute("size"));
-					game_list_settings.fontNormalColor = sf::Color::Color(atoi(gameElem->Attribute("red")), atoi(gameElem->Attribute("green")), atoi(gameElem->Attribute("blue")), atoi(gameElem->Attribute("alpha")) );
+					for(tinyxml2::XMLElement* normalElem = gameElem->FirstChildElement(); normalElem != NULL; normalElem = normalElem->NextSiblingElement())
+					{
+						std::string normalElemName = normalElem->Value();
+						if (normalElemName == "font")
+							game_list_settings.normal_font = read_font_elem(normalElem);						
+					}										
 				}
 			}
+		}
+		if (elemName == "game_info")
+		{
+
 		}
 	}
 

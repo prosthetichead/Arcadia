@@ -9,20 +9,21 @@
 class GameList
 {
 	private:
+		
+		SkinHandle::Game_List_Settings *settings;
+		
 		sf::RectangleShape rectangle;
-		sf::Font selectedFont;
-		sf::Font normalFont;
+		
 		dbHandle &db;
 		assetHandle &ah;
 
 		sf::Text selectedText;
+		sf::Text normalText;
 		std::vector<dbHandle::gameListItem> listOfItems;
-		int selectedItemNum;
 		
+		int selectedItemNum;
 		int counter; //used for input control
-		int normalFontSize;
-		int selectedFontSize;
-
+		
 		bool selectedItemChange;
 		void GameList::nextLetter(int direction);
 
