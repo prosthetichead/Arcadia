@@ -33,7 +33,7 @@ inputHandle ih;  //Dont use untill init
 SkinHandle sh; //Dont use untill init
 
 GameList gameList(db, ah);
-GameInfo gameInfo(&db, &ah);
+GameInfo gameInfo(&db, &ah, &sh);
 FilterList platformFilters(db, ah);
 FilterScreen filterScreen(db, ah);
 SettingsScreen settingsScreen(db, ah);
@@ -128,7 +128,7 @@ void initialize()
 	hideScreen.setFillColor(sf::Color::Color(0,0,0,180));
 
 	gameList.init(sh);//0, 70,  gameListWidth, desktopMode.height - 140);
-	gameInfo.init(gameListWidth, 0, desktopMode.width - gameListWidth, desktopMode.height);
+	gameInfo.init();
 			
 	platformFilters.init(1, 35,  gameListWidth, db.getPlatformFilterList(), "platform Filter List");
 

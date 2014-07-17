@@ -4,6 +4,7 @@
 #include <boost\algorithm\string\split.hpp>
 #include "dbHandle.h"
 #include "assetHandle.h"
+#include "SkinHandle.h"
 
 
 class GameInfo
@@ -11,6 +12,8 @@ class GameInfo
 private:
 	dbHandle* db;
 	assetHandle* ah;
+	SkinHandle* sh;
+
 	dbHandle::gameListItem currentGameItem;
 	dbHandle::gameInfoItem currentGameInfo;
 	dbHandle::gameListItem newGameItem;
@@ -30,16 +33,16 @@ private:
 
 	sfe::Movie* movie;
 
-	sf::RectangleShape rectangleInfo;	//Rectangle of just the Info Area
+	//sf::RectangleShape rectangleInfo;	//Rectangle of just the Info Area
 	sf::RectangleShape rectangleFanArt;	//Full Screen Rectangle
-	sf::RectangleShape movieBorder;	
-	sf::RectangleShape gameIconsBorderTop;
-	sf::RectangleShape gameIconsBorderBottom;
-	sf::RectangleShape descriptionBorder;
+	//sf::RectangleShape movieBorder;	
+	//sf::RectangleShape gameIconsBorderTop;
+	//sf::RectangleShape gameIconsBorderBottom;
+	//sf::RectangleShape descriptionBorder;
 
 	//sf::View descriptionView;
 	
-	sf::Font descriptionFont;
+	//sf::Font descriptionFont;
 	sf::Text descriptionText;
 	int descriptionFontSize;
 	bool descriptionScroll;
@@ -50,21 +53,21 @@ private:
 	float descriptionRequiredOffset;
 	bool resetOffset;
 
-	sf::Font yearFont;
+	//sf::Font yearFont;
 	sf::Text yearText;
 	int yearFontSize;
 
-	sf::Font playTimeFont;
+	//sf::Font playTimeFont;
 	sf::Text playTimeText;
 	
-	sf::Vector2i moviePostion;
+	//sf::Vector2i moviePostion;
 
 	void GameInfo::newGameInfo(dbHandle::gameListItem gameItem);
 	
 public:
-	GameInfo(dbHandle* db_ref, assetHandle* ah_ref);
+	GameInfo(dbHandle* db_ref, assetHandle* ah_ref, SkinHandle* sh_ref);
 	~GameInfo(void);
-	void GameInfo::init(float posX, float posY, float width, float height);
+	void GameInfo::init(); //void GameInfo::init(float posX, float posY, float width, float height);
 	void GameInfo::update(dbHandle::gameListItem gameItem);
 	
 	void GameInfo::draw(sf::RenderWindow &window);

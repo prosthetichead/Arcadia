@@ -119,9 +119,12 @@ void GameList::draw(sf::RenderWindow& window)
 	selectedText.setPosition(selectedPosX , selectedPosY );
 	selectedText.setColor(sf::Color::Color(0,102,153,255));
 	window.draw(selectedText);
-	selectedText.setPosition(selectedPosX -2, selectedPosY -2);
-	selectedText.setColor(settings->selected_font.color);
-	window.draw(selectedText);
+	if(settings->selected_font.shadow)
+	{
+		selectedText.setPosition(selectedPosX - settings->selected_font.shadowOffset, selectedPosY - settings->selected_font.shadowOffset);
+		selectedText.setColor(settings->selected_font.shadowColor);
+		window.draw(selectedText);
+	}
 
 	sf::RectangleShape line(sf::Vector2f(rectangle.getSize().x, 2));
 	line.setFillColor(sf::Color::Color(0,102,153,255));
