@@ -6,8 +6,9 @@
 #include <boost/algorithm/string/replace.hpp>
 #include <sys/stat.h>
 #include <SFML/Window.hpp>
+#include <SFML/Network.hpp>
 #include <math.h>
-#include <curl/curl.h> 
+//#include <curl/curl.h> 
 #include "tinyxml2.h"
 #include <regex>
 
@@ -18,7 +19,7 @@ private:
 	std::vector<std::string> movie_file_exts;
 	std::vector<std::string> img_file_exts;
 	std::string dbHandle::fileExists(std::string file, std::vector<std::string> file_exts);
-
+	
 public:
 	std::string exe_path;
 
@@ -129,7 +130,7 @@ public:
 	inputItem dbHandle::getInputItem(int input);
 	int dbHandle::getMaxPlayers();
 	void dbHandle::updateGamePlaytime(std::string platform_id, std::string file_name, double minsPlayed);
-	std::string dbHandle::getHTMLdata(std::string URL);
+	//std::string dbHandle::getHTMLdata(std::string URL);
 	std::vector<dbHandle::findGameResultItem> dbHandle::findGame_onGameDb( gameListItem );
 };
 

@@ -180,7 +180,7 @@ void update()
 		if (ih.inputPress(inputHandle::inputs::platform_filter_right))
 		{
 			platformFilters.update(+1);
-			gameList.updateFilter(platformFilters.getFilterString() + filterScreen.getFilterString());		
+			gameList.updateFilter(platformFilters.getFilterString() + filterScreen.getFilterString());	
 		}		
 	
 

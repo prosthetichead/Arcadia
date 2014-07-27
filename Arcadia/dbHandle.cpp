@@ -390,30 +390,30 @@ void dbHandle::updateGamePlaytime(std::string platform_id, std::string file_name
 	cmd.execute();
 }
 
-static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
-{
-    ((std::string*)userp)->append((char*)contents, size * nmemb);
-    return size * nmemb;
-}
+//static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
+//{
+//    ((std::string*)userp)->append((char*)contents, size * nmemb);
+//    return size * nmemb;
+//}
 
-std::string dbHandle::getHTMLdata(std::string URL)
-{
-	CURL *curl;
-    CURLcode res;
-	std::string readBuffer;
-
-    curl = curl_easy_init();
-    if (curl) {
-        curl_easy_setopt(curl, CURLOPT_URL, URL);
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-		 curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-        res = curl_easy_perform(curl);
-
-        /* always cleanup */
-        curl_easy_cleanup(curl);
-    }
-	return readBuffer;
-}
+//std::string dbHandle::getHTMLdata(std::string URL)
+//{
+//	CURL *curl;
+//    CURLcode res;
+//	std::string readBuffer;
+//
+//    curl = curl_easy_init();
+//    if (curl) {
+ //       curl_easy_setopt(curl, CURLOPT_URL, URL);
+//		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+//		 curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+ //       res = curl_easy_perform(curl);
+//
+ //       /* always cleanup */
+  //      curl_easy_cleanup(curl);
+  //  }
+//	return readBuffer;
+//}
 
 std::vector<dbHandle::findGameResultItem> dbHandle::findGame_onGameDb( dbHandle::gameListItem list_item )
 {
@@ -422,10 +422,17 @@ std::vector<dbHandle::findGameResultItem> dbHandle::findGame_onGameDb( dbHandle:
 	searchString = regex_replace(searchString, regex("[^a-zA-Z0-9 ]"), "");
 
 	std::string platformName = list_item.platformName;
-	std::string url = "http://thegamesdb.net/api/GetGamesList.php?name=" + searchString + "&platform=" + platformName;
+	std::string url = "/api/GetGamesList.php?name=" + searchString + "&platform=" + platformName;
 	url = regex_replace(url, regex(" "), "%20");
 
-	std::string xmlData = getHTMLdata(url);
+	sf::Http http("http://thegamesdb.net/");
+	sf::Http::Request request;
+	request.setMethod(sf::Http::Request::Get);
+	request.setUri(url);
+	sf::Http::Response response = http.sendRequest(request);
+	std::string xmlData = response.getBody();
+	std::cout << xmlData << std::endl;
+
 	tinyxml2::XMLDocument doc;
 	doc.Parse(xmlData.c_str());
 	tinyxml2::XMLNode *rootnode = doc.RootElement();
