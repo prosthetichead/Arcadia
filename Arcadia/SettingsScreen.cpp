@@ -1,11 +1,14 @@
 #include "SettingsScreen.h"
 
 
-SettingsScreen::SettingsScreen(dbHandle &db_ref, assetHandle &ah_ref):
-	db(db_ref),
-	ah(ah_ref)
+SettingsScreen::SettingsScreen(dbHandle *db_ref, assetHandle *ah_ref, inputHandle *ih_ref)
 {
+	db = db_ref;
+	ah = ah_ref;
+	ih = ih_ref;
 	editGameVisible = false;
+	controlsVisible = false;
+	
 }
 
 
@@ -16,8 +19,8 @@ SettingsScreen::~SettingsScreen(void)
 
 void SettingsScreen::init(float posX, float posY)
 {
-	menuRect.setSize(sf::Vector2f(256,320));
-	menuRect.setPosition(posX - 256/2, posY - 512/2);
+	menuRect.setSize(sf::Vector2f(256,260));
+	menuRect.setPosition(posX - 256/2, posY - 260/2);
 	menuRect.setFillColor(sf::Color::Color(46,76,106,255));
 	menuRect.setOutlineColor(sf::Color::Black);
 	menuRect.setOutlineThickness(2);
@@ -27,8 +30,7 @@ void SettingsScreen::init(float posX, float posY)
 	menuButtonRect.setOutlineColor(sf::Color::Black);
 	menuButtonRect.setOutlineThickness(1);
 
-	menuFont.loadFromFile(db.exe_path + "\\assets\\fonts\\ARCADE_PIX.TTF");
-	menuText.setFont(menuFont);
+	menuText.setFont( ah->getFontAsset("ARCADE_PIX.TTF") );
 	menuText.setCharacterSize(20);
 	menuShadowText = menuText;
 
@@ -40,6 +42,8 @@ void SettingsScreen::init(float posX, float posY)
 	menuNav.addItem("exit", "", "", "controls", "", "none", "Exit Arcadia", menuRect.getPosition().x+16, menuRect.getPosition().y + (16 * 5) + (32 * 4));
 
 	menuIDs = menuNav.getIDVector();
+
+	controlScreen.init(db, ah, ih);
 }
 
 void SettingsScreen::setCurrentGameListItem(dbHandle::gameListItem gameItem)
@@ -47,21 +51,9 @@ void SettingsScreen::setCurrentGameListItem(dbHandle::gameListItem gameItem)
 	currentGameListItem = gameItem;
 }
 
-bool SettingsScreen::update(inputHandle& ih)
+bool SettingsScreen::update()
 {
-	menuNav.selected = false;
-	if (ih.inputPress(inputHandle::inputs::up) || ih.inputHold(inputHandle::inputs::up))
-		menuNav.move(MenuNavigation::movements::up);
-	else if (ih.inputPress(inputHandle::inputs::down) || ih.inputHold(inputHandle::inputs::down))
-		menuNav.move(MenuNavigation::movements::down);
-	else if (ih.inputPress(inputHandle::inputs::left) || ih.inputHold(inputHandle::inputs::left))
-		menuNav.move(MenuNavigation::movements::left);
-	else if (ih.inputPress(inputHandle::inputs::right) || ih.inputHold(inputHandle::inputs::right))
-		menuNav.move(MenuNavigation::movements::right);
-	else if (ih.inputPress(inputHandle::inputs::start_game) && !menuNav.selected)
-		menuNav.selected = true;			
-	
-
+	//menuNav.selected = false;
 
 	if (menuNav.selected) // Selected  = True
 	{
@@ -76,12 +68,29 @@ bool SettingsScreen::update(inputHandle& ih)
 				//}
 			}
 		}
+		else if (menuNav.getCurrentID() == "controls")
+		{
+			if(controlScreen.update())
+				menuNav.selected = false;
+		}
 		else if (menuNav.getCurrentID() == "close")
-			return true;
+			return true;  // we are finished return true
+	}
+	else
+	{
+		if (ih->inputPress(inputHandle::inputs::up) || ih->inputHold(inputHandle::inputs::up))
+			menuNav.move(MenuNavigation::movements::up);
+		else if (ih->inputPress(inputHandle::inputs::down) || ih->inputHold(inputHandle::inputs::down))
+			menuNav.move(MenuNavigation::movements::down);
+		else if (ih->inputPress(inputHandle::inputs::left) || ih->inputHold(inputHandle::inputs::left))
+			menuNav.move(MenuNavigation::movements::left);
+		else if (ih->inputPress(inputHandle::inputs::right) || ih->inputHold(inputHandle::inputs::right))
+			menuNav.move(MenuNavigation::movements::right);
+		else if (ih->inputPress(inputHandle::inputs::start_game) && !menuNav.selected)
+			menuNav.selected = true;
 	}
 
-
-	return false;
+	return false;  // return false keep displaying this screen.
 }
 void SettingsScreen::draw(sf::RenderWindow& window)
 {
@@ -102,17 +111,21 @@ void SettingsScreen::draw(sf::RenderWindow& window)
 		window.draw(menuShadowText);
 		window.draw(menuText);
 	}
-
-	
-
-
-
-
 	// draw the hand pointer
-		sf::Sprite pointerSprite;
-		pointerSprite.setTexture(ah.getTextureAsset("POINTER"));
-		pointerSprite.setOrigin(32,12);
-		pointerSprite.setPosition(menuNav.getCurrentPosX() + 10, menuNav.getCurrentPosY()+ 10);
-		window.draw(pointerSprite);
+	sf::Sprite pointerSprite;
+	pointerSprite.setTexture(ah->getTextureAsset("POINTER"));
+	pointerSprite.setOrigin(32,12);
+	pointerSprite.setPosition(menuNav.getCurrentPosX() + 10, menuNav.getCurrentPosY()+ 10);
+	window.draw(pointerSprite);
+
+	if (menuNav.selected)
+	{
+		if (menuNav.getCurrentID() == "controls")
+			controlScreen.draw(window);
+	}
+
+
+
+
 
 }

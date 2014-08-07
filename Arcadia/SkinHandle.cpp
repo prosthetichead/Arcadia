@@ -28,9 +28,15 @@ SkinHandle::Font_Item SkinHandle::read_font_elem(tinyxml2::XMLElement* elem)
 {
 	SkinHandle::Font_Item font_item;
 
+	if (elem->Attribute("pos_x") != NULL)
+		font_item.pos.x = atof(elem->Attribute("pos_x"));
+	if (elem->Attribute("pos_y") != NULL)
+		font_item.pos.y = atof(elem->Attribute("pos_y"));
+
 	for(tinyxml2::XMLElement* fontRootElem = elem->FirstChildElement(); fontRootElem != NULL; fontRootElem = fontRootElem->NextSiblingElement())
 	{
 		std::string fontRootElemName = fontRootElem->Value();
+		 
 			if (fontRootElemName == "font")
 			{	
 				font_item.fontName = fontRootElem->Attribute("file");
@@ -59,7 +65,29 @@ SkinHandle::Rectangle_Item SkinHandle::read_rectangle_elem(tinyxml2::XMLElement*
 	return_rect.pos = sf::Vector2f(atof(elem->Attribute("pos_x")), atof(elem->Attribute("pos_y")));	
 	return_rect.size = sf::Vector2f(atof(elem->Attribute("size_x")), atof(elem->Attribute("size_y")));
 	if(elem->Attribute("origin") != NULL)
+	{
 		return_rect.origin_code = elem->Attribute("origin");
+		
+	}
+	if (elem->Attribute("resize_fit") != NULL)
+	{
+		std::string resize_fit = elem->Attribute("resize_fit");
+		if (resize_fit == "false")	
+			return_rect.resize_fit = false;		
+		else
+			return_rect.resize_fit = true;
+	}
+	for(tinyxml2::XMLElement* rectElem = elem->FirstChildElement(); rectElem != NULL; rectElem = rectElem->NextSiblingElement())
+	{
+		std::string rectElemName = rectElem->Value();
+		if(rectElemName == "colour")
+			return_rect.colour = sf::Color::Color(atoi(rectElem->Attribute("red")), atoi(rectElem->Attribute("green")), atoi(rectElem->Attribute("blue")), atoi(rectElem->Attribute("alpha")) );
+		if(rectElemName == "outline")
+		{
+			return_rect.outline_width = atoi(rectElem->Attribute("width"));
+			return_rect.outline_colour = sf::Color::Color(atoi(rectElem->Attribute("red")), atoi(rectElem->Attribute("green")), atoi(rectElem->Attribute("blue")), atoi(rectElem->Attribute("alpha")) );
+		}
+	}
 
 	return return_rect;
 }
@@ -99,37 +127,47 @@ void SkinHandle::loadLayout()
 			{
 				std::string gameElemName = gameElem->Value();
 				if (gameElemName == "fanart")
-					game_info_settings.fanArt_colour = sf::Color::Color(atoi(gameElem->Attribute("red")), atoi(gameElem->Attribute("green")), atoi(gameElem->Attribute("blue")), atoi(gameElem->Attribute("alpha")) );
+					game_info_settings.fanArt = read_rectangle_elem(gameElem);
+
+				if (gameElemName == "clear_logo")
+					game_info_settings.clearLogo = read_rectangle_elem(gameElem);	
+				
 				if (gameElemName == "description")
 				{
-					game_info_settings.description_position.x = atof(gameElem->Attribute("pos_x"));
-					game_info_settings.description_position.y = atof(gameElem->Attribute("pos_y"));
-					game_info_settings.description_size.x = atof(gameElem->Attribute("size_x"));
-					game_info_settings.description_size.y = atof(gameElem->Attribute("size_y"));
-					
+					game_info_settings.description = read_rectangle_elem(gameElem);					
 					game_info_settings.description_font = read_font_elem(gameElem);
 				}
 				if (gameElemName == "video")
-				{
 					game_info_settings.video  = read_rectangle_elem(gameElem);
-				}
+				
 				if (gameElemName == "screenshot")
-				{
-					game_info_settings.screenshot_position.x = atof(gameElem->Attribute("pos_x"));
-					game_info_settings.screenshot_position.y = atof(gameElem->Attribute("pos_y"));
-					game_info_settings.screenshot_size.x = atof(gameElem->Attribute("size_x"));
-					game_info_settings.screenshot_size.y = atof(gameElem->Attribute("size_y"));
-				}
+					game_info_settings.screenshot = read_rectangle_elem(gameElem);
+				
 				if (gameElemName == "genre_icon")
-				{
 					game_info_settings.genreIcon  = read_rectangle_elem(gameElem);
-				}
+				
 				if (gameElemName == "company_logos")
-				{
 					game_info_settings.companyLogos = read_rectangle_elem(gameElem);
-				}
+				
+				if (gameElemName == "platform_icon")
+					game_info_settings.platformIcon = read_rectangle_elem(gameElem);
+				
+				if (gameElemName == "year")
+					game_info_settings.year_font = read_font_elem(gameElem);
+				
+				if (gameElemName == "play_time_title")
+					game_info_settings.playTimeTitle_font = read_font_elem(gameElem);
 
+				if (gameElemName == "play_time")
+					game_info_settings.playTime_font = read_font_elem(gameElem);
+
+				if (gameElemName == "last_played_title")
+					game_info_settings.lastPlayedTitle_font = read_font_elem(gameElem);
+				
+				if (gameElemName == "last_played")
+					game_info_settings.lastPlayed_font = read_font_elem(gameElem);
 			}
+
 		}
 	}
 

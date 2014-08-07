@@ -357,11 +357,24 @@ dbHandle::inputItem dbHandle::getInputItem(int input)
 
 		int key_id = (*i).get<int>(3); 
 		item.key = (sf::Keyboard::Key)key_id;
+		item.inputID = input;
 	}
 
 	return item;
 
 	//db.disconnect();
+
+}
+void dbHandle::updateInputItem(inputItem &item)
+{
+	//if(item.inputType == "Keyboard")
+	//{
+		sqlite3pp::command cmd(db, "UPDATE inputs set input_type = :input_type, keyboard_key_id = :key_id where id = :id");
+		cmd.bind(":input_type", item.inputType.c_str());
+		cmd.bind(":key_id", item.key);
+		cmd.bind(":id", item.inputID);
+		cmd.execute();
+	//}
 
 }
 

@@ -100,11 +100,16 @@ public:
 
 	struct inputItem
 	{
+		int inputID;
 		std::string inputName;
 
 		std::string inputType;  // joystick, keyboard, mouse
 		sf::Keyboard::Key key;
-		int buttonNumber;
+		
+		int joystickButtonNumber;
+		sf::Joystick::Axis joystickAxis;
+		int joystickAxisDirection;
+		
 		bool press;
 		bool hold;
 		bool repeat;
@@ -132,5 +137,6 @@ public:
 	void dbHandle::updateGamePlaytime(std::string platform_id, std::string file_name, double minsPlayed);
 	//std::string dbHandle::getHTMLdata(std::string URL);
 	std::vector<dbHandle::findGameResultItem> dbHandle::findGame_onGameDb( gameListItem );
+	void dbHandle::updateInputItem(inputItem &item);
 };
 

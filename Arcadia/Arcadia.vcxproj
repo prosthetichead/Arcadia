@@ -83,8 +83,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ControlsScreen.cpp" />
     <ClCompile Include="FilterScreen.cpp" />
-    <ClCompile Include="dbHandle.cpp" />
+    <ClCompile Include="DBHandle.cpp" />
     <ClCompile Include="GameInfo.cpp" />
     <ClCompile Include="gameList.cpp" />
     <ClCompile Include="assetHandle.cpp" />
@@ -100,6 +101,7 @@
     <ClCompile Include="tinyxml2.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ControlsScreen.h" />
     <ClInclude Include="FilterScreen.h" />
     <ClInclude Include="DBHandle.h" />
     <ClInclude Include="GameInfo.h" />

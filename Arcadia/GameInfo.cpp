@@ -14,6 +14,9 @@ GameInfo::GameInfo(dbHandle* db_ref, assetHandle* ah_ref, SkinHandle* sh_ref)
 	descriptionPauseCount = 0;
 	gameChangedCounter = 0;
 	hasMovieFile = false;
+
+	fanArt.create(1,1);
+	clearLogo.create(1,1);
 }
 
 
@@ -24,24 +27,17 @@ GameInfo::~GameInfo(void)
 
 void GameInfo::init()
 {
-	rectangleFanArt.setSize(sh->resolution);
-	rectangleFanArt.setPosition(0, 0);
-	rectangleFanArt.setFillColor(sh->game_info_settings.fanArt_colour);
-	rectangleFanArt.setOutlineThickness(0);
+	rectangleFanArt.setSize(sh->game_info_settings.fanArt.size);
+	rectangleFanArt.setPosition(sh->game_info_settings.fanArt.pos);
+	rectangleFanArt.setFillColor(sh->game_info_settings.fanArt.colour);
+	rectangleFanArt.setOutlineThickness(sh->game_info_settings.fanArt.outline_width);
+	rectangleFanArt.setOutlineColor(sh->game_info_settings.fanArt.outline_colour);
 
-
-	scrollingTextTexture.create(sh->game_info_settings.description_size.x, sh->game_info_settings.description_size.y);
+	scrollingTextTexture.create(sh->game_info_settings.description.size.x, sh->game_info_settings.description.size.y);
 
 	descriptionText.setFont(ah->getFontAsset(sh->game_info_settings.description_font.fontName));
 	descriptionText.setCharacterSize(sh->game_info_settings.description_font.size);
 	descriptionText.setColor(sh->game_info_settings.description_font.color);
-	
-
-	yearText.setFont(ah->getFontAsset(sh->game_info_settings.year_font.fontName));
-	yearText.setCharacterSize(sh->game_info_settings.year_font.size);
-
-	playTimeText.setFont(ah->getFontAsset(sh->game_info_settings.playTime_font.fontName));
-	playTimeText.setCharacterSize(sh->game_info_settings.playTime_font.size);
 	
 	movie = new sfe::Movie;
 }
@@ -95,7 +91,7 @@ void GameInfo::newGameInfo(dbHandle::gameListItem gameItem)
 		hasMovieFile = true;
 		movie->openFromFile(currentGameInfo.videoPath);
 		movie->resizeToFrame(sh->game_info_settings.video.pos.x , sh->game_info_settings.video.pos.y, sh->game_info_settings.video.size.x, sh->game_info_settings.video.size.y,true);
-		movie->setOrigin(sh->game_info_settings.video.get_origin(sf::Vector2f(movie->getSize().x,movie->getSize().y)));
+		movie->setOrigin(sh->game_info_settings.video.getOrigin(movie->getSize().x,movie->getSize().y));
 
 		movie->play();
 	}
@@ -106,7 +102,10 @@ void GameInfo::newGameInfo(dbHandle::gameListItem gameItem)
 
 	// Clear Logo Texture
 	if (currentGameInfo.clearLogoPath != "NULL")
+	{
 		clearLogo.loadFromFile(currentGameInfo.clearLogoPath);
+		clearLogo.setSmooth(true);
+	}
 	else 
 		clearLogo.create(1,1); // Create and empty Texture	
 
@@ -124,7 +123,7 @@ void GameInfo::newGameInfo(dbHandle::gameListItem gameItem)
 		std::string new_str;
 		std::vector<std::string> tokens;
 		boost::split(tokens, currentGameInfo.description, boost::is_any_of(" "));
-		int lineLengthPixels = sh->game_info_settings.description_size.x;  // / descriptionFontSize;
+		int lineLengthPixels = sh->game_info_settings.description.size.x;  // / descriptionFontSize;
 		int currentLineLength = 0;
 
 		sf::Text tempText = descriptionText;
@@ -149,9 +148,9 @@ void GameInfo::newGameInfo(dbHandle::gameListItem gameItem)
 		//descriptionView.reset(sf::FloatRect(0, 0, rectangleFanArt.getSize().x, rectangleFanArt.getSize().y)); //Reset the description view (uses retangle fan art to get full screen size)
 		descriptionOffset = 0;
 		resetOffset = false;
-		if (descriptionText.getLocalBounds().height > sh->game_info_settings.description_size.y)
+		if (descriptionText.getLocalBounds().height > sh->game_info_settings.description.size.y)
 		{
-			descriptionRequiredOffset = descriptionText.getLocalBounds().height - sh->game_info_settings.description_size.y;
+			descriptionRequiredOffset = descriptionText.getLocalBounds().height - sh->game_info_settings.description.size.y;
 			descriptionScroll = true;
 			descriptionPause  = true;
 		}
@@ -167,57 +166,25 @@ void GameInfo::newGameInfo(dbHandle::gameListItem gameItem)
 
 void GameInfo::draw(sf::RenderWindow& window)
 {
+	sf::Vector2i newSize;
 
+	window.draw(sh->game_info_settings.fanArt.getSprite(fanArt));
 
-	sf::Sprite spriteFanArt;
-	spriteFanArt.setTexture(fanArt);
-	spriteFanArt.setOrigin(spriteFanArt.getLocalBounds().width/2, spriteFanArt.getLocalBounds().height/2);
-	spriteFanArt.setPosition(rectangleFanArt.getSize().x/2, rectangleFanArt.getSize().y/2);
-	sf::Vector2i newSize = ah->resizePreserveRatio(spriteFanArt.getLocalBounds().width, spriteFanArt.getLocalBounds().height, rectangleFanArt.getSize().x, rectangleFanArt.getSize().y, false);
-	spriteFanArt.setScale(newSize.x/spriteFanArt.getLocalBounds().width, newSize.y/spriteFanArt.getLocalBounds().height);
-
-	window.draw(spriteFanArt);
-	window.draw(rectangleFanArt);
-	//window.draw(gameIconsBorderTop);
-	//window.draw(descriptionBorder);
+	window.draw(sh->game_info_settings.clearLogo.getSprite( clearLogo ));
 	
-	 // Set back to original view
-
-	sf::Sprite spriteClearLogo;
-	spriteClearLogo.setTexture(clearLogo);
-	//spriteClearLogo.setOrigin(spriteClearLogo.getGlobalBounds().width/2, 0); // Set origin to top center
-	spriteClearLogo.setPosition(sh->game_info_settings.clearLogo_position); 
-	window.draw(spriteClearLogo);
-	
-	sf::Sprite spriteDeveloper;
-	spriteDeveloper.setTexture(ah->getTextureAsset(currentGameInfo.developerIconID));
-	spriteDeveloper.setOrigin(sh->game_info_settings.companyLogos.get_origin(sf::Vector2f(spriteDeveloper.getLocalBounds().width, spriteDeveloper.getLocalBounds().height)));
-	spriteDeveloper.setPosition(sh->game_info_settings.companyLogos.pos);
 	if (currentGameInfo.developerIconID != "ERROR") // icon id of error means it does not have an icon so we should show the text insted.
-		window.draw(spriteDeveloper);
+		window.draw(sh->game_info_settings.companyLogos.getSprite( ah->getTextureAsset(currentGameInfo.developerIconID) ));
 
-	sf::Sprite spriteGenre;
-	spriteGenre.setTexture(ah->getTextureAsset(currentGameInfo.genreIconID));
-	spriteGenre.setPosition(sh->game_info_settings.genreIcon.pos);
-	spriteGenre.setOrigin(sh->game_info_settings.genreIcon.get_origin(sf::Vector2f(spriteGenre.getLocalBounds().width, spriteGenre.getLocalBounds().height)));
-	newSize = ah->resizePreserveRatio(spriteGenre.getLocalBounds().width, spriteGenre.getLocalBounds().height, sh->game_info_settings.genreIcon.size.x, sh->game_info_settings.genreIcon.size.y, true);
-	spriteGenre.setScale(newSize.x/spriteGenre.getLocalBounds().width, newSize.y/spriteGenre.getLocalBounds().height);
 	if (currentGameInfo.genreIconID != "ERROR")
-		window.draw(spriteGenre);
+		window.draw(sh->game_info_settings.genreIcon.getSprite( ah->getTextureAsset(currentGameInfo.genreIconID) ) );
 
-	sf::Sprite spritePlatform;
-	spritePlatform.setTexture(ah->getTextureAsset(currentGameInfo.platformIconID));
-	newSize = ah->resizePreserveRatio(spritePlatform.getLocalBounds().width, spritePlatform.getLocalBounds().height, sh->game_info_settings.platformIcon_size.x, sh->game_info_settings.platformIcon_size.y, true);
-	spritePlatform.setScale(newSize.x/spritePlatform.getLocalBounds().width, newSize.y/spritePlatform.getLocalBounds().height);
-	spritePlatform.setOrigin(0, spritePlatform.getLocalBounds().height);
-	spritePlatform.setPosition(sh->game_info_settings.platformIcon_position);
-	window.draw(spritePlatform);
+	window.draw(sh->game_info_settings.platformIcon.getSprite( ah->getTextureAsset(currentGameInfo.platformIconID) ));
 
 	sf::Sprite spritePlayer;
 	spritePlayer.setTexture(ah->getTextureAsset("PLAYERS"));
 	for(int i=0; i < currentGameInfo.players; i++)
 	{
-		spritePlayer.setPosition(sh->game_info_settings.players_position.x * i, sh->game_info_settings.players_position.y);
+		spritePlayer.setPosition(sh->game_info_settings.players.pos.x * i, sh->game_info_settings.players.pos.y);
 		window.draw(spritePlayer);
 	}
 
@@ -225,29 +192,14 @@ void GameInfo::draw(sf::RenderWindow& window)
 	//ah->draw5_Stars(currentGameInfo.user_stars, sf::Color::Color(246,235,20,255), gameIconsBorderBottom.getPosition().x, gameIconsBorderBottom.getPosition().y+10, window);
 	//ah->draw5_Stars(currentGameInfo.online_stars, sf::Color::Color(105,205,255,255), gameIconsBorderBottom.getPosition().x, gameIconsBorderBottom.getPosition().y+30, window);
 	
-	//playtime infomation.
-	playTimeText.setColor(sf::Color::Color(0,102,153,255));
-	playTimeText.setString("You've Played");	
-	playTimeText.setPosition(sh->game_info_settings.playTimeTitle_position);
-	window.draw(playTimeText);
-	playTimeText.setColor(sf::Color::White);
-	playTimeText.setString(currentGameInfo.playTime);
-	playTimeText.setPosition(sh->game_info_settings.playTime_position);
-	window.draw(playTimeText);
-
-	playTimeText.setColor(sf::Color::Color(0,102,153,255));
-	playTimeText.setString("Last Played");
-	playTimeText.setPosition(sh->game_info_settings.playTimeTitle_position);
-	window.draw(playTimeText);
-	playTimeText.setColor(sf::Color::White);
-	playTimeText.setString(currentGameInfo.lastPlayed);
-	playTimeText.setPosition(sh->game_info_settings.playTimeTitle_position);
-	window.draw(playTimeText);
+	//playtime infomation.	
+	ah->drawText("You've Played", sh->game_info_settings.playTimeTitle_font, window);
+	ah->drawText(currentGameInfo.playTime, sh->game_info_settings.playTime_font, window);
+	ah->drawText("Last Played", sh->game_info_settings.playTimeTitle_font, window);
+	ah->drawText(currentGameInfo.lastPlayed, sh->game_info_settings.playTime_font, window);
 
 	//draw year information
-	yearText.setString(currentGameInfo.release_year);
-	yearText.setPosition(sh->game_info_settings.year_position);
-	window.draw(yearText);
+	ah->drawText(currentGameInfo.release_year, sh->game_info_settings.year_font, window);
 
 	//window.draw(movieBorder);
 
@@ -255,8 +207,8 @@ void GameInfo::draw(sf::RenderWindow& window)
 	{
 		sf::Sprite spriteScreenShot;
 		spriteScreenShot.setTexture(screenShot);
-		spriteScreenShot.setPosition(sh->game_info_settings.screenshot_position);	
-		sf::Vector2i new_size = ah->resizePreserveRatio(spriteScreenShot.getLocalBounds().width, spriteScreenShot.getLocalBounds().height, 640, 480, true);
+		spriteScreenShot.setPosition(sh->game_info_settings.screenshot.pos);	
+		sf::Vector2i new_size = ah->resizePreserveRatio(spriteScreenShot.getLocalBounds().width, spriteScreenShot.getLocalBounds().height, sh->game_info_settings.screenshot.size.x, sh->game_info_settings.screenshot.size.y, true);
 		spriteScreenShot.setScale(new_size.x/spriteScreenShot.getLocalBounds().width, new_size.y/spriteScreenShot.getLocalBounds().height);
 		window.draw(spriteScreenShot);
 	}
@@ -300,7 +252,7 @@ void GameInfo::draw(sf::RenderWindow& window)
 	scrollingTextTexture.draw(descriptionText);
 	scrollingTextTexture.display();
 	sf::Sprite scrollingTextSprite(scrollingTextTexture.getTexture());
-	scrollingTextSprite.setPosition(sh->game_info_settings.description_position);
+	scrollingTextSprite.setPosition(sh->game_info_settings.description.pos);
 	window.draw(scrollingTextSprite);
 }
  

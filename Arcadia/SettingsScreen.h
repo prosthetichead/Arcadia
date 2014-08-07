@@ -3,14 +3,16 @@
 #include "MenuNavigation.h"
 #include "inputHandle.h"
 #include "assetHandle.h"
+#include "ControlsScreen.h"
 #include <SFML/Graphics.hpp>
 
 class SettingsScreen
 {
 private:
 
-	dbHandle &db;
-	assetHandle &ah;
+	dbHandle *db;
+	assetHandle *ah;
+	inputHandle *ih;
 	MenuNavigation menuNav;
 
 	sf::RectangleShape menuRect;
@@ -23,16 +25,19 @@ private:
 	sf::Font menuFont;
 	
 	bool editGameVisible;
+	bool controlsVisible;
 	std::vector<std::string> menuIDs;
+
+	ControlsScreen controlScreen;
 
 
 public:
-	SettingsScreen(dbHandle &db_ref, assetHandle &ah_ref);
+	SettingsScreen(dbHandle *db_ref, assetHandle *ah_ref, inputHandle *ih_ref);
 	~SettingsScreen(void);
 
 	void SettingsScreen::init(float posX, float posY);
 	void SettingsScreen::setCurrentGameListItem(dbHandle::gameListItem gameListItem);
-	bool SettingsScreen::update(inputHandle& ih);
+	bool SettingsScreen::update();
 	void SettingsScreen::draw(sf::RenderWindow& window);
 };
 

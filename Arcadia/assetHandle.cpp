@@ -126,3 +126,30 @@ void assetHandle::draw5_Stars(double numStars, sf::Color color, int x, int y, sf
 		}
 	}
 }
+
+sf::Text assetHandle::getText(std::string text, SkinHandle::Font_Item& fontItem)
+{
+	sf::Text returnText;
+	returnText.setCharacterSize(fontItem.size);
+	returnText.setColor(fontItem.color);
+	returnText.setPosition(fontItem.pos);
+	returnText.setFont(getFontAsset(fontItem.fontName));
+	returnText.setString(text);
+
+	return returnText;
+}
+
+void assetHandle::drawText(std::string text, SkinHandle::Font_Item& fontItem, sf::RenderWindow& window)
+{
+	sf::Text main_text = getText(text, fontItem);
+	
+	if (fontItem.shadow)
+	{
+		sf::Text shadow_text = main_text;
+		shadow_text.setPosition(fontItem.pos.x + fontItem.shadowOffset, fontItem.pos.y + fontItem.shadowOffset);
+		shadow_text.setColor(fontItem.shadowColor);
+		window.draw(shadow_text);
+	}
+
+	window.draw(main_text);
+}

@@ -36,7 +36,7 @@ GameList gameList(db, ah);
 GameInfo gameInfo(&db, &ah, &sh);
 FilterList platformFilters(db, ah);
 FilterScreen filterScreen(db, ah);
-SettingsScreen settingsScreen(db, ah);
+SettingsScreen settingsScreen(&db, &ah, &ih);
 launcher launch(&db);
 
 std::string path;
@@ -94,6 +94,8 @@ int main()
 				pause = false;
 				gameInfo.pauseMovie();
 			}
+
+			ih.checkEventForInput(event);
 		}
 		if (!pause)
 		{
@@ -116,7 +118,7 @@ void initialize()
 	
 	db.setFilePath(path, "database.db");
 	ah.init(db);
-	ih.init(db);
+	ih.init(&db, &window);
 	sh.init(db);
 
 	sf::VideoMode desktopMode = sf::VideoMode(sh.resolution.x,sh.resolution.y);
@@ -139,6 +141,7 @@ void initialize()
 
 	window.create(desktopMode, "Arcadia", sf::Style::Fullscreen);
 	window.setVerticalSyncEnabled(true);
+	window.setJoystickThreshold(5);
 }
 
 void update()
@@ -154,7 +157,7 @@ void update()
 	}
 	else if (displaySettingsScreen)
 	{
-		if(settingsScreen.update(ih))
+		if(settingsScreen.update())
 		{
 			displaySettingsScreen = false;
 		}
