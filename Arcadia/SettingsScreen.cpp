@@ -74,7 +74,10 @@ bool SettingsScreen::update()
 				menuNav.selected = false;
 		}
 		else if (menuNav.getCurrentID() == "close")
+		{
+			menuNav.selected = false;
 			return true;  // we are finished return true
+		}
 	}
 	else
 	{

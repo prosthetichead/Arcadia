@@ -170,21 +170,23 @@ void GameInfo::draw(sf::RenderWindow& window)
 
 	window.draw(sh->game_info_settings.fanArt.getSprite(fanArt));
 
+	window.draw(sh->game_info_settings.gameInfoBorder.getRectangle());
+
 	window.draw(sh->game_info_settings.clearLogo.getSprite( clearLogo ));
 	
 	if (currentGameInfo.developerIconID != "ERROR") // icon id of error means it does not have an icon so we should show the text insted.
-		window.draw(sh->game_info_settings.companyLogos.getSprite( ah->getTextureAsset(currentGameInfo.developerIconID) ));
+		window.draw(sh->game_info_settings.companyLogos.getSprite( ah->getCompanyAsset(currentGameInfo.developerIconID) ));
 
 	if (currentGameInfo.genreIconID != "ERROR")
-		window.draw(sh->game_info_settings.genreIcon.getSprite( ah->getTextureAsset(currentGameInfo.genreIconID) ) );
+		window.draw(sh->game_info_settings.genreIcon.getSprite( ah->getIconAsset(currentGameInfo.genreIconID) ) );
 
-	window.draw(sh->game_info_settings.platformIcon.getSprite( ah->getTextureAsset(currentGameInfo.platformIconID) ));
+	window.draw(sh->game_info_settings.platformIcon.getSprite( ah->getIconAsset(currentGameInfo.platformIconID) ));
 
 	sf::Sprite spritePlayer;
 	spritePlayer.setTexture(ah->getTextureAsset("PLAYERS"));
 	for(int i=0; i < currentGameInfo.players; i++)
 	{
-		spritePlayer.setPosition(sh->game_info_settings.players.pos.x * i, sh->game_info_settings.players.pos.y);
+		spritePlayer.setPosition(sh->game_info_settings.players.pos.x + (spritePlayer.getLocalBounds().width * i), sh->game_info_settings.players.pos.y);
 		window.draw(spritePlayer);
 	}
 
@@ -195,13 +197,11 @@ void GameInfo::draw(sf::RenderWindow& window)
 	//playtime infomation.	
 	ah->drawText("You've Played", sh->game_info_settings.playTimeTitle_font, window);
 	ah->drawText(currentGameInfo.playTime, sh->game_info_settings.playTime_font, window);
-	ah->drawText("Last Played", sh->game_info_settings.playTimeTitle_font, window);
-	ah->drawText(currentGameInfo.lastPlayed, sh->game_info_settings.playTime_font, window);
+	ah->drawText("Last Played", sh->game_info_settings.lastPlayedTitle_font, window);
+	ah->drawText(currentGameInfo.lastPlayed, sh->game_info_settings.lastPlayed_font, window);
 
 	//draw year information
 	ah->drawText(currentGameInfo.release_year, sh->game_info_settings.year_font, window);
-
-	//window.draw(movieBorder);
 
 	if (currentGameInfo.screenPath != "NULL")
 	{

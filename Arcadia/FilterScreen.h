@@ -6,6 +6,7 @@
 #include "inputHandle.h"
 #include "FilterList.h"
 #include "OnScreenKeyboard.h"
+#include "SkinHandle.h"
 
 
 class FilterScreen
@@ -31,10 +32,8 @@ private:
 	int year;
 	double userStars;
 	double onlineStars;
-	bool userSelected;
+	bool userStarsSelected;
 
-	FilterList developerFilter;
-	FilterList publisherFilter;
 	FilterList regionFilter;
 	FilterList genreFilter;
 
@@ -44,6 +43,7 @@ private:
 	sf::Font textFont;
 	sf::Text searchStringText;
 	sf::Text largeText;
+	SkinHandle::Font_Item fontItem;
 
 	std::string filterString;
 	std::string searchString;
@@ -55,12 +55,19 @@ private:
 	std::string filterDescription;
 
 public:
+	
+	enum update_retern{
+		open,
+		cancel,
+		apply
+	};
+
 	FilterScreen(dbHandle &db_ref, assetHandle &ah_ref);
 	~FilterScreen(void);
 
 	std::string FilterScreen::getFilterString();
 	void FilterScreen::init(float posX, float posY, int width, float height);
-	bool FilterScreen::update(inputHandle& ih);
+	update_retern FilterScreen::update(inputHandle& ih);
 	void FilterScreen::draw(sf::RenderWindow& window);
 };
 

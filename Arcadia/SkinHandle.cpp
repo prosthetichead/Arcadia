@@ -62,8 +62,10 @@ SkinHandle::Font_Item SkinHandle::read_font_elem(tinyxml2::XMLElement* elem)
 SkinHandle::Rectangle_Item SkinHandle::read_rectangle_elem(tinyxml2::XMLElement* elem)
 {
 	SkinHandle::Rectangle_Item return_rect;
-	return_rect.pos = sf::Vector2f(atof(elem->Attribute("pos_x")), atof(elem->Attribute("pos_y")));	
-	return_rect.size = sf::Vector2f(atof(elem->Attribute("size_x")), atof(elem->Attribute("size_y")));
+	if (elem->Attribute("pos_x") != NULL && elem->Attribute("pos_y") != NULL)
+		return_rect.pos = sf::Vector2f(atof(elem->Attribute("pos_x")), atof(elem->Attribute("pos_y")));	
+	if (elem->Attribute("size_x") != NULL && elem->Attribute("size_y") != NULL)
+		return_rect.size = sf::Vector2f(atof(elem->Attribute("size_x")), atof(elem->Attribute("size_y")));
 	if(elem->Attribute("origin") != NULL)
 	{
 		return_rect.origin_code = elem->Attribute("origin");
@@ -166,6 +168,12 @@ void SkinHandle::loadLayout()
 				
 				if (gameElemName == "last_played")
 					game_info_settings.lastPlayed_font = read_font_elem(gameElem);
+
+				if (gameElemName == "game_info_border")
+					game_info_settings.gameInfoBorder = read_rectangle_elem(gameElem);
+
+				if (gameElemName == "players")
+					game_info_settings.players = read_rectangle_elem(gameElem);
 			}
 
 		}

@@ -23,6 +23,8 @@ private:
 	sf::Text menuText;
 	sf::Text menuShadowText;
 	sf::Font menuFont;
+
+	
 	
 	bool editGameVisible;
 	bool controlsVisible;

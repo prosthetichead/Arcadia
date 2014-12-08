@@ -122,14 +122,14 @@ void inputHandle::checkEventForInput(sf::Event event)
 {
 	if (event.type == sf::Event::KeyPressed)
 	{
-		std::cout << event.key.code << std::endl;
+		//std::cout << event.key.code << std::endl;
 		
 	}
 	if (event.type == sf::Event::JoystickButtonPressed)
-		std::cout << event.joystickButton.button << std::endl;
+		//std::cout << event.joystickButton.button << std::endl;
 	if (event.type == sf::Event::JoystickMoved)
 	{
-		std::cout << "axis " << event.joystickMove.axis << "- Pos " << event.joystickMove.position << std::endl;
+		//std::cout << "axis " << event.joystickMove.axis << "- Pos " << event.joystickMove.position << std::endl;
 	}
 }
 

@@ -71,7 +71,7 @@ void FilterList::draw(sf::RenderWindow& window)
 {
 	sf::Sprite selectedSprite;
 	sf::Vector2i newSize;
-	selectedSprite.setTexture(ah.getTextureAsset(listOfItems.at(selectedItemNum).filterIcon), true);
+	selectedSprite.setTexture(ah.getIconAsset(listOfItems.at(selectedItemNum).filterIcon), true);
 
 
 	float selectedPosX = rectangle.getPosition().x + rectangle.getSize().x/2;
@@ -131,8 +131,8 @@ void FilterList::draw(sf::RenderWindow& window)
 		sf::Sprite normalSpriteLeft;
 		sf::Sprite normalSpriteRight;
 		
-		normalSpriteLeft.setTexture(ah.getTextureAsset(itemLeft.filterIcon));
-		normalSpriteRight.setTexture(ah.getTextureAsset(itemRight.filterIcon));
+		normalSpriteLeft.setTexture(ah.getIconAsset(itemLeft.filterIcon));
+		normalSpriteRight.setTexture(ah.getIconAsset(itemRight.filterIcon));
 		
 		normalSpriteLeft.setOrigin(normalSpriteLeft.getLocalBounds().width/2, normalSpriteLeft.getLocalBounds().height/2);
 		normalSpriteRight.setOrigin(normalSpriteRight.getLocalBounds().width/2, normalSpriteRight.getLocalBounds().height/2);

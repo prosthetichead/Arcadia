@@ -5,8 +5,6 @@ FilterScreen::FilterScreen(dbHandle &db_ref, assetHandle &ah_ref):
 	db(db_ref),
 	ah(ah_ref),
 	osk(db_ref, ah_ref),
-	developerFilter(db_ref,ah_ref),
-	publisherFilter(db_ref,ah_ref),
 	regionFilter(db_ref,ah_ref),
 	genreFilter(db_ref,ah_ref)
 {
@@ -19,7 +17,7 @@ FilterScreen::FilterScreen(dbHandle &db_ref, assetHandle &ah_ref):
 	year = 2000;
 	userStars = -0.5;
 	onlineStars = -0.5;
-	userSelected = false;
+	userStarsSelected = false;
 
 	filterDescription = "";
 }
@@ -33,9 +31,7 @@ void FilterScreen::updateFilterString()
 {
 	filterDescription = "";
 
-	filterString = developerFilter.getFilterString() + publisherFilter.getFilterString() + regionFilter.getFilterString() + genreFilter.getFilterString();
-	if (developerFilter.getFilterString() != "")
-		filterDescription = "Developer: " + developerFilter.getSelectedTitle();
+	filterString = regionFilter.getFilterString() + genreFilter.getFilterString();
 
 	if (!searchString.empty())
 		filterString += " and games.name like '%" + searchString + "%' ";
@@ -70,7 +66,6 @@ void FilterScreen::updateFilterString()
 	
 
 	std::cout << filterString << std::endl;
-	std::cout << filterDescription << std::endl;
 }
 std::string FilterScreen::getFilterString()
 {
@@ -83,37 +78,28 @@ void FilterScreen::init(float posX, float posY, int width, float height)
 	menuRect.setPosition(posX, posY);
 
 	//menuNav
-	menuNav.addItem("developer", "" , "publisher", "", "players", "filterList", "none", menuRect.getPosition().x + 103, menuRect.getPosition().y + 90); // DEVELOPER
-	menuNav.addItem("publisher", "developer" , "region", "", "co_op", "filterList", "none", menuRect.getPosition().x + 263, menuRect.getPosition().y + 90); // PUBLISHER
-	menuNav.addItem("region", "publisher" , "genre", "", "rating", "filterList", "none", menuRect.getPosition().x + 423, menuRect.getPosition().y + 90);
-	menuNav.addItem("genre", "region" , "", "", "favourite", "filterList", "none", menuRect.getPosition().x + 583, menuRect.getPosition().y + 90);
+	menuNav.addItem("titlelike", "" , "", "", "developer", "textInput", "none", menuRect.getPosition().x + 16, menuRect.getPosition().y + 16);
+	menuNav.addItem("developer", "", "", "titlelike", "region", "textInput", "none", menuRect.getPosition().x + 16, menuRect.getPosition().y + 48);
+	menuNav.addItem("region","" , "", "developer", "genre", "filterList", "none", menuRect.getPosition().x + 16, menuRect.getPosition().y + 80);
+	menuNav.addItem("genre", "" , "", "region", "players", "filterList", "none", menuRect.getPosition().x + 16, menuRect.getPosition().y + 112);
+	menuNav.addItem("players", "" , "", "genre", "co_op", "number", "none", menuRect.getPosition().x + 16, menuRect.getPosition().y + 144);
+	menuNav.addItem("co_op", "" , "", "players", "rating", "bool", "none", menuRect.getPosition().x + 16, menuRect.getPosition().y + 176);
+	menuNav.addItem("rating", "" , "", "co_op", "favourite", "filterList", "none", menuRect.getPosition().x + 16, menuRect.getPosition().y + 208);
+	menuNav.addItem("favourite", "" , "", "rating", "stars", "bool", "none", menuRect.getPosition().x + 16, menuRect.getPosition().y + 240);
+	menuNav.addItem("stars", "" , "", "favourite", "year", "number", "none", menuRect.getPosition().x + 16, menuRect.getPosition().y + 272);
+	menuNav.addItem("year", "" , "","stars", "cancel", "year", "none", menuRect.getPosition().x + 16, menuRect.getPosition().y + 304);
+	menuNav.addItem("cancel", "" , "", "year", "apply", "button", "none", menuRect.getPosition().x + 16, menuRect.getPosition().y + 336);
+	menuNav.addItem("apply", "" , "", "cancel", "", "button", "none", menuRect.getPosition().x + 16, menuRect.getPosition().y + 368);
 
-	menuNav.addItem("players", "" , "co_op", "developer", "stars", "number", "none", menuRect.getPosition().x + 103, menuRect.getPosition().y + 250);
-	menuNav.addItem("co_op", "players" , "rating", "publisher", "year", "bool", "none", menuRect.getPosition().x + 263, menuRect.getPosition().y + 250);
-	menuNav.addItem("rating", "co_op" , "favourite", "region", "search", "filterList", "none", menuRect.getPosition().x + 423, menuRect.getPosition().y + 250);
-	menuNav.addItem("favourite", "rating" , "", "genre", "search", "bool", "none", menuRect.getPosition().x + 583, menuRect.getPosition().y + 250);
-
-	menuNav.addItem("stars", "" , "year", "players", "cancel", "number", "none", menuRect.getPosition().x + 103, menuRect.getPosition().y + 413);
-	menuNav.addItem("year", "stars" , "search", "co_op", "cancel", "year", "none", menuRect.getPosition().x + 263, menuRect.getPosition().y + 413);
-	menuNav.addItem("search", "year" , "", "rating", "cancel", "search", "none", menuRect.getPosition().x + 423, menuRect.getPosition().y + 413);
-
-	menuNav.addItem("cancel", "year" , "apply", "search", "", "button", "none", menuRect.getPosition().x + 423, menuRect.getPosition().y + 509);
-	menuNav.addItem("apply", "cancel" , "", "search", "", "button", "none", menuRect.getPosition().x + 583, menuRect.getPosition().y + 509);
-	
-	screenTexture_p = new sf::Texture();
-	screenTexture_p->loadFromFile(db.exe_path + "\\assets\\system\\filterMenu.png");
+	//screenTexture_p = new sf::Texture();
+	//screenTexture_p->loadFromFile(db.exe_path + "\\assets\\system\\filterMenu.png");
 	//pointerTexture.loadFromFile();
-	menuRect.setTexture(screenTexture_p);
+	//menuRect.setTexture(screenTexture_p);
+	menuRect.setFillColor(sf::Color::Color(46,76,106,255));
 
 	osk.init(300, 500);
 
-	std::vector<dbHandle::filterListItem> listItems = db.getCustomFilterList("developer", "select distinct companies.id, companies.name, companies.icon_id from companies, games where games.developer_id = companies.id and games.active = 1", "games.developer_id");
-	developerFilter.init(menuNav.getPosX("developer")+55, menuNav.getPosY("developer")+60,0, listItems, "developer");
-	developerFilter.setSelectedSize(85);
-
-	listItems = db.getCustomFilterList("publisher", "select distinct companies.id, companies.name, companies.icon_id from companies, games where games.publisher_id = companies.id and games.active = 1", "games.publisher_id");
-	publisherFilter.init(menuNav.getPosX("publisher")+55, menuNav.getPosY("publisher")+60, 0, listItems, "publisher");
-	publisherFilter.setSelectedSize(85);
+	std::vector<dbHandle::filterListItem> listItems;
 
 	listItems = db.getCustomFilterList("region", "select distinct regions.id, regions.name, regions.icon_id from regions, games where games.region_id = regions.id and games.active = 1", "games.region_id");
 	regionFilter.init(menuNav.getPosX("region")+55, menuNav.getPosY("region")+60, 0, listItems, "region");
@@ -131,10 +117,15 @@ void FilterScreen::init(float posX, float posY, int width, float height)
 	searchStringText.setCharacterSize(16);
 	searchStringText.setString("nothing");
 
+	fontItem.color = sf::Color::White;
+	fontItem.fontName = "ARCADE_PIX.TTF";
+	fontItem.size = 18;
+
+
 	maxPlayers = db.getMaxPlayers();
 }
 
-bool FilterScreen::update(inputHandle& ih)
+FilterScreen::update_retern FilterScreen::update(inputHandle& ih)
 {
 	if(showKeyboard)
 	{
@@ -160,17 +151,9 @@ bool FilterScreen::update(inputHandle& ih)
 
 			if (menuNav.getCurrentID() == "developer") //Developer Menu Item is selected do our thing with the developer filter
 			{
-				 if (ih.inputPress(inputHandle::inputs::left))
-					 developerFilter.update(-1);
-				 else if (ih.inputPress(inputHandle::inputs::right))
-					 developerFilter.update(1);
 			}		
 			else if (menuNav.getCurrentID() == "publisher")
 			{
-				 if (ih.inputPress(inputHandle::inputs::left))
-					 publisherFilter.update(-1);
-				 else if (ih.inputPress(inputHandle::inputs::right))
-					 publisherFilter.update(1);
 			}
 			else if (menuNav.getCurrentID() == "region") 
 			{
@@ -244,7 +227,7 @@ bool FilterScreen::update(inputHandle& ih)
 			}
 			else if (menuNav.getCurrentID() == "stars")
 			{
-				if (userSelected)
+				if (userStarsSelected)
 				{				
 					if (ih.inputPress(inputHandle::inputs::left))
 						userStars -= 0.5;
@@ -267,25 +250,26 @@ bool FilterScreen::update(inputHandle& ih)
 						onlineStars = 5;
 				}
 				if (ih.inputPress(inputHandle::inputs::up))
-					userSelected = true;
+					userStarsSelected = true;
 				else if (ih.inputPress(inputHandle::inputs::down))
-					userSelected = false;
+					userStarsSelected = false;
 			}
 
 			else if (menuNav.getCurrentID() == "search")
 			{
 				showKeyboard = true;
 			}
+
 			if (menuNav.getCurrentID() == "apply")
 			{
 				menuNav.selected = false;
 				updateFilterString();
-				return true;  // Close the menu now
+				return update_retern::apply;  // Close the menu now
 			}
 			if (menuNav.getCurrentID() == "cancel")
 			{
 				menuNav.selected = false;
-				return true; // Close the menu now
+				return update_retern::cancel; // Close the menu now
 			}
 		}
 		else // Selected  = False
@@ -305,7 +289,7 @@ bool FilterScreen::update(inputHandle& ih)
 		}
 	}
 
-	return false; // Dont close the menu this update!
+	return update_retern::open; // Dont close the menu this update!
 
 }
 
@@ -313,69 +297,76 @@ void FilterScreen::draw(sf::RenderWindow& window)
 {
 	
 	window.draw(menuRect);
-
+	sf::Sprite pointerSprite;
+	pointerSprite.setTexture(ah.getTextureAsset("POINTER"));
+	pointerSprite.setOrigin(32,1);
+	pointerSprite.setPosition(menuNav.getCurrentPosX(), menuNav.getCurrentPosY());
 	if(!menuNav.selected) // Nothing is selected yet, show the pointer
-	{
-		sf::Sprite pointerSprite;
-		pointerSprite.setTexture(ah.getTextureAsset("POINTER"));
-		pointerSprite.setOrigin(32,12);
-		pointerSprite.setPosition(menuNav.getCurrentPosX(), menuNav.getCurrentPosY());
+		window.draw(pointerSprite);
+
+// Title Like
+	fontItem.pos = sf::Vector2f(menuNav.getPosX("titlelike"), menuNav.getPosY("titlelike"));
+	ah.drawText("Title Like:",  fontItem, window);
+
+// Developer
+	fontItem.pos = sf::Vector2f(menuNav.getPosX("developer"), menuNav.getPosY("developer"));
+	ah.drawText("Developer / Publisher:",  fontItem, window);
+
+// Region	
+	fontItem.pos = sf::Vector2f(menuNav.getPosX("region"), menuNav.getPosY("region"));
+	ah.drawText("Region:",  fontItem, window);
+
+// genre
+	fontItem.pos = sf::Vector2f(menuNav.getPosX("genre"), menuNav.getPosY("genre"));
+	ah.drawText("Genre:",  fontItem, window);
+
+// Players Filter
+	fontItem.pos = sf::Vector2f(menuNav.getPosX("players"), menuNav.getPosY("players"));
+	ah.drawText("Number of Players:",  fontItem, window);
+	if (players == 0)
+		largeText.setString("All Players");
+	else if (players == 1)
+		largeText.setString(std::to_string(players) + " Player");
+	else
+		largeText.setString(std::to_string(players) + " Players");
+	largeText.setPosition(menuNav.getPosX("players") + 250,menuNav.getPosY("players"));	
+	window.draw(largeText);
+
+// Co-Op Filter
+	fontItem.pos = sf::Vector2f(menuNav.getPosX("co_op"), menuNav.getPosY("co_op"));
+	ah.drawText("Co-Op:", fontItem, window);
+	if (co_op == -1)
+		largeText.setString("No Filter");		
+	else if (co_op == 1)
+		largeText.setString("Co-Op");
+	else
+		largeText.setString("Not Co-Op");
+	largeText.setPosition(menuNav.getPosX("co_op") + 100,menuNav.getPosY("co_op"));
+	window.draw(largeText);
+
+// Rating
+	fontItem.pos = sf::Vector2f(menuNav.getPosX("rating"), menuNav.getPosY("rating"));
+	ah.drawText("Rating:", fontItem, window);
+
+// Favourite Filter
+	fontItem.pos = sf::Vector2f(menuNav.getPosX("favourite"), menuNav.getPosY("favourite"));
+	ah.drawText("Favourites:",  fontItem, window);
+	if (favourite == -1)
+		largeText.setString("No Filter");
+	else if (favourite == 1)
+		largeText.setString("Only in Favourites");
+	else
+		largeText.setString("Not in Favourites");
+	largeText.setPosition(menuNav.getPosX("favourite") +150 ,menuNav.getPosY("favourite"));
+	window.draw(largeText);
+	if (menuNav.selected && menuNav.getCurrentID()=="favourite"){
+		pointerSprite.setPosition(menuNav.getPosX("favourite") +150, menuNav.getPosY("favourite"));
 		window.draw(pointerSprite);
 	}
 
-// Players Filter
-	for(int i = 0; i < players ; i++)
-	{
-		sf::Vector2i playerPos(menuNav.getPosX("players"),menuNav.getPosY("players"));
-		sf::Sprite playerSprite;
-		playerSprite.setTexture(ah.getTextureAsset("PLAYERS"));
-		playerSprite.setPosition(playerPos.x + 25 + (playerSprite.getLocalBounds().width * i),playerPos.y + 40);
-		window.draw(playerSprite);
-	}
-	if (players == 0)
-	{
-		largeText.setString("  All\nPlayers");
-		largeText.setPosition(menuNav.getPosX("players") + 10,menuNav.getPosY("players") + 40);
-		window.draw(largeText);
-	}
-
-// Co-Op Filter
-	if (co_op == -1)
-	{
-		largeText.setString("No Filter");
-		largeText.setPosition(menuNav.getPosX("co_op"),menuNav.getPosY("co_op") + 40);
-	}
-	else if (co_op == 1)
-	{
-		largeText.setString("Co-Op");
-		largeText.setPosition(menuNav.getPosX("co_op") + 10,menuNav.getPosY("co_op") + 40);	
-	}
-	else
-	{
-		largeText.setString("Not Co-Op");
-		largeText.setPosition(menuNav.getPosX("co_op"),menuNav.getPosY("co_op") + 40);
-	}
-	window.draw(largeText);
-
-// Favourite Filter
-	if (favourite == -1)
-	{
-		largeText.setString("No Filter");
-		largeText.setPosition(menuNav.getPosX("favourite"),menuNav.getPosY("favourite") + 40);
-	}
-	else if (favourite == 1)
-	{
-		largeText.setString("Only\nFavourites");
-		largeText.setPosition(menuNav.getPosX("favourite") + 10,menuNav.getPosY("favourite") + 40);	
-	}
-	else
-	{
-		largeText.setString("Not\nFavourites");
-		largeText.setPosition(menuNav.getPosX("favourite"),menuNav.getPosY("favourite") + 40);
-	}
-	window.draw(largeText);
-
 // Year Filter
+	fontItem.pos = sf::Vector2f(menuNav.getPosX("year"), menuNav.getPosY("year"));
+	ah.drawText("Year",  fontItem, window);
 	if (year_operation == -1)
 	{
 		largeText.setString("No Filter");
@@ -410,28 +401,35 @@ void FilterScreen::draw(sf::RenderWindow& window)
 	}
 
 // Draw Stars
+	fontItem.pos = sf::Vector2f(menuNav.getPosX("stars"), menuNav.getPosY("stars"));
+	ah.drawText("Stars:",  fontItem, window);
 	if (userStars > -0.5)
-		ah.draw5_Stars(userStars, sf::Color::Color(246,235,20,255), menuNav.getPosX("stars")+10, menuNav.getPosY("stars")+40, window);
-	else
-	{
+		ah.draw5_Stars(userStars, sf::Color::Color(246,235,20,255), menuNav.getPosX("stars") + 100, menuNav.getPosY("stars")-8, window);
+	else {
 		largeText.setString("No Filter");
-		largeText.setPosition(menuNav.getPosX("stars")+10, menuNav.getPosY("stars")+40);
+		largeText.setPosition(menuNav.getPosX("stars") + 100, menuNav.getPosY("stars")-8);
 		window.draw(largeText);
 	}
 	if(onlineStars > -0.5)
-		ah.draw5_Stars(onlineStars, sf::Color::Color(105,205,255,255), menuNav.getPosX("stars")+10, menuNav.getPosY("stars")+60, window);
-	else
-	{
+		ah.draw5_Stars(onlineStars, sf::Color::Color(105,205,255,255), menuNav.getPosX("stars") + 100, menuNav.getPosY("stars")+8, window);
+	else {
 		largeText.setString("No Filter");
-		largeText.setPosition(menuNav.getPosX("stars")+10, menuNav.getPosY("stars")+60);
+		largeText.setPosition(menuNav.getPosX("stars") + 100, menuNav.getPosY("stars") + 8);
 		window.draw(largeText);
 	}
 
+	if (!userStarsSelected && menuNav.selected && menuNav.getCurrentID()=="stars"){
+		pointerSprite.setPosition(menuNav.getPosX("stars") + 100, menuNav.getPosY("stars") + 8);
+		window.draw(pointerSprite);
+	}
+	else if (userStarsSelected && menuNav.selected && menuNav.getCurrentID()=="stars"){
+		pointerSprite.setPosition(menuNav.getPosX("stars") + 100, menuNav.getPosY("stars") - 8);
+		window.draw(pointerSprite);
+	}
+
 //fliter lists
-	developerFilter.draw(window); //Draw the developer filter list.
-	publisherFilter.draw(window);
-	regionFilter.draw(window);
-	genreFilter.draw(window);
+	//regionFilter.draw(window);
+	//genreFilter.draw(window);
 	window.draw(searchStringText);
 	if(showKeyboard)
 	{

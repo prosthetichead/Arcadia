@@ -12,18 +12,56 @@ assetHandle::~assetHandle(void)
 
 void assetHandle::init(dbHandle& db_obj)
 {
-	std::vector<dbHandle::assetItem> items = db_obj.getIconPaths();
-	for (int i = 0; i < items.size(); i++)
-	{
-		sf::Texture texture;
-		texture.setSmooth(true);
-		texture.loadFromFile(items.at(i).path);
-		std::pair<std::string,sf::Texture> pair (items.at(i).id,texture);
-		textureMap.insert(pair);
-	}
+	//std::vector<dbHandle::assetItem> items = db_obj.getIconPaths();
+	//for (int i = 0; i < items.size(); i++)
+	//{
+	//	sf::Texture texture;
+	//	texture.setSmooth(true);
+	//	texture.loadFromFile(items.at(i).path);
+	//	std::pair<std::string,sf::Texture> pair (items.at(i).id,texture);
+	//	textureMap.insert(pair);
+	//}
 
 	loadFonts(db_obj.exe_path + "\\assets\\fonts");
+	iconMap = loadImages(db_obj.exe_path + "\\assets\\icons");
+	textureMap = loadImages(db_obj.exe_path + "\\assets\\system");
+	companiesMap = loadImages(db_obj.exe_path + "\\assets\\companies");
 }
+
+
+boost::unordered_map<std::string, sf::Texture> assetHandle::loadImages(std::string path)
+{
+	boost::unordered_map<std::string, sf::Texture> returnMap;
+	const std::string target_path = path;
+	
+	boost::filesystem::directory_iterator end_itr; // Default ctor yields past-the-end
+	for( boost::filesystem::directory_iterator i( target_path ); i != end_itr; ++i )
+	{
+	    // Skip if not a file
+	    if( !boost::filesystem::is_regular_file( i->status() ) ) continue;
+	
+	    // Skip if no match
+		std::string extension = i->path().extension().string();
+		std::string id = i->path().stem().string();
+
+		boost::to_upper(extension);
+		boost::to_upper(id);
+
+	    if(extension == ".PNG")
+		{
+			// File matches, store it
+			sf::Texture texture;
+			texture.loadFromFile(i->path().string());
+			std::pair<std::string,sf::Texture> pair(id, texture);
+			returnMap.insert(pair);
+			//std::cout << " File ID = " << id << " - " << i->path().string() << std::endl ;
+		}
+	}
+	return returnMap;
+}
+
+
+
 
 void assetHandle::loadFonts(std::string path)
 {
@@ -59,6 +97,36 @@ sf::Texture& assetHandle::getTextureAsset(std::string id)
 	boost::to_upper(id);  //Make upper case
 
 	boost::unordered_map<std::string,sf::Texture>::iterator iter = textureMap.find(id);
+	if(iter != textureMap.end()) return iter->second;
+	else
+	{
+		//std::cout << "ERROR: texture ID " << id << " not found" << std::endl;
+		boost::unordered_map<std::string,sf::Texture>::iterator iter = textureMap.find("ERROR");
+		if(iter != textureMap.end()) return iter->second;
+	}
+
+}
+
+sf::Texture& assetHandle::getIconAsset(std::string id)
+{
+	boost::to_upper(id);  //Make upper case
+
+	boost::unordered_map<std::string,sf::Texture>::iterator iter = iconMap.find(id);
+	if(iter != textureMap.end()) return iter->second;
+	else
+	{
+		//std::cout << "ERROR: texture ID " << id << " not found" << std::endl;
+		boost::unordered_map<std::string,sf::Texture>::iterator iter = textureMap.find("ERROR");
+		if(iter != textureMap.end()) return iter->second;
+	}
+
+}
+
+sf::Texture& assetHandle::getCompanyAsset(std::string id)
+{
+	boost::to_upper(id);  //Make upper case
+
+	boost::unordered_map<std::string,sf::Texture>::iterator iter = companiesMap.find(id);
 	if(iter != textureMap.end()) return iter->second;
 	else
 	{

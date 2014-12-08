@@ -35,7 +35,7 @@ bool ControlsScreen::update()
 		int numberOfInputs = ih->getInputStates().size();
 		ih->waitAndUpdateInput( (inputHandle::inputs)selectedItem );
 		++selectedItem;
-		sf::sleep(sf::milliseconds(60));
+		sf::sleep(sf::milliseconds(120));
 		if (selectedItem == numberOfInputs)
 		{
 			selectedItem = 0;

@@ -107,10 +107,10 @@ dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 						" ,regions.icon_id "
 						" ,genres.genre_name "
 						" ,genres.icon_id "
-						" ,case when developer_id = 0 then games.developer else d_comp.name end " // Take the name from games table if its an unknow developer
-						" ,d_comp.icon_id "
-						" ,case when publisher_id = 0 then games.publisher else p_comp.name end " // Take the name from games table if its an unknow publisher
-						" ,p_comp.icon_id "
+						" ,games.developer " 
+						" ,upper(games.developer)"
+						" ,games.publisher " 
+						" ,upper(games.publisher) "
 						" ,games.players "
 						" ,games.users_stars "
 						" ,games.gamedb_stars "
@@ -118,8 +118,8 @@ dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 						" ,games.minutes_played "
 						" ,strftime('%d/%m/%Y', games.last_played) "
 						" ,release_year "
-						" from games, platforms, genres, regions, companies p_comp, companies d_comp "
-						" where p_comp.id = games.publisher_id and d_comp.id = games.developer_id and regions.id = games.region_id and games.genre_id = genres.id and games.platform_id = platforms.id and games.platform_id = :platform_id and games.file_name = :file_name"; 
+						" from games, platforms, genres, regions"
+						" where regions.id = games.region_id and games.genre_id = genres.id and games.platform_id = platforms.id and games.platform_id = :platform_id and games.file_name = :file_name"; 
 	sqlite3pp::query qry(db, query.c_str());
 	qry.bind(":platform_id", listItem.platformID.c_str());
 	qry.bind(":file_name", listItem.fileName.c_str());
@@ -166,15 +166,26 @@ dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 
 		// Developer - Publisher
 		if ((*i).get<const char*>(7) == NULL)
+		{
 			infoItem.developer = "";
+			infoItem.developerIconID = "";
+		}
 		else
+		{
 			infoItem.developer = (*i).get<const char*>(7);
-		infoItem.developerIconID = (*i).get<const char*>(8);
+			infoItem.developerIconID = (*i).get<const char*>(8);
+		}		
 		if ((*i).get<const char*>(9) == NULL)
+		{
 			infoItem.publisher = "";
+			infoItem.publisherIconID = "";
+		}
 		else
+		{
 			infoItem.publisher = (*i).get<const char*>(9);
-		infoItem.publisherIconID = (*i).get<const char*>(10);
+			infoItem.publisherIconID = (*i).get<const char*>(10);
+		}
+		
 
 		//players
 		infoItem.players = (*i).get<int>(11);

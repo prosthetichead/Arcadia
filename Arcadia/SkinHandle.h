@@ -151,6 +151,7 @@ public:
 		Font_Item description_font;
 
 		Rectangle_Item video;
+		Rectangle_Item gameInfoBorder;
 
 		Rectangle_Item screenshot;
 

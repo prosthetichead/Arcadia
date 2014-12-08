@@ -35,6 +35,7 @@ SkinHandle sh; //Dont use untill init
 GameList gameList(db, ah);
 GameInfo gameInfo(&db, &ah, &sh);
 FilterList platformFilters(db, ah);
+FilterList savedFilters(db, ah);
 FilterScreen filterScreen(db, ah);
 SettingsScreen settingsScreen(&db, &ah, &ih);
 launcher launch(&db);
@@ -133,6 +134,8 @@ void initialize()
 	gameInfo.init();
 			
 	platformFilters.init(1, 35,  gameListWidth, db.getPlatformFilterList(), "platform Filter List");
+	savedFilters.init(1, 92,  gameListWidth, db.getPlatformFilterList(), "platform Filter List");
+
 
 	filterScreen.init(desktopMode.width/2 - 800/2, desktopMode.height/2 - 600/2, 800,600);
 	settingsScreen.init(desktopMode.width/2,  desktopMode.height/2);
@@ -148,13 +151,19 @@ void update()
 {
 	if (displayFilterScreen)
 	{
-		if (filterScreen.update(ih))  // only returns true once done. Maybe change to a enum? so we can tell if it was accept or cancel pressed?
+		FilterScreen::update_retern returnCode = filterScreen.update(ih);
+		if (returnCode == FilterScreen::update_retern::apply)  // only returns true once done. Maybe change to a enum? so we can tell if it was accept or cancel pressed?
 		{
 			displayFilterScreen = false;
 			gameList.updateFilter(platformFilters.getFilterString() + filterScreen.getFilterString());
 			gameInfo.update(gameList.getCurrentItem());
 		}
+		else if (returnCode == FilterScreen::update_retern::cancel)
+		{
+			displayFilterScreen = false;
+		}
 	}
+
 	else if (displaySettingsScreen)
 	{
 		if(settingsScreen.update())
@@ -201,6 +210,7 @@ void draw()
 	gameInfo.draw(window);
 	gameList.draw(window);
 	platformFilters.draw(window);
+	savedFilters.draw(window);
 	
 	if(displayFilterScreen)
 	{
