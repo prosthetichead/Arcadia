@@ -57,7 +57,7 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 {
 	vector<dbHandle::gameListItem> results;
 
-	std::string query = "select games.name, games.file_name, platforms.id, platforms.name from games, platforms, genres where games.genre_id = genres.id and games.platform_id = platforms.id and games.active = 1 " + whereStatment + " order by games.name"; 
+	std::string query = "select games.name, games.file_name, platforms.id, platforms.name from games, platforms where games.platform_id = platforms.id and games.active = 1 " + whereStatment + " order by games.name"; 
 
 	sqlite3pp::query qry(db, query.c_str());
 	sqlite3pp::query::iterator intBegin = qry.begin();
@@ -103,23 +103,23 @@ dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 						" platforms.images_path "
 						" ,platforms.videos_path "
 						" ,games.description "
-						" ,regions.name "
-						" ,regions.icon_id "
-						" ,genres.genre_name "
-						" ,genres.icon_id "
+						" ,'Region' "
+						" ,'Region Icon' "
+						" ,'Genre' "
+						" ,'Genre Icon' "
 						" ,games.developer " 
 						" ,upper(games.developer)"
 						" ,games.publisher " 
 						" ,upper(games.publisher) "
 						" ,games.players "
-						" ,games.users_stars "
-						" ,games.gamedb_stars "
+						" ,games.stars "
+						" ,0 "
 						" ,platforms.icon_id "
-						" ,games.minutes_played "
+						" ,games.seconds_played "
 						" ,strftime('%d/%m/%Y', games.last_played) "
 						" ,release_year "
-						" from games, platforms, genres, regions"
-						" where regions.id = games.region_id and games.genre_id = genres.id and games.platform_id = platforms.id and games.platform_id = :platform_id and games.file_name = :file_name"; 
+						" from games, platforms"
+						" where games.platform_id = platforms.id and games.platform_id = :platform_id and games.file_name = :file_name"; 
 	sqlite3pp::query qry(db, query.c_str());
 	qry.bind(":platform_id", listItem.platformID.c_str());
 	qry.bind(":file_name", listItem.fileName.c_str());
@@ -157,12 +157,29 @@ dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 			infoItem.description = (*i).get<const char*>(2);
 
 		// REGION
-		infoItem.regionName = (*i).get<const char*>(3);
-		infoItem.regionIconID = (*i).get<const char*>(4);
+		if ((*i).get<const char*>(3) != NULL)
+		{
+			infoItem.regionName = (*i).get<const char*>(3);
+			infoItem.regionIconID = (*i).get<const char*>(4);
+		}
+		else
+		{
+			infoItem.regionName = "None";
+			infoItem.regionIconID = "None";
+		}
 
 		// GENRE
-		infoItem.genreName = (*i).get<const char*>(5);
-		infoItem.genreIconID = (*i).get<const char*>(6);
+		if ((*i).get<const char*>(5) != NULL)
+		{
+			infoItem.genreName = (*i).get<const char*>(5);
+			infoItem.genreIconID = (*i).get<const char*>(6);
+		}
+		else
+		{
+			infoItem.genreName = "None";
+			infoItem.genreIconID = "None";
+		}
+
 
 		// Developer - Publisher
 		if ((*i).get<const char*>(7) == NULL)
@@ -198,7 +215,11 @@ dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 		//infoItem.online_stars = infoItem.online_stars/2;  // Raiting is a score out of 10.
 		//infoItem.online_stars = //floor(infoItem.online_stars * 2.0 + .5) / 2.0; //Get it to .5
 		//platform Icon ID
-		infoItem.platformIconID = (*i).get<const char*>(14);
+		if ((*i).get<const char*>(14) == NULL)
+			infoItem.platformIconID = "None";
+		else
+			infoItem.platformIconID = (*i).get<const char*>(14);
+
 		//played time
 		double mins_played = (*i).get<double>(15);
 		if (mins_played > 60) 
@@ -215,7 +236,10 @@ dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 			infoItem.lastPlayed = (*i).get<const char*>(16);
 
 		//release year
-		infoItem.release_year = (*i).get<const char*>(17);
+		if ((*i).get<const char*>(17) == NULL)
+			infoItem.release_year = "None";
+		else
+			infoItem.release_year = (*i).get<const char*>(17);
 	}
 
 	return infoItem;
@@ -248,6 +272,7 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 		newItem.filterString = " and platform_id = " + platform_id;
 		newItem.title = (*i).get<const char*>(1);
 		newItem.filterIcon = icon_id; 
+
 
 		filterList.push_back(newItem);
 	}
@@ -357,7 +382,7 @@ dbHandle::inputItem dbHandle::getInputItem(int input)
 	dbHandle::inputItem item;
 	//db.connect(db_fileName.c_str());
 
-	std::string query = "select id, name, input_type, keyboard_key_id, buttonNumber from inputs where id = :inputID";
+	std::string query = "select id, name, input_type, keyboard_key_id from inputs where id = :inputID";
 	sqlite3pp::query qry(db, query.c_str());
 	qry.bind(":inputID", input);
 

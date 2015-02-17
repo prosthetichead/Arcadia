@@ -8,7 +8,6 @@
 #include "FilterList.h"
 #include "launcher.h"
 #include "assetHandle.h"
-#include "FilterScreen.h"
 #include "SettingsScreen.h"
 #include "SkinHandle.h"
 
@@ -36,7 +35,6 @@ GameList gameList(db, ah);
 GameInfo gameInfo(&db, &ah, &sh);
 FilterList platformFilters(db, ah);
 FilterList savedFilters(db, ah);
-FilterScreen filterScreen(db, ah);
 SettingsScreen settingsScreen(&db, &ah, &ih);
 launcher launch(&db);
 
@@ -115,12 +113,12 @@ int main()
 //runs just once
 void initialize()
 {	
-	
-	
-	db.setFilePath(path, "database.db");
+	printf("--Initialize -- \n");
+	db.setFilePath(path, "arcadia.db");
 	ah.init(db);
 	ih.init(&db, &window);
 	sh.init(db);
+	printf("-- AH, IH, DB and SH Init -- \n");
 
 	sf::VideoMode desktopMode = sf::VideoMode(sh.resolution.x,sh.resolution.y);
 
@@ -131,40 +129,30 @@ void initialize()
 	hideScreen.setFillColor(sf::Color::Color(0,0,0,180));
 
 	gameList.init(sh);//0, 70,  gameListWidth, desktopMode.height - 140);
+	printf("-- Game List Init -- \n");
 	gameInfo.init();
+	printf("-- Game Info Init -- \n");
 			
 	platformFilters.init(1, 35,  gameListWidth, db.getPlatformFilterList(), "platform Filter List");
 	savedFilters.init(1, 92,  gameListWidth, db.getPlatformFilterList(), "platform Filter List");
 
-
-	filterScreen.init(desktopMode.width/2 - 800/2, desktopMode.height/2 - 600/2, 800,600);
 	settingsScreen.init(desktopMode.width/2,  desktopMode.height/2);
-	
+
 	gameList.updateFilter(platformFilters.getFilterString());
+	printf("-- Update Filters -- \n");
 
 	window.create(desktopMode, "Arcadia", sf::Style::Fullscreen);
 	window.setVerticalSyncEnabled(true);
 	window.setJoystickThreshold(5);
+	printf("-- Create Window -- \n");
+
+
+	printf("-- Initialize Complete -- \n");
 }
 
 void update()
 {
-	if (displayFilterScreen)
-	{
-		FilterScreen::update_retern returnCode = filterScreen.update(ih);
-		if (returnCode == FilterScreen::update_retern::apply)  // only returns true once done. Maybe change to a enum? so we can tell if it was accept or cancel pressed?
-		{
-			displayFilterScreen = false;
-			gameList.updateFilter(platformFilters.getFilterString() + filterScreen.getFilterString());
-			gameInfo.update(gameList.getCurrentItem());
-		}
-		else if (returnCode == FilterScreen::update_retern::cancel)
-		{
-			displayFilterScreen = false;
-		}
-	}
-
-	else if (displaySettingsScreen)
+	if (displaySettingsScreen)
 	{
 		if(settingsScreen.update())
 		{
@@ -187,12 +175,12 @@ void update()
 		if (ih.inputPress(inputHandle::inputs::platform_filter_left))
 		{
 			platformFilters.update(-1);
-			gameList.updateFilter(platformFilters.getFilterString() + filterScreen.getFilterString());		
+			gameList.updateFilter(platformFilters.getFilterString() );//+ filterScreen.getFilterString());		
 		}
 		if (ih.inputPress(inputHandle::inputs::platform_filter_right))
 		{
 			platformFilters.update(+1);
-			gameList.updateFilter(platformFilters.getFilterString() + filterScreen.getFilterString());	
+			gameList.updateFilter(platformFilters.getFilterString());//+ filterScreen.getFilterString());	
 		}		
 	
 
@@ -212,12 +200,7 @@ void draw()
 	platformFilters.draw(window);
 	savedFilters.draw(window);
 	
-	if(displayFilterScreen)
-	{
-		window.draw(hideScreen);
-		filterScreen.draw(window);
-	}
-	else if(displaySettingsScreen)
+	if(displaySettingsScreen)
 	{
 		window.draw(hideScreen);
 		settingsScreen.draw(window);

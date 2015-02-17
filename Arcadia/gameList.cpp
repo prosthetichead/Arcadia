@@ -29,7 +29,7 @@ void GameList::init(SkinHandle& sh)//float posX, float posY, int width, float he
 }
 
 void GameList::updateFilter(std::string filterString)
-{
+{	
 	selectedItemNum = 0;
 	listOfItems = db.getGamesListQuery(filterString);
 }
