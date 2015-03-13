@@ -16,11 +16,11 @@ public:
 		start_game,
 		platform_filter_left,
 		platform_filter_right,
-		filter_menu,
+		filter_left,
+		filter_right,
 		settings,
-		set_fav,
-		set_stars,
-		exit
+		extra,
+		exit_game
 	};
 	inputHandle();	
 	~inputHandle(void);

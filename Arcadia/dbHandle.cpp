@@ -20,7 +20,7 @@ dbHandle::~dbHandle(void)
 }
 
 void dbHandle::setFilePath(std::string path, std::string fileName)
-{
+{	
 	exe_path = path;
 	db_fileName = path + "\\" + fileName;
 
@@ -39,7 +39,7 @@ std::string dbHandle::fileExists(std::string file, std::vector<std::string> file
 {
     struct stat buf;
 	std::string returnString;
-	//boost::replace_all(file, "%PATH%", exe_path);
+
 	for (int i = 0; i < file_exts.size(); i++)
 	{
 		returnString = file + file_exts.at(i);
@@ -380,7 +380,6 @@ std::vector<dbHandle::assetItem> dbHandle::getIconPaths()
 dbHandle::inputItem dbHandle::getInputItem(int input)
 {
 	dbHandle::inputItem item;
-	//db.connect(db_fileName.c_str());
 
 	std::string query = "select id, name, input_type, keyboard_key_id from inputs where id = :inputID";
 	sqlite3pp::query qry(db, query.c_str());

@@ -24,15 +24,15 @@ void inputHandle::init(dbHandle *db_obj, sf::Window *window_ref)
 	inputStates.push_back(item);
 	item = db_obj->getInputItem(inputs::platform_filter_right);
 	inputStates.push_back(item);
-	item = db_obj->getInputItem(inputs::filter_menu);
+	item = db_obj->getInputItem(inputs::filter_left);
+	inputStates.push_back(item);
+	item = db_obj->getInputItem(inputs::filter_right);
 	inputStates.push_back(item);
 	item = db_obj->getInputItem(inputs::settings);
 	inputStates.push_back(item);
-	item = db_obj->getInputItem(inputs::set_fav);
+	item = db_obj->getInputItem(inputs::extra);
 	inputStates.push_back(item);
-	item = db_obj->getInputItem(inputs::set_stars);
-	inputStates.push_back(item);
-	item = db_obj->getInputItem(inputs::exit);
+	item = db_obj->getInputItem(inputs::exit_game);
 	inputStates.push_back(item);
 
 	window = window_ref;

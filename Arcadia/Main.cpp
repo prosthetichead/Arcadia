@@ -72,7 +72,7 @@ int main()
 
 		ih.update(); //update inputs
 		
-		if(ih.inputPress(inputHandle::inputs::exit) && (launch.processRunning))
+		if(ih.inputPress(inputHandle::inputs::exit_game) && (launch.processRunning))
 		{
 			launch.terminate();
 		}
@@ -128,7 +128,7 @@ void initialize()
 	hideScreen.setPosition(0,0);
 	hideScreen.setFillColor(sf::Color::Color(0,0,0,180));
 
-	gameList.init(sh);//0, 70,  gameListWidth, desktopMode.height - 140);
+	gameList.init(sh);
 	printf("-- Game List Init -- \n");
 	gameInfo.init();
 	printf("-- Game Info Init -- \n");
@@ -162,9 +162,7 @@ void update()
 	}
 	else /// no screen to show run a normal update
 	{
-		if (ih.inputPress(inputHandle::inputs::filter_menu))
-			displayFilterScreen = true;
-		else if (ih.inputPress(inputHandle::inputs::settings))
+		if (ih.inputPress(inputHandle::inputs::settings))
 			displaySettingsScreen = true;
 
 		if (ih.inputPress(inputHandle::inputs::start_game))
