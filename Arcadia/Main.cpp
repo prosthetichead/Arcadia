@@ -158,7 +158,7 @@ void update()
 		{
 			displaySettingsScreen = false;
 		}
-
+		
 	}
 	else /// no screen to show run a normal update
 	{

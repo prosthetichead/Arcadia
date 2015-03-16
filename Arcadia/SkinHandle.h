@@ -151,12 +151,11 @@ public:
 		Font_Item description_font;
 
 		Rectangle_Item video;
+
 		Rectangle_Item gameInfoBorder;
 
 		Rectangle_Item screenshot;
-
-		Rectangle_Item genreIcon;
-
+		
 		Rectangle_Item companyLogos;
 
 		Rectangle_Item platformIcon;

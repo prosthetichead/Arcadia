@@ -145,9 +145,6 @@ void SkinHandle::loadLayout()
 				if (gameElemName == "screenshot")
 					game_info_settings.screenshot = read_rectangle_elem(gameElem);
 				
-				if (gameElemName == "genre_icon")
-					game_info_settings.genreIcon  = read_rectangle_elem(gameElem);
-				
 				if (gameElemName == "company_logos")
 					game_info_settings.companyLogos = read_rectangle_elem(gameElem);
 				

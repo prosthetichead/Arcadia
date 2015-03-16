@@ -10,29 +10,29 @@ inputHandle::inputHandle()
 void inputHandle::init(dbHandle *db_obj, sf::Window *window_ref)
 {
 	dbHandle::inputItem item;
-	item = db_obj->getInputItem(inputs::up);
+	item = db_obj->getInputItem(inputs::up, sf::Keyboard::Up);
 	inputStates.push_back(item);
-	item = db_obj->getInputItem(inputs::down);
+	item = db_obj->getInputItem(inputs::down, sf::Keyboard::Down);
 	inputStates.push_back(item);
-	item = db_obj->getInputItem(inputs::left); 
+	item = db_obj->getInputItem(inputs::left, sf::Keyboard::Left); 
 	inputStates.push_back(item);
-	item = db_obj->getInputItem(inputs::right);
+	item = db_obj->getInputItem(inputs::right, sf::Keyboard::Right);
 	inputStates.push_back(item);
-	item = db_obj->getInputItem(inputs::start_game);
+	item = db_obj->getInputItem(inputs::start_game, sf::Keyboard::Return);
 	inputStates.push_back(item);
-	item = db_obj->getInputItem(inputs::platform_filter_left);
+	item = db_obj->getInputItem(inputs::platform_filter_left, sf::Keyboard::Q);
 	inputStates.push_back(item);
-	item = db_obj->getInputItem(inputs::platform_filter_right);
+	item = db_obj->getInputItem(inputs::platform_filter_right, sf::Keyboard::W);
 	inputStates.push_back(item);
-	item = db_obj->getInputItem(inputs::filter_left);
+	item = db_obj->getInputItem(inputs::filter_left, sf::Keyboard::A);
 	inputStates.push_back(item);
-	item = db_obj->getInputItem(inputs::filter_right);
+	item = db_obj->getInputItem(inputs::filter_right, sf::Keyboard::S);
 	inputStates.push_back(item);
-	item = db_obj->getInputItem(inputs::settings);
+	item = db_obj->getInputItem(inputs::settings, sf::Keyboard::F1);
 	inputStates.push_back(item);
-	item = db_obj->getInputItem(inputs::extra);
+	item = db_obj->getInputItem(inputs::extra, sf::Keyboard::F2);
 	inputStates.push_back(item);
-	item = db_obj->getInputItem(inputs::exit_game);
+	item = db_obj->getInputItem(inputs::exit_game, sf::Keyboard::Escape);
 	inputStates.push_back(item);
 
 	window = window_ref;

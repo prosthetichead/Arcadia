@@ -115,6 +115,7 @@ void GameList::draw(sf::RenderWindow& window)
 	int selectedPosY = ((rectangle.getSize().y / 2) + rectangle.getPosition().y);
 	
 	
+
 	selectedText.setOrigin(0, selectedFontSizeHalf );
 	selectedText.setPosition(selectedPosX + settings->selected_font.shadowOffset , selectedPosY + settings->selected_font.shadowOffset );
 	selectedText.setColor(settings->selected_font.shadowColor);

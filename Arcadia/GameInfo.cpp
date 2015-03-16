@@ -174,11 +174,7 @@ void GameInfo::draw(sf::RenderWindow& window)
 
 	window.draw(sh->game_info_settings.clearLogo.getSprite( clearLogo ));
 	
-	if (currentGameInfo.developerIconID != "ERROR") // icon id of error means it does not have an icon so we should show the text insted.
-		window.draw(sh->game_info_settings.companyLogos.getSprite( ah->getCompanyAsset(currentGameInfo.developerIconID) ));
-
-	if (currentGameInfo.genreIconID != "ERROR")
-		window.draw(sh->game_info_settings.genreIcon.getSprite( ah->getIconAsset(currentGameInfo.genreIconID) ) );
+	
 
 	window.draw(sh->game_info_settings.platformIcon.getSprite( ah->getIconAsset(currentGameInfo.platformIconID) ));
 

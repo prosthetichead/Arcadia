@@ -90,6 +90,9 @@ vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStat
 	return results;
 }
 
+
+
+
 // Get detailed info strut based on a game list item
 dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 {
@@ -103,26 +106,21 @@ dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 						" platforms.images_path "
 						" ,platforms.videos_path "
 						" ,games.description "
-						" ,'Region' "
-						" ,'Region Icon' "
-						" ,'Genre' "
-						" ,'Genre Icon' "
-						" ,games.developer " 
-						" ,upper(games.developer)"
-						" ,games.publisher " 
-						" ,upper(games.publisher) "
 						" ,games.players "
 						" ,games.stars "
 						" ,0 "
-						" ,platforms.icon_id "
+						" ,platforms.icon "
 						" ,games.seconds_played "
 						" ,strftime('%d/%m/%Y', games.last_played) "
 						" ,release_year "
+						" ,games.id "
 						" from games, platforms"
 						" where games.platform_id = platforms.id and games.platform_id = :platform_id and games.file_name = :file_name"; 
 	sqlite3pp::query qry(db, query.c_str());
 	qry.bind(":platform_id", listItem.platformID.c_str());
 	qry.bind(":file_name", listItem.fileName.c_str());
+
+	std::string game_id = " ";
 
 	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
 	{
@@ -155,73 +153,24 @@ dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 			infoItem.description = "";
 		else
 			infoItem.description = (*i).get<const char*>(2);
-
-		// REGION
-		if ((*i).get<const char*>(3) != NULL)
-		{
-			infoItem.regionName = (*i).get<const char*>(3);
-			infoItem.regionIconID = (*i).get<const char*>(4);
-		}
-		else
-		{
-			infoItem.regionName = "None";
-			infoItem.regionIconID = "None";
-		}
-
-		// GENRE
-		if ((*i).get<const char*>(5) != NULL)
-		{
-			infoItem.genreName = (*i).get<const char*>(5);
-			infoItem.genreIconID = (*i).get<const char*>(6);
-		}
-		else
-		{
-			infoItem.genreName = "None";
-			infoItem.genreIconID = "None";
-		}
-
-
-		// Developer - Publisher
-		if ((*i).get<const char*>(7) == NULL)
-		{
-			infoItem.developer = "";
-			infoItem.developerIconID = "";
-		}
-		else
-		{
-			infoItem.developer = (*i).get<const char*>(7);
-			infoItem.developerIconID = (*i).get<const char*>(8);
-		}		
-		if ((*i).get<const char*>(9) == NULL)
-		{
-			infoItem.publisher = "";
-			infoItem.publisherIconID = "";
-		}
-		else
-		{
-			infoItem.publisher = (*i).get<const char*>(9);
-			infoItem.publisherIconID = (*i).get<const char*>(10);
-		}
 		
-
 		//players
-		infoItem.players = (*i).get<int>(11);
+		infoItem.players = (*i).get<int>(3);
 
 		//User Stars
-		infoItem.user_stars =  (*i).get<double>(12);
-		//infoItem.user_stars = //floor(infoItem.user_stars * 2.0 + .5) / 2.0; // get it to .5
+		infoItem.user_stars =  (*i).get<double>(4);
+
 		//online Stars 
-		infoItem.online_stars = (*i).get<double>(13);
-		//infoItem.online_stars = infoItem.online_stars/2;  // Raiting is a score out of 10.
-		//infoItem.online_stars = //floor(infoItem.online_stars * 2.0 + .5) / 2.0; //Get it to .5
+		infoItem.online_stars = (*i).get<double>(5);
+		
 		//platform Icon ID
-		if ((*i).get<const char*>(14) == NULL)
+		if ((*i).get<const char*>(6) == NULL)
 			infoItem.platformIconID = "None";
 		else
-			infoItem.platformIconID = (*i).get<const char*>(14);
+			infoItem.platformIconID = (*i).get<const char*>(6);
 
 		//played time
-		double mins_played = (*i).get<double>(15);
+		double mins_played = (*i).get<double>(7);
 		if (mins_played > 60) 
 			infoItem.playTime =  std::to_string((int)mins_played/60) + " Hours";
 		else if (mins_played < 60)
@@ -230,18 +179,27 @@ dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 			infoItem.playTime = "NULL";
 
 		//last played
-		if ((*i).get<const char*>(16) == NULL)
+		if ((*i).get<const char*>(8) == NULL)
 			infoItem.lastPlayed = "NULL";
 		else
-			infoItem.lastPlayed = (*i).get<const char*>(16);
+			infoItem.lastPlayed = (*i).get<const char*>(8);
 
 		//release year
-		if ((*i).get<const char*>(17) == NULL)
+		if ((*i).get<const char*>(9) == NULL)
 			infoItem.release_year = "None";
 		else
-			infoItem.release_year = (*i).get<const char*>(17);
-	}
+			infoItem.release_year = (*i).get<const char*>(9);
 
+		game_id = (*i).get<const char*>(10);
+	}
+	
+	//Get Genres
+	query = "SELECT genres.name FROM games, game_genres, genres where games.id = game_genres.game_id and genres.id = game_genres.genre_id and games.id = :game_id";
+	sqlite3pp::query genreqry(db, query.c_str());
+	genreqry.bind(":game_id", game_id.c_str());
+	for (sqlite3pp::query::iterator i = genreqry.begin(); i != genreqry.end(); ++i) {
+		infoItem.genres.push_back((*i).get<const char*>(0));
+	}
 	return infoItem;
 }
 
@@ -257,7 +215,7 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 	filterList.push_back(newItemAll);
 
 
-	std::string query = "select distinct platforms.id, platforms.name, platforms.icon_id from platforms, games where games.platform_id = platforms.id and games.active = 1";
+	std::string query = "select distinct platforms.id, platforms.name, platforms.icon from platforms, games where games.platform_id = platforms.id and games.active = 1";
 	sqlite3pp::query qry(db, query.c_str());
 	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
 	{
@@ -377,9 +335,11 @@ std::vector<dbHandle::assetItem> dbHandle::getIconPaths()
 	return list;
 }
 
-dbHandle::inputItem dbHandle::getInputItem(int input)
+dbHandle::inputItem dbHandle::getInputItem(int input, sf::Keyboard::Key default_key)
 {
 	dbHandle::inputItem item;
+	item.inputID = input;
+	item.key = default_key;
 
 	std::string query = "select id, name, input_type, keyboard_key_id from inputs where id = :inputID";
 	sqlite3pp::query qry(db, query.c_str());
@@ -391,14 +351,10 @@ dbHandle::inputItem dbHandle::getInputItem(int input)
 		item.inputType = (*i).get<const char*>(2);
 
 		int key_id = (*i).get<int>(3); 
-		item.key = (sf::Keyboard::Key)key_id;
-		item.inputID = input;
+		item.key = (sf::Keyboard::Key)key_id;		
 	}
 
 	return item;
-
-	//db.disconnect();
-
 }
 void dbHandle::updateInputItem(inputItem &item)
 {

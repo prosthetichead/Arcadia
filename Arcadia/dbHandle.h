@@ -46,17 +46,6 @@ public:
 		std::string platformIconID;
 
 		std::string description;
-		
-		std::string regionName;
-		std::string regionIconID;
-
-		std::string genreName;
-		std::string genreIconID;
-
-		std::string developer;
-		std::string developerIconID;
-		std::string publisher;
-		std::string publisherIconID;
 
 		std::string release_year;
 		std::string rating;
@@ -67,6 +56,11 @@ public:
 
 		std::string playTime;
 		std::string lastPlayed;	
+
+		std::vector<std::string> genres;
+		std::vector<std::string> developers;
+		std::vector<std::string> publishers;
+		std::vector<std::string> regions;
 
 		gameInfoItem()
 		{
@@ -132,7 +126,7 @@ public:
 	std::vector<dbHandle::filterListItem> dbHandle::getCustomFilterList(std::string name, std::string sql, std::string games_column_name);
 	std::string dbHandle::getLaunchCode(std::string platform_id, std::string file_name);
 	std::vector<dbHandle::assetItem> dbHandle::getIconPaths();
-	inputItem dbHandle::getInputItem(int input);
+	inputItem dbHandle::getInputItem(int input, sf::Keyboard::Key default_key);
 	int dbHandle::getMaxPlayers();
 	void dbHandle::updateGamePlaytime(std::string platform_id, std::string file_name, double minsPlayed);
 	//std::string dbHandle::getHTMLdata(std::string URL);

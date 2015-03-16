@@ -35,10 +35,9 @@ void SettingsScreen::init(float posX, float posY)
 	menuShadowText = menuText;
 
 
-	menuNav.addItem("close", "", "", "","editGame", "none", "Close Menu", menuRect.getPosition().x+16, menuRect.getPosition().y + 16);
-	menuNav.addItem("editGame", "" , "", "close", "platformOptions", "none", "Edit Game Data", menuRect.getPosition().x+16, menuRect.getPosition().y + (16 * 2) + 32);
-	menuNav.addItem("platformOptions", "", "", "editGame", "controls", "none", "Platform Options", menuRect.getPosition().x+16, menuRect.getPosition().y + (16 * 3) + (32 * 2));
-	menuNav.addItem("controls", "", "", "platformOptions", "exit", "none", "Controls", menuRect.getPosition().x+16, menuRect.getPosition().y + (16 * 4) + (32 * 3));
+	menuNav.addItem("close", "", "", "","controls", "none", "Close Menu", menuRect.getPosition().x+16, menuRect.getPosition().y + 16);
+	
+	menuNav.addItem("controls", "", "", "close", "exit", "none", "Controls", menuRect.getPosition().x+16, menuRect.getPosition().y + (16 * 4) + (32 * 3));
 	menuNav.addItem("exit", "", "", "controls", "", "none", "Exit Arcadia", menuRect.getPosition().x+16, menuRect.getPosition().y + (16 * 5) + (32 * 4));
 
 	menuIDs = menuNav.getIDVector();
@@ -57,18 +56,8 @@ bool SettingsScreen::update()
 
 	if (menuNav.selected) // Selected  = True
 	{
-		if (menuNav.getCurrentID() == "editGame")
-		{
-			if (!editGameVisible) //we havent displayed the edit game screen yet, so load up any details we need.
-			{
-				//gameDB_FindResults = db.findGame_onGameDb(currentGameListItem);
-				//for (auto &item : gameDB_FindResults)
-				//{
 
-				//}
-			}
-		}
-		else if (menuNav.getCurrentID() == "controls")
+		if (menuNav.getCurrentID() == "controls")
 		{
 			if(controlScreen.update())
 				menuNav.selected = false;
@@ -78,6 +67,13 @@ bool SettingsScreen::update()
 			menuNav.selected = false;
 			return true;  // we are finished return true
 		}
+
+		else if (menuNav.getCurrentID() == "exit")
+		{
+			menuNav.selected = false;
+			return true;  // we are finished return true
+		}
+
 	}
 	else
 	{
