@@ -38,6 +38,7 @@ public:
 	
 	// Used by rectangles and sprites to position them.
 	struct Rectangle_Item{
+		bool enabled;
 		sf::Vector2f size;
 		sf::Vector2f pos;
 		std::string origin_code;
@@ -48,6 +49,7 @@ public:
 
 		Rectangle_Item()
 		{
+			enabled = false;
 			size = sf::Vector2f(100,100);
 			pos = sf::Vector2f(100,100);
 			origin_code = "TL";
@@ -148,7 +150,12 @@ public:
 		Rectangle_Item clearLogo;
 				
 		Rectangle_Item description;
+
 		Font_Item description_font;
+
+		Rectangle_Item genres;
+
+		Font_Item genres_font;
 
 		Rectangle_Item video;
 

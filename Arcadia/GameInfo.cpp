@@ -2,6 +2,7 @@
 
 
 GameInfo::GameInfo(dbHandle* db_ref, assetHandle* ah_ref, SkinHandle* sh_ref)
+	: genreChanger(ah_ref)
 {
 	ah = ah_ref;
 	db = db_ref;
@@ -17,6 +18,8 @@ GameInfo::GameInfo(dbHandle* db_ref, assetHandle* ah_ref, SkinHandle* sh_ref)
 
 	fanArt.create(1,1);
 	clearLogo.create(1,1);
+
+	genreChanger.setText(currentGameInfo.genres, sh->game_info_settings.genres_font, 10);
 }
 
 
@@ -75,12 +78,17 @@ void GameInfo::update(dbHandle::gameListItem gameItem)
 
 	if (hasMovieFile && movie->getStatus() == movie->Playing)
 		movie->update();
+
+	genreChanger.update();
 }
 
 void GameInfo::newGameInfo(dbHandle::gameListItem gameItem)
 {
 	currentGameItem = gameItem;
 	currentGameInfo = db->getGameInfo(gameItem);
+
+	// Genre roatating text
+	genreChanger.setText(currentGameInfo.genres, sh->game_info_settings.genres_font, 100);
 
 	//recreate movie
 	delete movie;
@@ -115,6 +123,9 @@ void GameInfo::newGameInfo(dbHandle::gameListItem gameItem)
 	else
 		screenShot.create(1,1); // Create and empty Texture	
 
+	
+
+	// TODO: Move this into a scrolling Text Class??
 	// Description Text
 	if (currentGameInfo.description.empty())
 		descriptionText.setString("No Description Available in Database");
@@ -144,18 +155,16 @@ void GameInfo::newGameInfo(dbHandle::gameListItem gameItem)
 				currentLineLength = wordLengthPixels;
 			}
 		}
-		descriptionText.setString(new_str);  //currentGameInfo.description);
-		//descriptionView.reset(sf::FloatRect(0, 0, rectangleFanArt.getSize().x, rectangleFanArt.getSize().y)); //Reset the description view (uses retangle fan art to get full screen size)
+		descriptionText.setString(new_str);  
+		
 		descriptionOffset = 0;
 		resetOffset = false;
-		if (descriptionText.getLocalBounds().height > sh->game_info_settings.description.size.y)
-		{
+		if (descriptionText.getLocalBounds().height > sh->game_info_settings.description.size.y) {
 			descriptionRequiredOffset = descriptionText.getLocalBounds().height - sh->game_info_settings.description.size.y;
 			descriptionScroll = true;
 			descriptionPause  = true;
 		}
-		else
-		{
+		else {
 			descriptionRequiredOffset = 0;
 			descriptionScroll = false;
 			descriptionPause  = true;
@@ -172,11 +181,11 @@ void GameInfo::draw(sf::RenderWindow& window)
 
 	window.draw(sh->game_info_settings.gameInfoBorder.getRectangle());
 
-	window.draw(sh->game_info_settings.clearLogo.getSprite( clearLogo ));
-	
-	
+	window.draw(sh->game_info_settings.clearLogo.getSprite( clearLogo ));	
 
 	window.draw(sh->game_info_settings.platformIcon.getSprite( ah->getIconAsset(currentGameInfo.platformIconID) ));
+
+	genreChanger.draw(window, sh->game_info_settings.genres.pos, sh->game_info_settings.genres.size);
 
 	sf::Sprite spritePlayer;
 	spritePlayer.setTexture(ah->getTextureAsset("PLAYERS"));

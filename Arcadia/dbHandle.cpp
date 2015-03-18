@@ -200,6 +200,9 @@ dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 	for (sqlite3pp::query::iterator i = genreqry.begin(); i != genreqry.end(); ++i) {
 		infoItem.genres.push_back((*i).get<const char*>(0));
 	}
+
+
+
 	return infoItem;
 }
 

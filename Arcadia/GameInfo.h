@@ -5,6 +5,7 @@
 #include "dbHandle.h"
 #include "assetHandle.h"
 #include "SkinHandle.h"
+#include "TextChanger.h"
 
 
 class GameInfo
@@ -13,6 +14,8 @@ private:
 	dbHandle* db;
 	assetHandle* ah;
 	SkinHandle* sh;
+
+	TextChanger genreChanger;
 
 	dbHandle::gameListItem currentGameItem;
 	dbHandle::gameInfoItem currentGameInfo;
@@ -33,16 +36,9 @@ private:
 
 	sfe::Movie* movie;
 
-	//sf::RectangleShape rectangleInfo;	//Rectangle of just the Info Area
-	sf::RectangleShape rectangleFanArt;	//Full Screen Rectangle
-	//sf::RectangleShape movieBorder;	
-	//sf::RectangleShape gameIconsBorderTop;
-	//sf::RectangleShape gameIconsBorderBottom;
-	//sf::RectangleShape descriptionBorder;
-
-	//sf::View descriptionView;
 	
-	//sf::Font descriptionFont;
+	sf::RectangleShape rectangleFanArt;	//Full Screen Rectangle
+
 	sf::Text descriptionText;
 	int descriptionFontSize;
 	bool descriptionScroll;
@@ -51,6 +47,7 @@ private:
 	float descriptionPauseCount;
 	float descriptionOffset;
 	float descriptionRequiredOffset;
+	
 	bool resetOffset;
 
 	//sf::Font yearFont;

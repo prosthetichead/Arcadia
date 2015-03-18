@@ -134,11 +134,16 @@ void SkinHandle::loadLayout()
 				if (gameElemName == "clear_logo")
 					game_info_settings.clearLogo = read_rectangle_elem(gameElem);	
 				
-				if (gameElemName == "description")
-				{
+				if (gameElemName == "description") {
 					game_info_settings.description = read_rectangle_elem(gameElem);					
 					game_info_settings.description_font = read_font_elem(gameElem);
 				}
+
+				if (gameElemName == "genres") {
+					game_info_settings.genres = read_rectangle_elem(gameElem);
+					game_info_settings.genres_font = read_font_elem(gameElem);
+				}
+
 				if (gameElemName == "video")
 					game_info_settings.video  = read_rectangle_elem(gameElem);
 				
