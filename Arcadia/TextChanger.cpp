@@ -14,7 +14,7 @@ TextChanger::~TextChanger(void)
 {
 }
 
-void TextChanger::setText(std::vector<std::string> textVector, SkinHandle::Font_Item fontItem, int speed)
+void TextChanger::setText(std::vector<std::string> textVector, SkinHandle::Skin_Element fontItem, int speed)
 {
 	text = textVector;
 	font = fontItem;
@@ -34,12 +34,9 @@ void TextChanger::update()
 		index = 0;
 }
 
-void TextChanger::draw(sf::RenderWindow &window, sf::Vector2f pos, sf::Vector2f size)
-{
-	
-	if (!text.empty()) {
-		font.pos = pos;
+void TextChanger::draw(sf::RenderWindow &window)
+{	
+	if (!text.empty()) {		
 		ah->drawText(text.at(index), font, window);
 	}
-
 }

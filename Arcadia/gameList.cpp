@@ -18,14 +18,14 @@ void GameList::init(SkinHandle& sh)//float posX, float posY, int width, float he
 	settings = &sh.game_list_settings;
 
 	//setup rectangle 
-	rectangle.setSize(settings->size);
-	rectangle.setPosition(settings->position);
+	rectangle.setSize(settings->list.size);
+	rectangle.setPosition(settings->list.pos);
 	
 	//setup fonts
-	selectedText.setFont( ah.getFontAsset(settings->selected_font.fontName) );
-	selectedText.setCharacterSize(settings->selected_font.size);
-	normalText.setFont( ah.getFontAsset(settings->normal_font.fontName) );
-	normalText.setCharacterSize(settings->normal_font.size);
+	selectedText.setFont( ah.getFontAsset(settings->selected_list_item.text_font) );
+	selectedText.setCharacterSize(settings->selected_list_item.text_size);
+	normalText.setFont( ah.getFontAsset(settings->normal_list_item.text_font) );
+	normalText.setCharacterSize(settings->normal_list_item.text_size);
 }
 
 void GameList::updateFilter(std::string filterString)
@@ -117,11 +117,11 @@ void GameList::draw(sf::RenderWindow& window)
 	
 
 	selectedText.setOrigin(0, selectedFontSizeHalf );
-	selectedText.setPosition(selectedPosX + settings->selected_font.shadowOffset , selectedPosY + settings->selected_font.shadowOffset );
-	selectedText.setColor(settings->selected_font.shadowColor);
+	selectedText.setPosition(selectedPosX + settings->selected_list_item.text_shadowOffset , selectedPosY + settings->selected_list_item.text_shadowOffset );
+	selectedText.setColor(settings->selected_list_item.text_shadowColor);
 	window.draw(selectedText);
 	selectedText.setPosition(selectedPosX, selectedPosY);
-	selectedText.setColor(settings->selected_font.color);
+	selectedText.setColor(settings->selected_list_item.text_color);
 	window.draw(selectedText);
 	
 
@@ -149,7 +149,7 @@ void GameList::draw(sf::RenderWindow& window)
 
 		dbHandle::gameListItem item = listOfItems.at(itemNum);
 
-		sf::Color newNormalColor = settings->normal_font.color;
+		sf::Color newNormalColor = settings->normal_list_item.text_color;
 		newNormalColor.a = 255 - i * (255/numItemsHalf);
 		normalText.setColor(newNormalColor);
 		normalText.setString(item.title);
@@ -167,7 +167,7 @@ void GameList::draw(sf::RenderWindow& window)
 			
 		dbHandle::gameListItem item = listOfItems.at(itemNum);
 
-		sf::Color newNormalColor = settings->normal_font.color;
+		sf::Color newNormalColor = settings->normal_list_item.text_color;
 		newNormalColor.a = 255 - i * (255/numItemsHalf);
 		normalText.setColor(newNormalColor);
 		normalText.setString(item.title);

@@ -195,27 +195,27 @@ void assetHandle::draw5_Stars(double numStars, sf::Color color, int x, int y, sf
 	}
 }
 
-sf::Text assetHandle::getText(std::string text, SkinHandle::Font_Item& fontItem)
+sf::Text assetHandle::getText(std::string text, SkinHandle::Skin_Element& fontItem)
 {
 	sf::Text returnText;
-	returnText.setCharacterSize(fontItem.size);
-	returnText.setColor(fontItem.color);
+	returnText.setCharacterSize(fontItem.text_size);
+	returnText.setColor(fontItem.text_color);
 	returnText.setPosition(fontItem.pos);
-	returnText.setFont(getFontAsset(fontItem.fontName));
+	returnText.setFont(getFontAsset(fontItem.text_font));
 	returnText.setString(text);
 
 	return returnText;
 }
 
-void assetHandle::drawText(std::string text, SkinHandle::Font_Item& fontItem, sf::RenderWindow& window)
+void assetHandle::drawText(std::string text, SkinHandle::Skin_Element& fontItem, sf::RenderWindow& window)
 {
 	sf::Text main_text = getText(text, fontItem);
 	
-	if (fontItem.shadow)
+	if (fontItem.text_shadow)
 	{
 		sf::Text shadow_text = main_text;
-		shadow_text.setPosition(fontItem.pos.x + fontItem.shadowOffset, fontItem.pos.y + fontItem.shadowOffset);
-		shadow_text.setColor(fontItem.shadowColor);
+		shadow_text.setPosition(fontItem.pos.x + fontItem.text_shadowOffset, fontItem.pos.y + fontItem.text_shadowOffset);
+		shadow_text.setColor(fontItem.text_shadowColor);
 		window.draw(shadow_text);
 	}
 

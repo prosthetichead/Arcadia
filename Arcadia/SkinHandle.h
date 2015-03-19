@@ -9,35 +9,10 @@ class SkinHandle
 public:
 	
 	sf::Vector2f resolution;
-	
-	struct Font_Item
-	{
-		int size;
-		std::string fontName;
-		sf::Color color;
 
-		sf::Vector2f pos;
-		
-		bool shadow;
-		sf::Color shadowColor;
-		int shadowOffset;
-
-		Font_Item()
-		{
-			size = 10;
-			fontName = "ARCADE_PIX.TTF";
-			color = sf::Color::White;
-
-			pos = sf::Vector2f(0,0);
-
-			shadow = false;
-			shadowOffset =0;
-			shadowColor = sf::Color::Black;
-		}
-	};
 	
 	// Used by rectangles and sprites to position them.
-	struct Rectangle_Item{
+	struct Skin_Element{
 		bool enabled;
 		sf::Vector2f size;
 		sf::Vector2f pos;
@@ -47,7 +22,14 @@ public:
 		sf::Color outline_colour; 
 		bool resize_fit;
 
-		Rectangle_Item()
+		bool text_shadow;
+		std::string text_font;
+		int text_size;
+		sf::Color text_color;
+		sf::Color text_shadowColor;
+		int text_shadowOffset;
+
+		Skin_Element()
 		{
 			enabled = false;
 			size = sf::Vector2f(100,100);
@@ -57,6 +39,13 @@ public:
 			outline_colour = sf::Color::White;
 			outline_width = 0;
 			resize_fit = true;
+
+			text_shadow = false;			
+			text_size = 10;
+			text_shadowOffset = 0;
+			text_shadowColor = sf::Color::White;
+			text_color = sf::Color::White;
+			text_font = "ARCADE_PIX.TTF";
 		}
 
 		sf::RectangleShape getRectangle()
@@ -131,53 +120,47 @@ public:
 	};
 	struct Game_List_Settings
 	{
-		sf::Vector2f size;
-		sf::Vector2f position;
-		
-		Font_Item selected_font;
-		Font_Item normal_font;
+		Skin_Element list;		
+		Skin_Element selected_list_item;
+		Skin_Element normal_list_item;
 
 		Game_List_Settings()
 		{
-			size = sf::Vector2f(300,500);
-			position = sf::Vector2f(0,0);
+			list.size = sf::Vector2f(300,500);
+			list.pos = sf::Vector2f(0,0);
 		}
 	};
 	struct Game_Info_Settings
 	{
-		Rectangle_Item fanArt;
+		Skin_Element fanArt;
 
-		Rectangle_Item clearLogo;
+		Skin_Element clearLogo;
 				
-		Rectangle_Item description;
-
-		Font_Item description_font;
-
-		Rectangle_Item genres;
-
-		Font_Item genres_font;
-
-		Rectangle_Item video;
-
-		Rectangle_Item gameInfoBorder;
-
-		Rectangle_Item screenshot;
+		Skin_Element description;
 		
-		Rectangle_Item companyLogos;
+		Skin_Element genres;
 
-		Rectangle_Item platformIcon;
+		Skin_Element video;
 
-		Rectangle_Item players;
+		Skin_Element gameInfoBorder;
 
-		Font_Item year_font;
-
-		Font_Item playTimeTitle_font;
+		Skin_Element screenshot;
 		
-		Font_Item playTime_font;
+		Skin_Element companyLogos;
+
+		Skin_Element platformIcon;
+
+		Skin_Element players;
+
+		Skin_Element year;
+
+		Skin_Element playTimeTitle;
 		
-		Font_Item lastPlayedTitle_font;
+		Skin_Element playTime;
 		
-		Font_Item lastPlayed_font;
+		Skin_Element lastPlayedTitle;
+		
+		Skin_Element lastPlayed;
 
 		Game_Info_Settings()
 		{		
@@ -196,8 +179,8 @@ private:
 	void SkinHandle::loadLayout();	
 	std::string xml_path;
 	std::string exe_path;
-	SkinHandle::Font_Item SkinHandle::read_font_elem(tinyxml2::XMLElement* elem);
-	SkinHandle::Rectangle_Item SkinHandle::read_rectangle_elem(tinyxml2::XMLElement* elem);
+	//SkinHandle::Font_Item SkinHandle::read_font_elem(tinyxml2::XMLElement* elem);
+	SkinHandle::Skin_Element SkinHandle::read_rectangle_elem(tinyxml2::XMLElement* elem);
 
 
 };

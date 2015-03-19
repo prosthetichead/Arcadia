@@ -33,7 +33,7 @@ public:
 	sf::Vector2i assetHandle::resizePreserveRatio(int org_width, int org_height, int new_width, int new_height, bool fit);
 	
 	void assetHandle::draw5_Stars(double numStars, sf::Color color, int x, int y, sf::RenderWindow& window);
-	sf::Text assetHandle::getText(std::string text, SkinHandle::Font_Item& fontItem);
-	void assetHandle::drawText(std::string text, SkinHandle::Font_Item& fontItem, sf::RenderWindow& window);
+	sf::Text assetHandle::getText(std::string text, SkinHandle::Skin_Element& fontItem);
+	void assetHandle::drawText(std::string text, SkinHandle::Skin_Element& fontItem, sf::RenderWindow& window);
 };
 

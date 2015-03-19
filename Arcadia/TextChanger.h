@@ -15,17 +15,16 @@ private:
 	int index;
 
 	std::vector<std::string> text;
-	SkinHandle::Font_Item font;
+	SkinHandle::Skin_Element font;
 
 
 public:
 	TextChanger(assetHandle* ah_ref);
 	~TextChanger(void);
 
-	void TextChanger::setText(std::vector<std::string> textVector, SkinHandle::Font_Item fontItem, int speed);
+	void TextChanger::setText(std::vector<std::string> textVector, SkinHandle::Skin_Element fontItem, int speed);
 
 	void TextChanger::update();
-	void TextChanger::draw(sf::RenderWindow &window, sf::Vector2f pos, sf::Vector2f size);
+	void TextChanger::draw(sf::RenderWindow &window);
 
 };
-

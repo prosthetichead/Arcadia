@@ -19,7 +19,7 @@ GameInfo::GameInfo(dbHandle* db_ref, assetHandle* ah_ref, SkinHandle* sh_ref)
 	fanArt.create(1,1);
 	clearLogo.create(1,1);
 
-	genreChanger.setText(currentGameInfo.genres, sh->game_info_settings.genres_font, 10);
+	genreChanger.setText(currentGameInfo.genres, sh->game_info_settings.genres, 10);
 }
 
 
@@ -38,9 +38,9 @@ void GameInfo::init()
 
 	scrollingTextTexture.create(sh->game_info_settings.description.size.x, sh->game_info_settings.description.size.y);
 
-	descriptionText.setFont(ah->getFontAsset(sh->game_info_settings.description_font.fontName));
-	descriptionText.setCharacterSize(sh->game_info_settings.description_font.size);
-	descriptionText.setColor(sh->game_info_settings.description_font.color);
+	descriptionText.setFont(ah->getFontAsset(sh->game_info_settings.description.text_font));
+	descriptionText.setCharacterSize(sh->game_info_settings.description.text_size);
+	descriptionText.setColor(sh->game_info_settings.description.text_color);
 	
 	movie = new sfe::Movie;
 }
@@ -88,7 +88,7 @@ void GameInfo::newGameInfo(dbHandle::gameListItem gameItem)
 	currentGameInfo = db->getGameInfo(gameItem);
 
 	// Genre roatating text
-	genreChanger.setText(currentGameInfo.genres, sh->game_info_settings.genres_font, 100);
+	genreChanger.setText(currentGameInfo.genres, sh->game_info_settings.genres, 100);
 
 	//recreate movie
 	delete movie;
@@ -185,7 +185,7 @@ void GameInfo::draw(sf::RenderWindow& window)
 
 	window.draw(sh->game_info_settings.platformIcon.getSprite( ah->getIconAsset(currentGameInfo.platformIconID) ));
 
-	genreChanger.draw(window, sh->game_info_settings.genres.pos, sh->game_info_settings.genres.size);
+	genreChanger.draw(window);
 
 	sf::Sprite spritePlayer;
 	spritePlayer.setTexture(ah->getTextureAsset("PLAYERS"));
@@ -200,13 +200,13 @@ void GameInfo::draw(sf::RenderWindow& window)
 	//ah->draw5_Stars(currentGameInfo.online_stars, sf::Color::Color(105,205,255,255), gameIconsBorderBottom.getPosition().x, gameIconsBorderBottom.getPosition().y+30, window);
 	
 	//playtime infomation.	
-	ah->drawText("You've Played", sh->game_info_settings.playTimeTitle_font, window);
-	ah->drawText(currentGameInfo.playTime, sh->game_info_settings.playTime_font, window);
-	ah->drawText("Last Played", sh->game_info_settings.lastPlayedTitle_font, window);
-	ah->drawText(currentGameInfo.lastPlayed, sh->game_info_settings.lastPlayed_font, window);
+	ah->drawText("You've Played", sh->game_info_settings.playTimeTitle, window);
+	ah->drawText(currentGameInfo.playTime, sh->game_info_settings.playTime, window);
+	ah->drawText("Last Played", sh->game_info_settings.lastPlayedTitle, window);
+	ah->drawText(currentGameInfo.lastPlayed, sh->game_info_settings.lastPlayed, window);
 
 	//draw year information
-	ah->drawText(currentGameInfo.release_year, sh->game_info_settings.year_font, window);
+	ah->drawText(currentGameInfo.release_year, sh->game_info_settings.year, window);
 
 	if (currentGameInfo.screenPath != "NULL")
 	{
