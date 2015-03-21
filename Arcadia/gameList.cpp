@@ -157,7 +157,8 @@ void GameList::draw(sf::RenderWindow& window)
 		window.draw(normalText);
 	}
 
-	
+
+
 	normalPosY = selectedPosY + (selectedFontPadding);
 	for(int i=0; i < numItemsHalf; ++i)
 	{

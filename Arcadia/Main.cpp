@@ -61,6 +61,15 @@ std::string getExePath()
 	return strAppDirectory;
   }
 
+void setupWindow()
+{
+	sf::VideoMode desktopMode = sf::VideoMode(sh.resolution.x,sh.resolution.y);
+	window.create(desktopMode, "Arcadia", sh.windowStyle);
+	window.setVerticalSyncEnabled(true);
+	window.setJoystickThreshold(5);
+}
+
+
 int main()
 {
 	activateDebugConsole();  //turn on debug console
@@ -87,9 +96,7 @@ int main()
 			}
 			if (event.type == sf::Event::GainedFocus)
 			{
-				sf::VideoMode desktopMode = sf::VideoMode(sh.resolution.x, sh.resolution.y);
-				window.create(desktopMode, "Arcadia", sf::Style::Fullscreen);
-				window.setVerticalSyncEnabled(true);
+				//setupWindow();
 				pause = false;
 				gameInfo.pauseMovie();
 			}
@@ -109,52 +116,42 @@ int main()
     return 0;
 }
 
+
+
+
+
 //Called at the start of the game
 //runs just once
 void initialize()
 {	
-	printf("--Initialize -- \n");
 	db.setFilePath(path, "arcadia.db");
 	ah.init(db);
 	ih.init(&db, &window);
 	sh.init(db);
-	printf("-- AH, IH, DB and SH Init -- \n");
+	printf("handelers Init complete");	
 
-	sf::VideoMode desktopMode = sf::VideoMode(sh.resolution.x,sh.resolution.y);
-
-	int gameListWidth = desktopMode.width * .35;
-
-	hideScreen.setSize(sf::Vector2f(desktopMode.width, desktopMode.height));
+	hideScreen.setSize(sf::Vector2f(sh.resolution.x, sh.resolution.y));
 	hideScreen.setPosition(0,0);
-	hideScreen.setFillColor(sf::Color::Color(0,0,0,180));
+	hideScreen.setFillColor(sf::Color::Color(0,0,0,190));
 
 	gameList.init(sh);
-	printf("-- Game List Init -- \n");
 	gameInfo.init();
-	printf("-- Game Info Init -- \n");
 			
-	platformFilters.init(1, 35,  gameListWidth, db.getPlatformFilterList(), "platform Filter List");
-	savedFilters.init(1, 92,  gameListWidth, db.getPlatformFilterList(), "platform Filter List");
+	platformFilters.init(1, 35,  400, db.getPlatformFilterList(), "platform Filter List");
+	savedFilters.init(1, 92,  400, db.getPlatformFilterList(), "platform Filter List");
 
-	settingsScreen.init(desktopMode.width/2,  desktopMode.height/2);
+	settingsScreen.init(sh.resolution.x / 2, sh.resolution.y / 2);
 
 	gameList.updateFilter(platformFilters.getFilterString());
-	printf("-- Update Filters -- \n");
 
-	window.create(desktopMode, "Arcadia", sf::Style::Fullscreen);
-	window.setVerticalSyncEnabled(true);
-	window.setJoystickThreshold(5);
-	printf("-- Create Window -- \n");
-
-
-	printf("-- Initialize Complete -- \n");
+	setupWindow();
 }
 
 void update()
 {
 	if (displaySettingsScreen)
 	{
-		if(settingsScreen.update())
+		if(settingsScreen.update(window))
 		{
 			displaySettingsScreen = false;
 		}
@@ -190,20 +187,23 @@ void update()
 
 void draw()
 {
-
 	window.clear(sf::Color::Black);
 
 	gameInfo.draw(window);
 	gameList.draw(window);
 	platformFilters.draw(window);
 	savedFilters.draw(window);
-	
+
 	if(displaySettingsScreen)
 	{
 		window.draw(hideScreen);
 		settingsScreen.draw(window);
 	}
-	window.display();
+
+
+
+
+	window.display();	
 }
 
 

@@ -50,7 +50,7 @@ void SettingsScreen::setCurrentGameListItem(dbHandle::gameListItem gameItem)
 	currentGameListItem = gameItem;
 }
 
-bool SettingsScreen::update()
+bool SettingsScreen::update(sf::RenderWindow& window)
 {
 	//menuNav.selected = false;
 
@@ -70,6 +70,7 @@ bool SettingsScreen::update()
 
 		else if (menuNav.getCurrentID() == "exit")
 		{
+			window.close();
 			menuNav.selected = false;
 			return true;  // we are finished return true
 		}

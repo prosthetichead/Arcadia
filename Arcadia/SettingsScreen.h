@@ -39,7 +39,7 @@ public:
 
 	void SettingsScreen::init(float posX, float posY);
 	void SettingsScreen::setCurrentGameListItem(dbHandle::gameListItem gameListItem);
-	bool SettingsScreen::update();
+	bool SettingsScreen::update(sf::RenderWindow& window);
 	void SettingsScreen::draw(sf::RenderWindow& window);
 };
 

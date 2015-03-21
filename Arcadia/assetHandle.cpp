@@ -201,6 +201,7 @@ sf::Text assetHandle::getText(std::string text, SkinHandle::Skin_Element& fontIt
 	returnText.setCharacterSize(fontItem.text_size);
 	returnText.setColor(fontItem.text_color);
 	returnText.setPosition(fontItem.pos);
+	returnText.setOrigin( fontItem.getOrigin( returnText.getLocalBounds().width, returnText.getCharacterSize() ) );
 	returnText.setFont(getFontAsset(fontItem.text_font));
 	returnText.setString(text);
 

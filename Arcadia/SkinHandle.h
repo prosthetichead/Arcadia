@@ -9,10 +9,15 @@ class SkinHandle
 public:
 	
 	sf::Vector2f resolution;
+	int windowStyle;
+	enum class element_type
+	{ static_text, static_rectangle, static_sprite, video, screenshot, fanart,
+	clear_logo, description, genres, developers, publishers, platform_icon, year,
+	players, play_time, last_played };
 
 	
-	// Used by rectangles and sprites to position them.
 	struct Skin_Element{
+		element_type type;
 		bool enabled;
 		sf::Vector2f size;
 		sf::Vector2f pos;
@@ -28,6 +33,7 @@ public:
 		sf::Color text_color;
 		sf::Color text_shadowColor;
 		int text_shadowOffset;
+		std::string text;
 
 		Skin_Element()
 		{
@@ -46,6 +52,7 @@ public:
 			text_shadowColor = sf::Color::White;
 			text_color = sf::Color::White;
 			text_font = "ARCADE_PIX.TTF";
+			text = "";
 		}
 
 		sf::RectangleShape getRectangle()
@@ -56,7 +63,6 @@ public:
 			returnRect.setFillColor(colour);
 			returnRect.setOutlineColor(outline_colour);
 			returnRect.setOutlineThickness(outline_width);
-
 			return returnRect;		
 		}
 
@@ -130,57 +136,21 @@ public:
 			list.pos = sf::Vector2f(0,0);
 		}
 	};
-	struct Game_Info_Settings
-	{
-		Skin_Element fanArt;
 
-		Skin_Element clearLogo;
-				
-		Skin_Element description;
-		
-		Skin_Element genres;
-
-		Skin_Element video;
-
-		Skin_Element gameInfoBorder;
-
-		Skin_Element screenshot;
-		
-		Skin_Element companyLogos;
-
-		Skin_Element platformIcon;
-
-		Skin_Element players;
-
-		Skin_Element year;
-
-		Skin_Element playTimeTitle;
-		
-		Skin_Element playTime;
-		
-		Skin_Element lastPlayedTitle;
-		
-		Skin_Element lastPlayed;
-
-		Game_Info_Settings()
-		{		
-
-		}
-
-	};
-
+	std::vector<Skin_Element> game_list_elements;
+	std::vector<Skin_Element> game_info_elements;
 	Game_List_Settings game_list_settings;
-	Game_Info_Settings game_info_settings;
 	SkinHandle();
 	~SkinHandle(void);
 	void SkinHandle::init(dbHandle& db_ref);
+	
 
 private:
 	void SkinHandle::loadLayout();	
 	std::string xml_path;
 	std::string exe_path;
 	//SkinHandle::Font_Item SkinHandle::read_font_elem(tinyxml2::XMLElement* elem);
-	SkinHandle::Skin_Element SkinHandle::read_rectangle_elem(tinyxml2::XMLElement* elem);
+	SkinHandle::Skin_Element SkinHandle::read_skin_elem(tinyxml2::XMLElement* elem);
 
 
 };

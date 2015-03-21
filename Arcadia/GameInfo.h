@@ -16,6 +16,8 @@ private:
 	SkinHandle* sh;
 
 	TextChanger genreChanger;
+	TextChanger developerChanger;
+	TextChanger publisherChanger;
 
 	dbHandle::gameListItem currentGameItem;
 	dbHandle::gameInfoItem currentGameInfo;
@@ -39,18 +41,18 @@ private:
 	
 	sf::RectangleShape rectangleFanArt;	//Full Screen Rectangle
 
-	sf::Text descriptionText;
-	int descriptionFontSize;
-	bool descriptionScroll;
-	bool descriptionPause;
-	float descriptionPauseTime;
-	float descriptionPauseCount;
-	float descriptionOffset;
-	float descriptionRequiredOffset;
-	
-	bool resetOffset;
 
+	//sf::Text descriptionText;
+	//int descriptionFontSize;
+	//bool descriptionScroll;
+	//bool descriptionPause;
+	//float descriptionPauseTime;
+	//float descriptionPauseCount;
+	//float descriptionOffset;
+	//float descriptionRequiredOffset;
+	//bool resetOffset;
 	//sf::Font yearFont;
+
 	sf::Text yearText;
 	int yearFontSize;
 

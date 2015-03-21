@@ -19,13 +19,14 @@ void SkinHandle::init(dbHandle& db)
 
 	resolution.x = 1600;
 	resolution.y = 1200;
+	windowStyle = sf::Style::Default;
 
 	//load gamelist settings from xml
 	loadLayout();
 }
 
 
-SkinHandle::Skin_Element SkinHandle::read_rectangle_elem(tinyxml2::XMLElement* elem)
+SkinHandle::Skin_Element SkinHandle::read_skin_elem(tinyxml2::XMLElement* elem)
 {
 	SkinHandle::Skin_Element return_element;
 	if (elem->Attribute("pos_x") != NULL && elem->Attribute("pos_y") != NULL)
@@ -34,8 +35,7 @@ SkinHandle::Skin_Element SkinHandle::read_rectangle_elem(tinyxml2::XMLElement* e
 		return_element.size = sf::Vector2f(atof(elem->Attribute("size_x")), atof(elem->Attribute("size_y")));
 	if(elem->Attribute("origin") != NULL)
 	{
-		return_element.origin_code = elem->Attribute("origin");
-		
+		return_element.origin_code = elem->Attribute("origin");		
 	}
 	if (elem->Attribute("resize_fit") != NULL)
 	{
@@ -72,6 +72,11 @@ SkinHandle::Skin_Element SkinHandle::read_rectangle_elem(tinyxml2::XMLElement* e
 				}
 			}
 		}
+		if (rectElemName == "text")
+		{
+			return_element.text = rectElem->GetText();
+			printf(return_element.text.c_str());
+		}
 
 	}
 
@@ -84,8 +89,20 @@ void SkinHandle::loadLayout()
 	doc.LoadFile(xml_path.c_str());
 	tinyxml2::XMLNode *rootnode = doc.RootElement();
 
-	resolution.x = atof(rootnode->ToElement()->Attribute("res_width"));
-	resolution.y = atof(rootnode->ToElement()->Attribute("res_height"));
+	if (rootnode->ToElement()->Attribute("res_width") != NULL && rootnode->ToElement()->Attribute("res_height") != NULL) {
+		resolution.x = atof(rootnode->ToElement()->Attribute("res_width"));
+		resolution.y = atof(rootnode->ToElement()->Attribute("res_height"));
+	}
+	if (rootnode->ToElement()->Attribute("screen_mode") != NULL){
+		std::string screen_mode = rootnode->ToElement()->Attribute("screen_mode");
+		if (screen_mode == "fullscreen")
+			windowStyle = sf::Style::Fullscreen;
+		if (screen_mode == "none")
+			windowStyle = sf::Style::None;
+		if (screen_mode == "window")
+			windowStyle = sf::Style::Default;
+	}
+
 
 	for(tinyxml2::XMLElement* elem = rootnode->FirstChildElement(); elem != NULL; elem = elem->NextSiblingElement())
 	{
@@ -96,11 +113,11 @@ void SkinHandle::loadLayout()
 			{
 				std::string gameElemName = gameElem->Value();
 				if (gameElemName == "list")
-					game_list_settings.list = read_rectangle_elem(gameElem);
+					game_list_settings.list = read_skin_elem(gameElem);
 				if (gameElemName == "selected_item")
-					game_list_settings.selected_list_item = read_rectangle_elem(gameElem);						
+					game_list_settings.selected_list_item = read_skin_elem(gameElem);						
 				if (gameElemName == "normal_item")
-					game_list_settings.normal_list_item = read_rectangle_elem(gameElem);																	
+					game_list_settings.normal_list_item = read_skin_elem(gameElem);																	
 			}
 		}
 		if (elemName == "game_info")
@@ -108,53 +125,86 @@ void SkinHandle::loadLayout()
 			for(tinyxml2::XMLElement* gameElem = elem->FirstChildElement(); gameElem != NULL; gameElem = gameElem->NextSiblingElement())
 			{
 				std::string gameElemName = gameElem->Value();
-				if (gameElemName == "fanart")
-					game_info_settings.fanArt = read_rectangle_elem(gameElem);
+				Skin_Element se = read_skin_elem(gameElem);
 
-				if (gameElemName == "clear_logo")
-					game_info_settings.clearLogo = read_rectangle_elem(gameElem);	
-				
-				if (gameElemName == "description") 
-					game_info_settings.description = read_rectangle_elem(gameElem);		
-				
-				if (gameElemName == "genres") 
-					game_info_settings.genres = read_rectangle_elem(gameElem);
-				
-				if (gameElemName == "video")
-					game_info_settings.video  = read_rectangle_elem(gameElem);
-				
-				if (gameElemName == "screenshot")
-					game_info_settings.screenshot = read_rectangle_elem(gameElem);
-				
-				if (gameElemName == "company_logos")
-					game_info_settings.companyLogos = read_rectangle_elem(gameElem);
-				
-				if (gameElemName == "platform_icon")
-					game_info_settings.platformIcon = read_rectangle_elem(gameElem);
-				
-				if (gameElemName == "year")
-					game_info_settings.year = read_rectangle_elem(gameElem);
-				
-				if (gameElemName == "play_time_title")
-					game_info_settings.playTimeTitle  = read_rectangle_elem(gameElem);
+				if (gameElemName == "static_rectangle") {				
+					se.type = element_type::static_rectangle;
+					game_info_elements.push_back(se);
+				}
 
-				if (gameElemName == "play_time")
-					game_info_settings.playTime = read_rectangle_elem(gameElem);
+				if (gameElemName == "static_text") {				
+					se.type = element_type::static_text;
+					game_info_elements.push_back(se);
+				}
+			
+				else if (gameElemName == "fanart") {				
+					se.type = element_type::fanart;	
+					game_info_elements.push_back(se);
+				}
 
-				if (gameElemName == "last_played_title")
-					game_info_settings.lastPlayedTitle = read_rectangle_elem(gameElem);
+				else if (gameElemName == "clear_logo") {
+					se.type = element_type::clear_logo;
+					game_info_elements.push_back(se);
+				}
 				
-				if (gameElemName == "last_played")
-					game_info_settings.lastPlayed = read_rectangle_elem(gameElem);
+				else if (gameElemName == "description") {
+					se.type = element_type::description;
+					game_info_elements.push_back(se);
+				}
 
-				if (gameElemName == "game_info_border")
-					game_info_settings.gameInfoBorder = read_rectangle_elem(gameElem);
+				else if (gameElemName == "platform_icon") {
+					se.type = element_type::platform_icon;
+					game_info_elements.push_back(se);
+				}
 
-				if (gameElemName == "players")
-					game_info_settings.players = read_rectangle_elem(gameElem);
+				else if (gameElemName == "genres") {
+					se.type = element_type::genres;
+					game_info_elements.push_back(se);
+				}
+
+				else if (gameElemName == "screenshot") {
+					se.type = element_type::screenshot;
+					game_info_elements.push_back(se);
+				}
+
+				else if (gameElemName == "video") {
+					se.type = element_type::video;
+					game_info_elements.push_back(se);
+				}
+				
+				else if (gameElemName == "developers") {
+					se.type = element_type::developers;
+					game_info_elements.push_back(se);
+				}
+
+				else if (gameElemName == "publishers") {
+					se.type = element_type::publishers;
+					game_info_elements.push_back(se);
+				}
+				
+				else if (gameElemName == "year") {
+					se.type = element_type::year;
+					game_info_elements.push_back(se);
+				}
+				
+				else if (gameElemName == "play_time") {
+					se.type = element_type::play_time;
+					game_info_elements.push_back(se);
+				}
+
+				else if (gameElemName == "last_played") {
+					se.type = element_type::last_played;
+					game_info_elements.push_back(se);
+				}
+
+				else if (gameElemName == "players") {
+					se.type = element_type::players;
+					game_info_elements.push_back(se);
+				}
 			}
-
 		}
+
+		
 	}
 
 
