@@ -34,7 +34,7 @@ class GameList
 		void GameList::init(SkinHandle& sh);//float posX, float posY, int width, float height);
 		bool GameList::update(inputHandle& ih);
 		void GameList::draw(sf::RenderWindow& window);
-		void GameList::updateFilter(std::string filterString);
+		void GameList::updateFilter(std::string filterString1, std::string filterString2);
 		dbHandle::gameListItem  GameList::getCurrentItem();
 };
 

@@ -34,7 +34,7 @@ SkinHandle sh; //Dont use untill init
 GameList gameList(db, ah);
 GameInfo gameInfo(&db, &ah, &sh);
 FilterList platformFilters(db, ah);
-FilterList savedFilters(db, ah);
+FilterList filters(db, ah);
 SettingsScreen settingsScreen(&db, &ah, &ih);
 launcher launch(&db);
 
@@ -137,12 +137,12 @@ void initialize()
 	gameList.init(sh);
 	gameInfo.init();
 			
-	platformFilters.init(1, 35,  400, db.getPlatformFilterList(), "platform Filter List");
-	savedFilters.init(1, 92,  400, db.getPlatformFilterList(), "platform Filter List");
+	platformFilters.init(1, 35,  400, db.getPlatformFilterList(), "Platform Filters");
+	filters.init(1, 92,  400, db.getCustomFilterList(), "Filters");
 
 	settingsScreen.init(sh.resolution.x / 2, sh.resolution.y / 2);
 
-	gameList.updateFilter(platformFilters.getFilterString());
+	gameList.updateFilter(platformFilters.getFilterString(), filters.getFilterString());
 
 	setupWindow();
 }
@@ -170,14 +170,23 @@ void update()
 		if (ih.inputPress(inputHandle::inputs::platform_filter_left))
 		{
 			platformFilters.update(-1);
-			gameList.updateFilter(platformFilters.getFilterString() );//+ filterScreen.getFilterString());		
+			gameList.updateFilter(platformFilters.getFilterString(), filters.getFilterString());//+ filterScreen.getFilterString());		
 		}
 		if (ih.inputPress(inputHandle::inputs::platform_filter_right))
 		{
 			platformFilters.update(+1);
-			gameList.updateFilter(platformFilters.getFilterString());//+ filterScreen.getFilterString());	
-		}		
-	
+			gameList.updateFilter(platformFilters.getFilterString(), filters.getFilterString());//+ filterScreen.getFilterString());	
+		}
+		if (ih.inputPress(inputHandle::inputs::filter_left))
+		{
+			filters.update(-1);
+			gameList.updateFilter( platformFilters.getFilterString(), filters.getFilterString() );//+ filterScreen.getFilterString());	
+		}
+		if (ih.inputPress(inputHandle::inputs::filter_right))
+		{
+			filters.update(+1);
+			gameList.updateFilter(platformFilters.getFilterString(), filters.getFilterString());//+ filterScreen.getFilterString());	
+		}
 
 		gameList.update(ih);
 		gameInfo.update(gameList.getCurrentItem());
@@ -192,7 +201,7 @@ void draw()
 	gameInfo.draw(window);
 	gameList.draw(window);
 	platformFilters.draw(window);
-	savedFilters.draw(window);
+	filters.draw(window);
 
 	if(displaySettingsScreen)
 	{

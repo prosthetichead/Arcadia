@@ -28,10 +28,10 @@ void GameList::init(SkinHandle& sh)//float posX, float posY, int width, float he
 	normalText.setCharacterSize(settings->normal_list_item.text_size);
 }
 
-void GameList::updateFilter(std::string filterString)
+void GameList::updateFilter(std::string filterString1, std::string filterString2 )
 {	
 	selectedItemNum = 0;
-	listOfItems = db.getGamesListQuery(filterString);
+	listOfItems = db.getGamesListQuery(filterString1, filterString2);
 }
 
 dbHandle::gameListItem  GameList::getCurrentItem()

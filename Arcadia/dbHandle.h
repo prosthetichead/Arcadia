@@ -120,10 +120,10 @@ public:
 	dbHandle(void);
 	~dbHandle(void);
 	void setFilePath(std::string path, std::string fileName);
-	std::vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStatment);
+	std::vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStatment1, std::string whereStatment2 );
 	gameInfoItem dbHandle::getGameInfo( gameListItem );
 	std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList();
-	std::vector<dbHandle::filterListItem> dbHandle::getCustomFilterList(std::string name, std::string sql, std::string games_column_name);
+	std::vector<dbHandle::filterListItem> dbHandle::getCustomFilterList();
 	std::string dbHandle::getLaunchCode(std::string platform_id, std::string file_name);
 	std::vector<dbHandle::assetItem> dbHandle::getIconPaths();
 	inputItem dbHandle::getInputItem(int input, sf::Keyboard::Key default_key);

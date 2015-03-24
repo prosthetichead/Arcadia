@@ -53,12 +53,21 @@ std::string dbHandle::fileExists(std::string file, std::vector<std::string> file
 
 
 
-vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStatment)
+vector<dbHandle::gameListItem> dbHandle::getGamesListQuery(std::string whereStatment1, std::string whereStatment2  )
 {
 	vector<dbHandle::gameListItem> results;
 
-	std::string query = "select games.name, games.file_name, platforms.id, platforms.name from games, platforms where games.platform_id = platforms.id and games.active = 1 " + whereStatment + " order by games.name"; 
-
+	std::string query = "select distinct "
+						"games.name, games.file_name, platforms.id, platforms.name, games.id "
+						"from games "
+						"join platforms on games.platform_id = platforms.id "
+						"left join game_genres on games.id = game_genres.game_id "
+						"left join genres on game_genres.genre_id = genres.id "
+						"left join game_developers on games.id = game_developers.game_id "
+						"left join companies developers on game_developers.developer_id = developers .id "
+						"left join game_publishers on games.id = game_publishers.game_id "
+						"left join companies publishers on game_publishers.publisher_id = publishers.id "
+						"where games.active = 1 and (" + whereStatment1 + ") and (" + whereStatment2 + ") order by games.name ";
 	sqlite3pp::query qry(db, query.c_str());
 	sqlite3pp::query::iterator intBegin = qry.begin();
 	sqlite3pp::query::iterator intEnd = qry.end();
@@ -212,8 +221,8 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 	
 	//Add the all items filter as first filter
 	dbHandle::filterListItem newItemAll;
-	newItemAll.filterIcon = "F_ALL";
-	newItemAll.filterString = " ";
+	newItemAll.filterIcon = "FILTER_ALL";
+	newItemAll.filterString = " 1=1 ";
 	newItemAll.title = "All Platforms";
 	filterList.push_back(newItemAll);
 
@@ -230,7 +239,7 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 		else
 			icon_id = "ERROR";
 
-		newItem.filterString = " and platform_id = " + platform_id;
+		newItem.filterString = " platform_id = " + platform_id;
 		newItem.title = (*i).get<const char*>(1);
 		newItem.filterIcon = icon_id; 
 
@@ -241,38 +250,35 @@ std::vector<dbHandle::filterListItem> dbHandle::getPlatformFilterList()
 	return filterList;	
 }
 
-std::vector<dbHandle::filterListItem> dbHandle::getCustomFilterList(std::string name, std::string sql, std::string games_column_name)
+std::vector<dbHandle::filterListItem> dbHandle::getCustomFilterList()
 {
 	vector<dbHandle::filterListItem> filterList;
 
 	//Add the all items filter as first filter
 	dbHandle::filterListItem newItemAll;
-	newItemAll.filterIcon = "F_ALL";
-	newItemAll.filterString = "";
-	newItemAll.title = "All " + name;
+	newItemAll.filterIcon = "FILTER_ALL";
+	newItemAll.filterString = " 1=1 ";
+	newItemAll.title = "No Filter";
 	filterList.push_back(newItemAll);
 
-	std::string query = sql; //"select distinct companies.id, companies.name, companies.icon_id from companies, games where games.developer_id = companies.id and games.active = 1";
+	std::string query = "select name, icon, filter_string from filters";
 	sqlite3pp::query qry(db, query.c_str());
 	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
 	{
 		dbHandle::filterListItem newItem;
-		std::string id_column = (*i).get<const char*>(0);
+		std::string filterString = (*i).get<const char*>(2);
 		std::string icon_id = "";
-		if ((*i).get<const char*>(2) != NULL)
-			 icon_id = (*i).get<const char*>(2);
+		if ((*i).get<const char*>(1) != NULL)
+			 icon_id = (*i).get<const char*>(1);
 		else
-			icon_id = "ERROR";
+			icon_id = "ERROR";		
 
-		newItem.filterString = " and " + games_column_name + " = " + id_column;
-		newItem.title = (*i).get<const char*>(1);
+		newItem.filterString = filterString;
+		newItem.title = (*i).get<const char*>(0);
 		newItem.filterIcon = icon_id; 
 		filterList.push_back(newItem);
 	}
-
-	return filterList;	
-
-		
+	return filterList;			
 }
 
 std::string dbHandle::getLaunchCode(std::string platform_id, std::string file_name)
