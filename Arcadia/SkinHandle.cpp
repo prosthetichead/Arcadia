@@ -14,7 +14,7 @@ void SkinHandle::init(dbHandle& db)
 {
 	exe_path = db.exe_path;
 	//work out which layout to use. for now lets just use /assets/layouts/main.xml
-	xml_path = db.exe_path + "\\assets\\layouts\\main.xml";
+	xml_path = db.exe_path + "\\assets\\skins\\main.xml";
 	std::cout << xml_path << std::endl;
 
 	resolution.x = 1600;
@@ -33,10 +33,11 @@ SkinHandle::Skin_Element SkinHandle::read_skin_elem(tinyxml2::XMLElement* elem)
 		return_element.pos = sf::Vector2f(atof(elem->Attribute("pos_x")), atof(elem->Attribute("pos_y")));	
 	if (elem->Attribute("size_x") != NULL && elem->Attribute("size_y") != NULL)
 		return_element.size = sf::Vector2f(atof(elem->Attribute("size_x")), atof(elem->Attribute("size_y")));
-	if(elem->Attribute("origin") != NULL)
-	{
-		return_element.origin_code = elem->Attribute("origin");		
-	}
+	if(elem->Attribute("origin") != NULL)	
+		return_element.origin_code = elem->Attribute("origin");	
+	if(elem->Attribute("png_file") != NULL)
+		return_element.asset_file = elem->Attribute("png_file");
+
 	if (elem->Attribute("resize_fit") != NULL)
 	{
 		std::string resize_fit = elem->Attribute("resize_fit");
@@ -57,7 +58,12 @@ SkinHandle::Skin_Element SkinHandle::read_skin_elem(tinyxml2::XMLElement* elem)
 		}
 		if(rectElemName == "font")
 		{
-			return_element.text_font = rectElem->Attribute("file");
+			if(rectElem->Attribute("line_spacing") != NULL)
+				return_element.line_spacing = atoi(rectElem->Attribute("line_spacing"));
+			if(rectElem->Attribute("indent") != NULL)
+				return_element.indent = atoi(rectElem->Attribute("indent"));
+
+			return_element.asset_file = rectElem->Attribute("file");
 
 			return_element.text_size = atoi(rectElem->Attribute("size"));
 			return_element.text_color = sf::Color::Color(atoi(rectElem->Attribute("red")), atoi(rectElem->Attribute("green")), atoi(rectElem->Attribute("blue")), atoi(rectElem->Attribute("alpha")) );
@@ -92,6 +98,7 @@ void SkinHandle::loadLayout()
 	if (rootnode->ToElement()->Attribute("res_width") != NULL && rootnode->ToElement()->Attribute("res_height") != NULL) {
 		resolution.x = atof(rootnode->ToElement()->Attribute("res_width"));
 		resolution.y = atof(rootnode->ToElement()->Attribute("res_height"));
+		skin_id = rootnode->ToElement()->Attribute("id");
 	}
 	if (rootnode->ToElement()->Attribute("screen_mode") != NULL){
 		std::string screen_mode = rootnode->ToElement()->Attribute("screen_mode");
@@ -107,104 +114,93 @@ void SkinHandle::loadLayout()
 	for(tinyxml2::XMLElement* elem = rootnode->FirstChildElement(); elem != NULL; elem = elem->NextSiblingElement())
 	{
 		std::string elemName = elem->Value();
+		Skin_Element se = read_skin_elem(elem);
+
 		if (elemName == "game_list")
 		{
+			se.type = element_type::game_list;
+			game_list_settings.list = se;			
+			skin_elements.push_back(game_list_settings.list);
+
 			for(tinyxml2::XMLElement* gameElem = elem->FirstChildElement(); gameElem != NULL; gameElem = gameElem->NextSiblingElement())
 			{
 				std::string gameElemName = gameElem->Value();
-				if (gameElemName == "list")
-					game_list_settings.list = read_skin_elem(gameElem);
-				if (gameElemName == "selected_item")
-					game_list_settings.selected_list_item = read_skin_elem(gameElem);						
-				if (gameElemName == "normal_item")
-					game_list_settings.normal_list_item = read_skin_elem(gameElem);																	
-			}
-		}
-		if (elemName == "game_info")
-		{
-			for(tinyxml2::XMLElement* gameElem = elem->FirstChildElement(); gameElem != NULL; gameElem = gameElem->NextSiblingElement())
-			{
-				std::string gameElemName = gameElem->Value();
-				Skin_Element se = read_skin_elem(gameElem);
-
-				if (gameElemName == "static_rectangle") {				
-					se.type = element_type::static_rectangle;
-					game_info_elements.push_back(se);
+				if (gameElemName == "game_list_selected_item")
+				{
+					game_list_settings.selected_list_item = read_skin_elem(gameElem);	
+					game_list_settings.selected_list_item.origin_code = "CL";
 				}
-
-				if (gameElemName == "static_text") {				
-					se.type = element_type::static_text;
-					game_info_elements.push_back(se);
-				}
-			
-				else if (gameElemName == "fanart") {				
-					se.type = element_type::fanart;	
-					game_info_elements.push_back(se);
-				}
-
-				else if (gameElemName == "clear_logo") {
-					se.type = element_type::clear_logo;
-					game_info_elements.push_back(se);
-				}
-				
-				else if (gameElemName == "description") {
-					se.type = element_type::description;
-					game_info_elements.push_back(se);
-				}
-
-				else if (gameElemName == "platform_icon") {
-					se.type = element_type::platform_icon;
-					game_info_elements.push_back(se);
-				}
-
-				else if (gameElemName == "genres") {
-					se.type = element_type::genres;
-					game_info_elements.push_back(se);
-				}
-
-				else if (gameElemName == "screenshot") {
-					se.type = element_type::screenshot;
-					game_info_elements.push_back(se);
-				}
-
-				else if (gameElemName == "video") {
-					se.type = element_type::video;
-					game_info_elements.push_back(se);
-				}
-				
-				else if (gameElemName == "developers") {
-					se.type = element_type::developers;
-					game_info_elements.push_back(se);
-				}
-
-				else if (gameElemName == "publishers") {
-					se.type = element_type::publishers;
-					game_info_elements.push_back(se);
-				}
-				
-				else if (gameElemName == "year") {
-					se.type = element_type::year;
-					game_info_elements.push_back(se);
-				}
-				
-				else if (gameElemName == "play_time") {
-					se.type = element_type::play_time;
-					game_info_elements.push_back(se);
-				}
-
-				else if (gameElemName == "last_played") {
-					se.type = element_type::last_played;
-					game_info_elements.push_back(se);
-				}
-
-				else if (gameElemName == "players") {
-					se.type = element_type::players;
-					game_info_elements.push_back(se);
+				if (gameElemName == "game_list_normal_item")
+				{
+					game_list_settings.normal_list_item = read_skin_elem(gameElem);	
+					game_list_settings.normal_list_item.origin_code = "CL";
 				}
 			}
 		}
-
-		
+		else if (elemName == "static_rectangle") {				
+			se.type = element_type::static_rectangle;
+			skin_elements.push_back(se);
+		}
+		else if (elemName == "static_text") {				
+			se.type = element_type::static_text;
+			skin_elements.push_back(se);
+		}
+		else if (elemName == "static_image") {				
+			se.type = element_type::static_image;
+			skin_elements.push_back(se);
+		}
+		else if (elemName == "fanart") {				
+			se.type = element_type::fanart;	
+			skin_elements.push_back(se);
+		}
+		else if (elemName == "clear_logo") {
+			se.type = element_type::clear_logo;
+			skin_elements.push_back(se);
+		}
+		else if (elemName == "description") {
+			se.type = element_type::description;
+			skin_elements.push_back(se);
+		}
+		else if (elemName == "platform_icon") {
+			se.type = element_type::platform_icon;
+			skin_elements.push_back(se);
+		}
+		else if (elemName == "genres") {
+			se.type = element_type::genres;
+			skin_elements.push_back(se);
+		}
+		else if (elemName == "screenshot") {
+			se.type = element_type::screenshot;
+			skin_elements.push_back(se);
+		}
+		else if (elemName == "video") {
+			se.type = element_type::video;
+			skin_elements.push_back(se);
+		}
+		else if (elemName == "developers") {
+			se.type = element_type::developers;
+			skin_elements.push_back(se);
+		}
+		else if (elemName == "publishers") {
+			se.type = element_type::publishers;
+			skin_elements.push_back(se);
+		}
+		else if (elemName == "year") {
+			se.type = element_type::year;
+			skin_elements.push_back(se);
+		}
+		else if (elemName == "play_time") {
+			se.type = element_type::play_time;
+			skin_elements.push_back(se);
+		}
+		else if (elemName == "last_played") {
+			se.type = element_type::last_played;
+			skin_elements.push_back(se);
+		}
+		else if (elemName == "players") {
+			se.type = element_type::players;
+			skin_elements.push_back(se);
+		}
 	}
 
 

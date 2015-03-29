@@ -69,7 +69,7 @@ public:
 	void GameInfo::init(); //void GameInfo::init(float posX, float posY, float width, float height);
 	void GameInfo::update(dbHandle::gameListItem gameItem);
 	
-	void GameInfo::draw(sf::RenderWindow &window);
+	void GameInfo::draw(sf::RenderWindow& window, SkinHandle::Skin_Element& se );
 	void GameInfo::pauseMovie();
 };
 

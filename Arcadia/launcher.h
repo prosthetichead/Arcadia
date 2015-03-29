@@ -13,7 +13,7 @@ private:
 	PROCESS_INFORMATION pi;
 	double startTime;
 	double endTime;
-	double totalSeconds;
+	int totalSeconds;
 	std::string currentPlatformID;
 	std::string currentFileName;
 

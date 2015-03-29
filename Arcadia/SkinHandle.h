@@ -8,12 +8,15 @@ class SkinHandle
 {
 public:
 	
+	std::string skin_id;
 	sf::Vector2f resolution;
 	int windowStyle;
+
+
 	enum class element_type
-	{ static_text, static_rectangle, static_sprite, video, screenshot, fanart,
+	{ static_text, static_rectangle, static_image, video, screenshot, fanart,
 	clear_logo, description, genres, developers, publishers, platform_icon, year,
-	players, play_time, last_played };
+	players, play_time, last_played, game_list  };
 
 	
 	struct Skin_Element{
@@ -27,13 +30,16 @@ public:
 		sf::Color outline_colour; 
 		bool resize_fit;
 
+		std::string asset_file;
+
 		bool text_shadow;
-		std::string text_font;
 		int text_size;
 		sf::Color text_color;
 		sf::Color text_shadowColor;
 		int text_shadowOffset;
 		std::string text;
+		int line_spacing;
+		int indent;
 
 		Skin_Element()
 		{
@@ -51,7 +57,7 @@ public:
 			text_shadowOffset = 0;
 			text_shadowColor = sf::Color::White;
 			text_color = sf::Color::White;
-			text_font = "ARCADE_PIX.TTF";
+			asset_file = "ARCADE_PIX.TTF";
 			text = "";
 		}
 
@@ -96,6 +102,26 @@ public:
 			else if (origin_code == "BR")
 				return sf::Vector2f(og_size_x,og_size_y);
 		}
+		sf::Vector2f getOrigin(sf::FloatRect floatRect){			
+			if (origin_code == "TL")
+				return sf::Vector2f(0,0);
+			else if (origin_code == "TC")
+				return sf::Vector2f(floatRect.left + floatRect.width/2.0f, 0);
+			else if (origin_code == "TR")
+				return sf::Vector2f(floatRect.left + floatRect.width, 0);
+			else if (origin_code == "CL")
+				return sf::Vector2f(0, floatRect.top + floatRect.height/2.0f);
+			else if (origin_code == "C")
+				return sf::Vector2f(floatRect.left + floatRect.width/2.0f,  floatRect.top  + floatRect.height/2.0f);
+			else if (origin_code == "CR")
+				return sf::Vector2f(floatRect.left + floatRect.width,  floatRect.top  + floatRect.height/2.0f);
+			else if (origin_code == "BL")
+				return sf::Vector2f(0, floatRect.top  + floatRect.height);
+			else if (origin_code == "BC")
+				return sf::Vector2f(floatRect.left + floatRect.width/2.0f, floatRect.top  + floatRect.height);
+			else if (origin_code == "BR")
+				return sf::Vector2f(floatRect.left + floatRect.width, floatRect.top  + floatRect.height);
+		}
 
 		sf::Vector2f newScale(int org_width, int org_height, int new_width, int new_height, bool fit)
 		{
@@ -137,8 +163,7 @@ public:
 		}
 	};
 
-	std::vector<Skin_Element> game_list_elements;
-	std::vector<Skin_Element> game_info_elements;
+	std::vector<Skin_Element> skin_elements;
 	Game_List_Settings game_list_settings;
 	SkinHandle();
 	~SkinHandle(void);

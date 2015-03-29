@@ -24,9 +24,9 @@ bool launcher::terminate()
 		processRunning = false;
 		endTime = time(NULL);
 		totalSeconds = endTime - startTime;
-		double newMins = totalSeconds/60;
-		std::cout << newMins << std::endl;
-		db->updateGamePlaytime(currentPlatformID, currentFileName, newMins);
+		
+		std::cout << totalSeconds << std::endl;
+		db->updateGamePlaytime(currentPlatformID, currentFileName, totalSeconds);
 		return true;
 	}
 	catch (...)

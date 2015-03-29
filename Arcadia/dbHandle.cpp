@@ -22,7 +22,8 @@ dbHandle::~dbHandle(void)
 void dbHandle::setFilePath(std::string path, std::string fileName)
 {	
 	exe_path = path;
-	db_fileName = path + "\\" + fileName;
+	//db_fileName = path + "\\" + fileName;
+	db_fileName = "C:\\Users\\Ashley\\Documents\\Python Projects\\arcadia_admin\\arcadia.db";
 
 	db.connect(db_fileName.c_str());
 	//db.enableREGEX();
@@ -179,17 +180,25 @@ dbHandle::gameInfoItem dbHandle::getGameInfo( dbHandle::gameListItem listItem )
 			infoItem.platformIconID = (*i).get<const char*>(6);
 
 		//played time
-		double mins_played = (*i).get<double>(7);
-		if (mins_played > 60) 
-			infoItem.playTime =  std::to_string((int)mins_played/60) + " Hours";
-		else if (mins_played < 60)
-			infoItem.playTime = std::to_string((int)mins_played) + " Minites";
-		else if ((int)mins_played == 0)
-			infoItem.playTime = "NULL";
+		double seconds_played = (*i).get<int>(7);
 
+		int hours = (int)seconds_played / 3600;
+		int remainder = (int) seconds_played - hours * 3600;
+		int mins = remainder / 60;
+		remainder = remainder - mins * 60;
+		int secs = remainder;
+		if (hours > 0)
+			infoItem.playTime = std::to_string(hours) + " Hours " + std::to_string(mins) + " Minites ";
+		else if (mins > 0)
+			infoItem.playTime = std::to_string(mins) + " Minites " + std::to_string(secs) + " Seconds";
+		else if (secs > 0)
+			infoItem.playTime = std::to_string(secs) + " Seconds";
+		else
+			infoItem.playTime = "Not Yet Played";
+		
 		//last played
 		if ((*i).get<const char*>(8) == NULL)
-			infoItem.lastPlayed = "NULL";
+			infoItem.lastPlayed = "Not Yet Played";
 		else
 			infoItem.lastPlayed = (*i).get<const char*>(8);
 
@@ -284,7 +293,7 @@ std::vector<dbHandle::filterListItem> dbHandle::getCustomFilterList()
 std::string dbHandle::getLaunchCode(std::string platform_id, std::string file_name)
 {
 	//db.connect(db_fileName.c_str());
-	std::string query = "select load_string, game_load_string, roms_path, extension from games, platforms where platforms.id = :platform_id and file_name = :file_name";
+	std::string query = "select load_string, game_load_string, roms_path, extension, emu_path from games, platforms where platforms.id = :platform_id and file_name = :file_name";
 	sqlite3pp::query qry(db, query.c_str());
 	qry.bind(":platform_id", platform_id.c_str());
 	qry.bind(":file_name", file_name.c_str());
@@ -292,6 +301,7 @@ std::string dbHandle::getLaunchCode(std::string platform_id, std::string file_na
 	std::string load_string = "";
 	std::string game_load_string = "";
 	std::string roms_path = "";
+	std::string emu_path = "";
 	std::string extension = "";
 	for (sqlite3pp::query::iterator i = qry.begin(); i != qry.end(); ++i)
 	{
@@ -307,12 +317,15 @@ std::string dbHandle::getLaunchCode(std::string platform_id, std::string file_na
 			if (!extension.empty())
 				extension = "." + extension;
 		}
+		if ((*i).get<const char*>(4) != NULL)
+			emu_path = (*i).get<const char*>(4);
 	}
 	
+	boost::replace_all(load_string, "%EMU_PATH%", emu_path);
 	boost::replace_all(load_string, "%GAME_LOAD_STRING%", game_load_string);
 	boost::replace_all(load_string, "%ROMS_PATH%", roms_path);
 	boost::replace_all(load_string, "%FILE_NAME%", file_name + extension);
-	boost::replace_all(load_string, "%PATH%", exe_path);
+	boost::replace_all(load_string, "%ARCADIA_PATH%", exe_path);
 	//db.disconnect;
 
 	return load_string;
@@ -394,10 +407,10 @@ int dbHandle::getMaxPlayers()
 	return maxPlayers;
 }
 
-void dbHandle::updateGamePlaytime(std::string platform_id, std::string file_name, double minsPlayed)
+void dbHandle::updateGamePlaytime(std::string platform_id, std::string file_name, int secondsPlayed )
 {
-	sqlite3pp::command cmd(db, "UPDATE games set minutes_played = minutes_played + :newMinsPlayed, last_played = date('now') where platform_id = :platform_id and file_name = :file_name");
-	cmd.bind(":newMinsPlayed", minsPlayed);
+	sqlite3pp::command cmd(db, "UPDATE games set seconds_played = seconds_played  + :secondsPlayed , last_played = date('now') where platform_id = :platform_id and file_name = :file_name");
+	cmd.bind(":secondsPlayed", secondsPlayed);
 	cmd.bind(":platform_id", platform_id.c_str());
 	cmd.bind(":file_name", file_name.c_str());
 	cmd.execute();

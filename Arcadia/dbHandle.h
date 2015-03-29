@@ -128,7 +128,7 @@ public:
 	std::vector<dbHandle::assetItem> dbHandle::getIconPaths();
 	inputItem dbHandle::getInputItem(int input, sf::Keyboard::Key default_key);
 	int dbHandle::getMaxPlayers();
-	void dbHandle::updateGamePlaytime(std::string platform_id, std::string file_name, double minsPlayed);
+	void dbHandle::updateGamePlaytime(std::string platform_id, std::string file_name, int minsPlayed);
 	//std::string dbHandle::getHTMLdata(std::string URL);
 	std::vector<dbHandle::findGameResultItem> dbHandle::findGame_onGameDb( gameListItem );
 	void dbHandle::updateInputItem(inputItem &item);

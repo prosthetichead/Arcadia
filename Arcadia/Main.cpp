@@ -31,7 +31,7 @@ assetHandle ah; //Dont use untill init
 inputHandle ih;  //Dont use untill init
 SkinHandle sh; //Dont use untill init
 
-GameList gameList(db, ah);
+GameList gameList(&db, &ah, &sh);
 GameInfo gameInfo(&db, &ah, &sh);
 FilterList platformFilters(db, ah);
 FilterList filters(db, ah);
@@ -125,16 +125,15 @@ int main()
 void initialize()
 {	
 	db.setFilePath(path, "arcadia.db");
-	ah.init(db);
 	ih.init(&db, &window);
 	sh.init(db);
+	ah.init(db, sh.skin_id);
 	printf("handelers Init complete");	
 
 	hideScreen.setSize(sf::Vector2f(sh.resolution.x, sh.resolution.y));
 	hideScreen.setPosition(0,0);
 	hideScreen.setFillColor(sf::Color::Color(0,0,0,190));
 
-	gameList.init(sh);
 	gameInfo.init();
 			
 	platformFilters.init(1, 35,  400, db.getPlatformFilterList(), "Platform Filters");
@@ -198,8 +197,31 @@ void draw()
 {
 	window.clear(sf::Color::Black);
 
-	gameInfo.draw(window);
-	gameList.draw(window);
+
+	for (SkinHandle::Skin_Element se : sh.skin_elements) {
+	
+		switch (se.type)
+		{
+		case SkinHandle::element_type::static_text:
+			ah.drawText(se.text, se, window);
+			break;
+		case SkinHandle::element_type::static_rectangle:
+			window.draw(se.getRectangle());			
+			break;
+		case SkinHandle::element_type::static_image:
+			window.draw( se.getSprite(ah.getStaticImageAsset(se.asset_file) ));
+			break;
+		case SkinHandle::element_type::game_list:
+			gameList.draw(window);
+			break;
+		default:
+			gameInfo.draw(window, se);
+			break;
+		}
+
+	}
+	
+	
 	platformFilters.draw(window);
 	filters.draw(window);
 

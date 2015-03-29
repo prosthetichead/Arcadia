@@ -10,15 +10,16 @@ class GameList
 {
 	private:
 		
-		SkinHandle::Game_List_Settings *settings;
+		//SkinHandle::Game_List_Settings *settings;
 		
-		sf::RectangleShape rectangle;
+		//sf::RectangleShape rectangle;
 		
-		dbHandle &db;
-		assetHandle &ah;
+		dbHandle* db;
+		assetHandle* ah;
+		SkinHandle* sh;
 
-		sf::Text selectedText;
-		sf::Text normalText;
+		//std::string selectedText;
+		//sf::Text normalText;
 		std::vector<dbHandle::gameListItem> listOfItems;
 		
 		int selectedItemNum;
@@ -28,10 +29,10 @@ class GameList
 		void GameList::nextLetter(int direction);
 
 	public:
-		GameList(dbHandle &db_ref, assetHandle &ah_ref);
+		GameList(dbHandle* db_ref, assetHandle* ah_ref, SkinHandle* sh_ref);
 		~GameList(void);
 
-		void GameList::init(SkinHandle& sh);//float posX, float posY, int width, float height);
+		void GameList::init();//float posX, float posY, int width, float height);
 		bool GameList::update(inputHandle& ih);
 		void GameList::draw(sf::RenderWindow& window);
 		void GameList::updateFilter(std::string filterString1, std::string filterString2);

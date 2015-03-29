@@ -2,8 +2,11 @@
 
 using namespace std;
 
-GameList::GameList(dbHandle &db_ref, assetHandle &ah_ref): db(db_ref), ah(ah_ref)
+GameList::GameList(dbHandle* db_ref, assetHandle* ah_ref, SkinHandle* sh_ref)
 {	
+	ah = ah_ref;
+	db = db_ref;
+	sh = sh_ref;
 	selectedItemNum = 0;
 	counter = 0;
 	selectedItemChange = false;	
@@ -12,26 +15,10 @@ GameList::~GameList(void)
 {
 }
 
-
-void GameList::init(SkinHandle& sh)//float posX, float posY, int width, float height)
-{
-	settings = &sh.game_list_settings;
-
-	//setup rectangle 
-	rectangle.setSize(settings->list.size);
-	rectangle.setPosition(settings->list.pos);
-	
-	//setup fonts
-	selectedText.setFont( ah.getFontAsset(settings->selected_list_item.text_font) );
-	selectedText.setCharacterSize(settings->selected_list_item.text_size);
-	normalText.setFont( ah.getFontAsset(settings->normal_list_item.text_font) );
-	normalText.setCharacterSize(settings->normal_list_item.text_size);
-}
-
 void GameList::updateFilter(std::string filterString1, std::string filterString2 )
 {	
 	selectedItemNum = 0;
-	listOfItems = db.getGamesListQuery(filterString1, filterString2);
+	listOfItems = db->getGamesListQuery(filterString1, filterString2);
 }
 
 dbHandle::gameListItem  GameList::getCurrentItem()
@@ -97,7 +84,6 @@ bool GameList::update(inputHandle& ih)
 		
 	}
 
-	selectedText.setString(listOfItems.at(selectedItemNum).title.substr(0,50));
 
 	return selectedItemChange;
 }
@@ -105,75 +91,52 @@ bool GameList::update(inputHandle& ih)
 
 void GameList::draw(sf::RenderWindow& window)
 {
-	//window.draw(rectangle);
 
-	int selectedFontPadding = selectedText.getCharacterSize() + 20;
-	int normalFontSize_Padding = normalText.getCharacterSize() + 10;
+	sf::RectangleShape listRect = sh->game_list_settings.list.getRectangle();
 
-	float selectedFontSizeHalf = selectedText.getCharacterSize() / 2;
-	int selectedPosX = rectangle.getPosition().x + 30;
-	int selectedPosY = ((rectangle.getSize().y / 2) + rectangle.getPosition().y);
+	//draw selected text
+	int selectedLineSpacing = sh->game_list_settings.selected_list_item.line_spacing;
+	int selectedIndent = sh->game_list_settings.selected_list_item.indent;
+	std::string text = listOfItems.at(selectedItemNum).title;
+	sh->game_list_settings.selected_list_item.pos.x = listRect.getPosition().x + selectedIndent; 
+	sh->game_list_settings.selected_list_item.pos.y = listRect.getPosition().y + (listRect.getSize().y/2); 
+	sf::Text selectedText = ah->getText(text, sh->game_list_settings.selected_list_item);
+	ah->trimTextToRectangleWidth(selectedText, listRect);
+	ah->drawText(selectedText, sh->game_list_settings.selected_list_item, window );
+
 	
 	
 
-	selectedText.setOrigin(0, selectedFontSizeHalf );
-	selectedText.setPosition(selectedPosX + settings->selected_list_item.text_shadowOffset , selectedPosY + settings->selected_list_item.text_shadowOffset );
-	selectedText.setColor(settings->selected_list_item.text_shadowColor);
-	window.draw(selectedText);
-	selectedText.setPosition(selectedPosX, selectedPosY);
-	selectedText.setColor(settings->selected_list_item.text_color);
-	window.draw(selectedText);
+	// draw unselected (normal) items
+	int normalLineSpacing = sh->game_list_settings.normal_list_item.line_spacing;
+	int normalIndent = sh->game_list_settings.normal_list_item.indent;
 	
+	sf::Text normalText = ah->getText("Place Holder Text", sh->game_list_settings.normal_list_item);
 
-	sf::RectangleShape line(sf::Vector2f(rectangle.getSize().x, 2));
-	line.setFillColor(sf::Color::Color(0,102,153,255));
-	line.setPosition(selectedPosX - 10, selectedPosY - (selectedFontSizeHalf + selectedFontPadding/4));
-	window.draw(line);
-	line.setPosition(selectedPosX - 10, selectedPosY + (selectedFontSizeHalf + selectedFontPadding/4));
-	window.draw(line);
-
-	int numNormalItems = (rectangle.getSize().y - (selectedText.getCharacterSize() + selectedFontPadding)) / (normalFontSize_Padding);
+	int numNormalItems = ( listRect.getSize().y - (selectedText.getGlobalBounds().height + selectedLineSpacing)) / (normalText.getGlobalBounds().height + normalLineSpacing) ;
 	if (numNormalItems > listOfItems.size())
 		numNormalItems = listOfItems.size();
-	
-	float normalPosX = rectangle.getPosition().x + 10;
-	float normalPosY = selectedPosY - (normalText.getCharacterSize() + selectedFontPadding);
+
+	for(int i=0; i < numNormalItems/2; ++i)
+	{
+		int itemNum_top = selectedItemNum - i-1;
+		if (itemNum_top < 0)
+			itemNum_top = listOfItems.size() + itemNum_top;
+
+		int itemNum_bottom = selectedItemNum + i + 1;
+		if (itemNum_bottom > listOfItems.size() - 1)
+			itemNum_bottom = 0 + (itemNum_bottom - listOfItems.size());
 		
-	int numItemsHalf = numNormalItems/2;
+		normalText.setString(listOfItems.at(itemNum_top).title);
+		normalText.setPosition(listRect.getPosition().x + normalIndent, (selectedText.getPosition().y - (normalText.getGlobalBounds().height/2 + selectedText.getGlobalBounds().height/2 + selectedLineSpacing/2)) - ( i * (normalText.getLocalBounds().height + normalLineSpacing) ) );
+		ah->trimTextToRectangleWidth(normalText, listRect);
+		ah->drawText(normalText, sh->game_list_settings.normal_list_item, window );
 
-	for(int i=0; i < numItemsHalf; ++i)
-	{
-		int itemNum = selectedItemNum - i-1;
-		if (itemNum < 0)
-			itemNum = listOfItems.size() + itemNum;
-
-		dbHandle::gameListItem item = listOfItems.at(itemNum);
-
-		sf::Color newNormalColor = settings->normal_list_item.text_color;
-		newNormalColor.a = 255 - i * (255/numItemsHalf);
-		normalText.setColor(newNormalColor);
-		normalText.setString(item.title);
-		normalText.setPosition(normalPosX, normalPosY - (i*normalFontSize_Padding));
-		window.draw(normalText);
+		normalText.setString(listOfItems.at(itemNum_bottom).title);
+		normalText.setPosition(listRect.getPosition().x + normalIndent, (selectedText.getPosition().y + (normalText.getGlobalBounds().height/2 + selectedText.getGlobalBounds().height/2 + selectedLineSpacing/2)) + ( i * (normalText.getLocalBounds().height + normalLineSpacing) ));
+		ah->trimTextToRectangleWidth(normalText, listRect);
+		ah->drawText(normalText, sh->game_list_settings.normal_list_item, window );
 	}
-
-
-
-	normalPosY = selectedPosY + (selectedFontPadding);
-	for(int i=0; i < numItemsHalf; ++i)
-	{
-		int itemNum = selectedItemNum + i + 1;
-		if (itemNum > listOfItems.size() - 1)
-			itemNum = 0 + (itemNum - listOfItems.size());
-			
-		dbHandle::gameListItem item = listOfItems.at(itemNum);
-
-		sf::Color newNormalColor = settings->normal_list_item.text_color;
-		newNormalColor.a = 255 - i * (255/numItemsHalf);
-		normalText.setColor(newNormalColor);
-		normalText.setString(item.title);
-		normalText.setPosition(normalPosX, normalPosY + (i*normalFontSize_Padding));
-		window.draw(normalText);
-	}
-
 }
+
+

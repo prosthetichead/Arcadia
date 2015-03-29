@@ -173,19 +173,10 @@ void GameInfo::newGameInfo(dbHandle::gameListItem gameItem)
 	
 }
 
-void GameInfo::draw(sf::RenderWindow& window)
+void GameInfo::draw(sf::RenderWindow& window,  SkinHandle::Skin_Element& se)
 {
-
-	for (SkinHandle::Skin_Element se : sh->game_info_elements) {
-	
 		switch (se.type)
 		{
-		case SkinHandle::element_type::static_text:
-			ah->drawText(se.text, se, window);
-			break;
-		case SkinHandle::element_type::static_rectangle:
-			window.draw(se.getRectangle());			
-			break;
 		case SkinHandle::element_type::fanart:
 			window.draw(se.getSprite(fanArt));
 			break;
@@ -229,7 +220,7 @@ void GameInfo::draw(sf::RenderWindow& window)
 			break;
 		}
 	
-	}
+	
 
 	
 

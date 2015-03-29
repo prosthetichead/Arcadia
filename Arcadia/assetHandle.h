@@ -11,6 +11,7 @@ class assetHandle
 {
 private:
 	boost::unordered_map<std::string, sf::Texture> textureMap;
+	boost::unordered_map<std::string, sf::Texture> staticImagesMap;
 	boost::unordered_map<std::string, sf::Font> fontMap;
 	boost::unordered_map<std::string, sf::Texture> iconMap;
 	boost::unordered_map<std::string, sf::Texture> companiesMap;
@@ -23,8 +24,9 @@ private:
 public:
 	assetHandle(void);
 	~assetHandle(void);
-	void assetHandle::init(dbHandle& db_obj);
+	void assetHandle::init(dbHandle& db_obj, std::string skin_id);
 	sf::Texture& assetHandle::getTextureAsset(std::string id);
+	sf::Texture& assetHandle::getStaticImageAsset(std::string id);
 	sf::Texture& assetHandle::getIconAsset(std::string id);
 	sf::Texture& assetHandle::getCompanyAsset(std::string id);
 
@@ -35,5 +37,8 @@ public:
 	void assetHandle::draw5_Stars(double numStars, sf::Color color, int x, int y, sf::RenderWindow& window);
 	sf::Text assetHandle::getText(std::string text, SkinHandle::Skin_Element& fontItem);
 	void assetHandle::drawText(std::string text, SkinHandle::Skin_Element& fontItem, sf::RenderWindow& window);
+	void assetHandle::drawText(sf::Text text, SkinHandle::Skin_Element& fontItem, sf::RenderWindow& window);
+
+	void assetHandle::trimTextToRectangleWidth(sf::Text &text, sf::RectangleShape &rect);
 };
 
