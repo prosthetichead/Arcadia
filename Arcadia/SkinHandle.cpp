@@ -13,8 +13,8 @@ SkinHandle::~SkinHandle(void)
 void SkinHandle::init(dbHandle& db)
 {
 	exe_path = db.exe_path;
-	//work out which layout to use. for now lets just use /assets/layouts/main.xml
-	xml_path = db.exe_path + "\\assets\\skins\\main.xml";
+	//work out which layout to use. for now lets just use skins/main.xml
+	xml_path = db.exe_path + "\\skins\\main.xml";
 	std::cout << xml_path << std::endl;
 
 	resolution.x = 1600;

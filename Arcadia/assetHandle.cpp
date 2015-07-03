@@ -22,11 +22,11 @@ void assetHandle::init(dbHandle& db_obj, std::string skin_id)
 	//	textureMap.insert(pair);
 	//}
 
-	loadFonts(db_obj.exe_path + "\\assets\\skins\\" + skin_id + "\\fonts");
-	iconMap = loadImages(db_obj.exe_path + "\\assets\\icons");
-	textureMap = loadImages(db_obj.exe_path + "\\assets\\system");
-	staticImagesMap = loadImages(db_obj.exe_path + "\\assets\\skins\\" + skin_id + "\\pngs");
-	companiesMap = loadImages(db_obj.exe_path + "\\assets\\companies");
+	loadFonts(db_obj.exe_path + "\\skins\\" + skin_id + "\\fonts");
+	iconMap = loadImages(db_obj.exe_path + "\\icons");
+	textureMap = loadImages(db_obj.exe_path + "\\skins\\" + skin_id + "\\system");
+	staticImagesMap = loadImages(db_obj.exe_path + "\\skins\\" + skin_id + "\\pngs");
+	companiesMap = loadImages(db_obj.exe_path + "\\companies");
 }
 
 

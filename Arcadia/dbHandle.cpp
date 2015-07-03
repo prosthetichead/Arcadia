@@ -23,7 +23,7 @@ void dbHandle::setFilePath(std::string path, std::string fileName)
 {	
 	exe_path = path;
 	//db_fileName = path + "\\" + fileName;
-	db_fileName = "C:\\Users\\Ashley\\Documents\\Python Projects\\arcadia_admin\\arcadia.db";
+	db_fileName = path + "\\" + fileName;
 
 	db.connect(db_fileName.c_str());
 	//db.enableREGEX();

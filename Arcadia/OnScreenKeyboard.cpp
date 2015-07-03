@@ -24,14 +24,14 @@ OnScreenKeyboard::~OnScreenKeyboard(void)
 
 void OnScreenKeyboard::init(float posX, float posY)
 {
-	keyBackTexture.loadFromFile(db.exe_path + "\\assets\\system\\keyBack.png");
-	keySysBackTexture.loadFromFile(db.exe_path + "\\assets\\system\\keySysBack.png");
-	keySpaceBackTexture.loadFromFile(db.exe_path + "\\assets\\system\\keySpaceBack.png");
-	keyFont.loadFromFile(db.exe_path + "\\assets\\fonts\\ARCADE_PIX.TTF");
-	keyText.setFont(keyFont);
+	keyBackTexture = ah.getTextureAsset("keyBack.png");
+	keySysBackTexture = ah.getTextureAsset("keySysBack.png");
+	keySpaceBackTexture = ah.getTextureAsset("keySpaceBack.png");
+	keyFont = ah.getFontAsset("default.ttf");
+	keyText.setFont(ah.getFontAsset(""));
 	keyText.setCharacterSize(22);
 	keyText.setColor(sf::Color::White);
-	userEnteredText.setFont(keyFont);
+	userEnteredText.setFont(ah.getFontAsset(""));
 	userEnteredText.setCharacterSize(22);
 	userEnteredText.setColor(sf::Color::White);
 	userEnteredText.setPosition(posX+10,posY+10);
@@ -69,11 +69,7 @@ void OnScreenKeyboard::init(float posX, float posY)
 	menuNav.addItem("(" ,"p", ")" ,"-","'","char","(", (posX+normalButtonSize.x*11)+(buttonPaddingSize.x*10)+(normalButtonSize.x/2), (posY+normalButtonSize.y*3)+(buttonPaddingSize.x*1)+(normalButtonSize.y/2)  );
 	menuNav.addItem(")" ,"(", "\\","+","?","char",")", (posX+normalButtonSize.x*12)+(buttonPaddingSize.x*11)+(normalButtonSize.x/2), (posY+normalButtonSize.y*3)+(buttonPaddingSize.x*1)+(normalButtonSize.y/2)  );
 	menuNav.addItem("\\",")",  "" ,"=","!","char","\\", (posX+normalButtonSize.x*13)+(buttonPaddingSize.x*12)+(normalButtonSize.x/2), (posY+normalButtonSize.y*3)+(buttonPaddingSize.x*1)+(normalButtonSize.y/2)  );
-
-
 	
-
-
 	menuNav.addItem("a","", "s","q","z","char","a", (posX+normalButtonSize.x*1)+(buttonPaddingSize.x*0)+(normalButtonSize.x/2), (posY+normalButtonSize.y*4)+(buttonPaddingSize.x*2)+(normalButtonSize.y/2) );
 	menuNav.addItem("s","a","d","w","x","char","s", (posX+normalButtonSize.x*2)+(buttonPaddingSize.x*1)+(normalButtonSize.x/2), (posY+normalButtonSize.y*4)+(buttonPaddingSize.x*2)+(normalButtonSize.y/2) );
 	menuNav.addItem("d","s","f","e","c","char","d", (posX+normalButtonSize.x*3)+(buttonPaddingSize.x*2)+(normalButtonSize.x/2), (posY+normalButtonSize.y*4)+(buttonPaddingSize.x*2)+(normalButtonSize.y/2) );
