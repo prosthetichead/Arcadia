@@ -36,7 +36,7 @@ bool launcher::terminate()
 }
 
 bool launcher::launchGame(std::string platform_id, std::string file_name)
-{
+{/*
 	std::string commandString = db->getLaunchCode(platform_id, file_name);
 	std::cout << commandString << std::endl;
 	if (processRunning)
@@ -72,7 +72,7 @@ bool launcher::launchGame(std::string platform_id, std::string file_name)
 	processRunning = true;
 	startTime = time(NULL);
 	currentPlatformID = platform_id;
-	currentFileName = file_name;
+	currentFileName = file_name;*/
 
 	return true;
 }

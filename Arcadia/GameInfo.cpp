@@ -239,7 +239,7 @@ void GameInfo::draw(sf::RenderWindow& window,  SkinHandle::Skin_Element& se)
 	//ah->draw5_Stars(currentGameInfo.online_stars, sf::Color::Color(105,205,255,255), gameIconsBorderBottom.getPosition().x, gameIconsBorderBottom.getPosition().y+30, window);
 	
 	//playtime infomation.	
-	//ah->drawText("You've Played", sh->game_info_settings.playTimeTitle, window);
+	//ah->drawText("", sh->game_info_settings.playTimeTitle, window);
 	//ah->drawText(currentGameInfo.playTime, sh->game_info_settings.playTime, window);
 	//ah->drawText("Last Played", sh->game_info_settings.lastPlayedTitle, window);
 	//ah->drawText(currentGameInfo.lastPlayed, sh->game_info_settings.lastPlayed, window);

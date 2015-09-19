@@ -81,7 +81,6 @@ SkinHandle::Skin_Element SkinHandle::read_skin_elem(tinyxml2::XMLElement* elem)
 		if (rectElemName == "text")
 		{
 			return_element.text = rectElem->GetText();
-			printf(return_element.text.c_str());
 		}
 
 	}
@@ -92,9 +91,11 @@ SkinHandle::Skin_Element SkinHandle::read_skin_elem(tinyxml2::XMLElement* elem)
 void SkinHandle::loadLayout()
 {
 	tinyxml2::XMLDocument doc;
+	tinyxml2::XMLNode *rootnode;
+	
 	doc.LoadFile(xml_path.c_str());
-	tinyxml2::XMLNode *rootnode = doc.RootElement();
-
+	rootnode = doc.RootElement();
+	
 	if (rootnode->ToElement()->Attribute("res_width") != NULL && rootnode->ToElement()->Attribute("res_height") != NULL) {
 		resolution.x = atof(rootnode->ToElement()->Attribute("res_width"));
 		resolution.y = atof(rootnode->ToElement()->Attribute("res_height"));
@@ -203,5 +204,5 @@ void SkinHandle::loadLayout()
 		}
 	}
 
-
+	
 }

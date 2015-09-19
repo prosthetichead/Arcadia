@@ -22,7 +22,6 @@ dbHandle::~dbHandle(void)
 void dbHandle::setFilePath(std::string path, std::string fileName)
 {	
 	exe_path = path;
-	//db_fileName = path + "\\" + fileName;
 	db_fileName = path + "\\" + fileName;
 
 	db.connect(db_fileName.c_str());
