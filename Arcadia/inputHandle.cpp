@@ -10,29 +10,53 @@ inputHandle::inputHandle()
 void inputHandle::init(dbHandle *db_obj, sf::Window *window_ref)
 {
 	dbHandle::inputItem item;
+	
 	item = db_obj->getInputItem(inputs::up, sf::Keyboard::Up);
+	item.inputName = "Up";
 	inputStates.push_back(item);
+
 	item = db_obj->getInputItem(inputs::down, sf::Keyboard::Down);
+	item.inputName = "Down";
 	inputStates.push_back(item);
+	
 	item = db_obj->getInputItem(inputs::left, sf::Keyboard::Left); 
+	item.inputName = "Left";
 	inputStates.push_back(item);
+
 	item = db_obj->getInputItem(inputs::right, sf::Keyboard::Right);
+	item.inputName = "Right";
 	inputStates.push_back(item);
+
 	item = db_obj->getInputItem(inputs::start_game, sf::Keyboard::Return);
+	item.inputName = "Start Game";
 	inputStates.push_back(item);
+	
 	item = db_obj->getInputItem(inputs::platform_filter_left, sf::Keyboard::Q);
+	item.inputName = "Platform Filter Previous";
 	inputStates.push_back(item);
+
 	item = db_obj->getInputItem(inputs::platform_filter_right, sf::Keyboard::W);
+	item.inputName = "Platform Filter Next";
 	inputStates.push_back(item);
+
 	item = db_obj->getInputItem(inputs::filter_left, sf::Keyboard::A);
+	item.inputName = "Filter Previous";
 	inputStates.push_back(item);
+
 	item = db_obj->getInputItem(inputs::filter_right, sf::Keyboard::S);
+	item.inputName = "Filter Next";
 	inputStates.push_back(item);
+
 	item = db_obj->getInputItem(inputs::settings, sf::Keyboard::F1);
+	item.inputName = "Display Settings";
 	inputStates.push_back(item);
+
 	item = db_obj->getInputItem(inputs::extra, sf::Keyboard::F2);
+	item.inputName = "Extra";
 	inputStates.push_back(item);
+	
 	item = db_obj->getInputItem(inputs::exit_game, sf::Keyboard::Escape);
+	item.inputName = "Exit Game";
 	inputStates.push_back(item);
 
 	window = window_ref;
