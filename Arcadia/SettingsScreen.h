@@ -4,6 +4,7 @@
 #include "inputHandle.h"
 #include "assetHandle.h"
 #include "ControlsScreen.h"
+#include "SkinHandle.h"
 #include <SFML/Graphics.hpp>
 
 class SettingsScreen
@@ -13,6 +14,7 @@ private:
 	dbHandle *db;
 	assetHandle *ah;
 	inputHandle *ih;
+	SkinHandle *sh;
 	MenuNavigation menuNav;
 
 	sf::RectangleShape menuRect;
@@ -34,7 +36,7 @@ private:
 
 
 public:
-	SettingsScreen(dbHandle *db_ref, assetHandle *ah_ref, inputHandle *ih_ref);
+	SettingsScreen(dbHandle *db_ref, assetHandle *ah_ref, inputHandle *ih_ref, SkinHandle *sh_ref);
 	~SettingsScreen(void);
 
 	void SettingsScreen::init(float posX, float posY);

@@ -1,11 +1,12 @@
 #include "SettingsScreen.h"
 
 
-SettingsScreen::SettingsScreen(dbHandle *db_ref, assetHandle *ah_ref, inputHandle *ih_ref)
+SettingsScreen::SettingsScreen(dbHandle *db_ref, assetHandle *ah_ref, inputHandle *ih_ref, SkinHandle *sh_ref )
 {
 	db = db_ref;
 	ah = ah_ref;
 	ih = ih_ref;
+	sh = sh_ref;
 	editGameVisible = false;
 	controlsVisible = false;
 	
@@ -35,9 +36,9 @@ void SettingsScreen::init(float posX, float posY)
 	menuShadowText = menuText;
 
 
-	menuNav.addItem("close", "", "", "","controls", "none", "Close Menu", menuRect.getPosition().x+16, menuRect.getPosition().y + 16);
-	
-	menuNav.addItem("controls", "", "", "close", "exit", "none", "Controls", menuRect.getPosition().x+16, menuRect.getPosition().y + (16 * 4) + (32 * 3));
+	menuNav.addItem("close", "", "", "","skin_select", "none", "Close Menu", menuRect.getPosition().x+16, menuRect.getPosition().y + 16);
+	menuNav.addItem("skin_select", "", "", "close", "controls", "none", "Skin Select", menuRect.getPosition().x + 16, menuRect.getPosition().y + (16 * 3) + (32 * 2));
+	menuNav.addItem("controls", "", "", "skin_select", "exit", "none", "Controls", menuRect.getPosition().x+16, menuRect.getPosition().y + (16 * 4) + (32 * 3));
 	menuNav.addItem("exit", "", "", "controls", "", "none", "Exit Arcadia", menuRect.getPosition().x+16, menuRect.getPosition().y + (16 * 5) + (32 * 4));
 
 	menuIDs = menuNav.getIDVector();
@@ -61,6 +62,18 @@ bool SettingsScreen::update(sf::RenderWindow& window)
 		{
 			if(controlScreen.update())
 				menuNav.selected = false;
+		}
+		if (menuNav.getCurrentID() == "skin_select"){
+
+			//Show Skin Select Screen
+			//For Now, just reload the current skin
+
+			//Initilize Skin and Assets Handeler again
+			sh->init(*db);
+			ah->init(*db, sh->skin_id);
+
+			menuNav.selected = false;
+			return true;
 		}
 		else if (menuNav.getCurrentID() == "close")
 		{
@@ -123,9 +136,4 @@ void SettingsScreen::draw(sf::RenderWindow& window)
 		if (menuNav.getCurrentID() == "controls")
 			controlScreen.draw(window);
 	}
-
-
-
-
-
 }

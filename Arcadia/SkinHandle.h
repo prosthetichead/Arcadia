@@ -169,13 +169,13 @@ public:
 	~SkinHandle(void);
 	void SkinHandle::init(dbHandle& db_ref);
 	
-
 private:
 	void SkinHandle::loadLayout();	
 	std::string xml_path;
 	std::string exe_path;
 	//SkinHandle::Font_Item SkinHandle::read_font_elem(tinyxml2::XMLElement* elem);
 	SkinHandle::Skin_Element SkinHandle::read_skin_elem(tinyxml2::XMLElement* elem);
+	
 
 
 };

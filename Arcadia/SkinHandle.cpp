@@ -22,6 +22,7 @@ void SkinHandle::init(dbHandle& db)
 	windowStyle = sf::Style::Default;
 
 	//load gamelist settings from xml
+	skin_elements.clear();
 	loadLayout();
 }
 

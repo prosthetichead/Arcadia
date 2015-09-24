@@ -35,7 +35,7 @@ GameList gameList(&db, &ah, &sh);
 GameInfo gameInfo(&db, &ah, &sh);
 FilterList platformFilters(db, ah);
 FilterList filters(db, ah);
-SettingsScreen settingsScreen(&db, &ah, &ih);
+SettingsScreen settingsScreen(&db, &ah, &ih, &sh);
 launcher launch(&db);
 
 std::string path;
