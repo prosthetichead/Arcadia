@@ -15,6 +15,8 @@ private:
 	dbHandle *db;
 	inputHandle *ih;
 
+	MenuNavigation menuNav;
+
 	sf::Text text;
 	int selectedItem;
 	bool selected;
