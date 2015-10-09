@@ -7,6 +7,7 @@ ControlsScreen::ControlsScreen()
 	rectBackground.setFillColor(sf::Color::Color(46,76,106,255));
 	rectBackground.setOutlineColor(sf::Color::Black);
 	rectBackground.setOutlineThickness(2);
+	rectBackground.setPosition(50, 50);
 
 	selectedItem  = 0;
 	selected = false;
@@ -33,35 +34,54 @@ void ControlsScreen::init(dbHandle* db_ref, assetHandle* ah_ref, inputHandle* ih
 	std::string prevItemName = "";
 	for (auto &item : inputStates)
 	{
-		std::string nextItemName = "reset";
-		if (index < inputStates.size()-1)
-			nextItemName = inputStates[index + 1].inputID;
-		menuNav.addItem(std::to_string(item.inputID), "", "", prevItemName, nextItemName, "input", item.inputName, rectBackground.getPosition().x + 10, rectBackground.getPosition().y + (15*index));
-		prevItemName = item.inputID;
+		std::string nextItemName;
+		if (index < inputStates.size() - 1)
+			nextItemName = std::to_string(inputStates[index + 1].inputID);
+		else
+			nextItemName = "reset";
+			
+		menuNav.addItem(std::to_string(item.inputID), "", "", prevItemName, nextItemName, "input", item.inputName, rectBackground.getPosition().x + 10, rectBackground.getPosition().y + 5 + (30 * index));
+		prevItemName = std::to_string(item.inputID);
 		index++;
 	}
-	menuNav.addItem("reset", "", "", prevItemName, "save", "none", "Reset To Defaults", rectBackground.getPosition().x + 10, rectBackground.getPosition().y + (15 * (index+1)));
-	menuNav.addItem("save", "", "", "reset", "cancel", "none", "Save", rectBackground.getPosition().x + 10, rectBackground.getPosition().y + (15 * (index+2)));
-	menuNav.addItem("cancel", "", "", "save", "", "none", "Cancel", rectBackground.getPosition().x + 10, rectBackground.getPosition().y + (15 * (index+3) ));
-
+	menuNav.addItem("reset", "", "", prevItemName,  "save", "none", "Reset To Defaults", rectBackground.getPosition().x + 10, rectBackground.getPosition().y + 5 + (30 * (index + 1)));
+	menuNav.addItem("save", "", "", "reset", "cancel", "none", "Save", rectBackground.getPosition().x + 10, rectBackground.getPosition().y + 5 + (30 * (index + 2)));
+	menuNav.addItem("cancel", "", "", "save", "", "none", "Cancel", rectBackground.getPosition().x + 10, rectBackground.getPosition().y + 5 + (30 * (index + 3)));
+	
 }
 
 bool ControlsScreen::update()
 {
-	if (selected) // Lets update be skipped first time so screen can be drawn before waiting for the key
-	{
-		int numberOfInputs = ih->getInputStates().size();
-		ih->waitAndUpdateInput( (inputHandle::inputs)selectedItem );
-		++selectedItem;
-		sf::sleep(sf::milliseconds(120));
-		if (selectedItem == numberOfInputs)
-		{
-			selectedItem = 0;
-			selected = false;
-			return true;
-		}
-	}
-	selected = true;
+	if (ih->inputPress(inputHandle::inputs::up) || ih->inputHold(inputHandle::inputs::up))
+		menuNav.move(MenuNavigation::movements::up);
+	
+	else if (ih->inputPress(inputHandle::inputs::down) || ih->inputHold(inputHandle::inputs::down))
+		menuNav.move(MenuNavigation::movements::down);
+	
+	else if (ih->inputPress(inputHandle::inputs::left) || ih->inputHold(inputHandle::inputs::left))
+		menuNav.move(MenuNavigation::movements::left);
+	
+	else if (ih->inputPress(inputHandle::inputs::right) || ih->inputHold(inputHandle::inputs::right))
+		menuNav.move(MenuNavigation::movements::right);
+	
+	else if (ih->inputPress(inputHandle::inputs::start_game) && !menuNav.selected)
+		menuNav.selected = true;
+
+
+	//if (selected) // Lets update be skipped first time so screen can be drawn before waiting for the key
+	//{
+	//	int numberOfInputs = ih->getInputStates().size();
+	//	ih->waitAndUpdateInput( (inputHandle::inputs)selectedItem );
+	//	++selectedItem;
+	//	sf::sleep(sf::milliseconds(120));
+	//	if (selectedItem == numberOfInputs)
+	//	{
+	//		selectedItem = 0;
+	//		selected = false;
+	//		return true;
+	//	}
+	//}
+	//selected = true;
 	return false;
 }
 
@@ -74,7 +94,21 @@ void ControlsScreen::draw(sf::RenderWindow &window)
 		text.setPosition(menuItem.posX, menuItem.posY);
 		text.setString(menuItem.value);
 		window.draw(text);
+		//This is a input item so also draw its current key alication
+		if (menuItem.type == "input"){
+			int inputID = std::stoi(menuID);
+			text.setPosition(menuItem.posX + 250, menuItem.posY);
+			text.setString(ih->getKeyName( ih->getInputItem((inputHandle::inputs)inputID).key));
+			window.draw(text);
+		}
+		
 	}
+	// draw the hand pointer
+	sf::Sprite pointerSprite;
+	pointerSprite.setTexture(ah->getTextureAsset("POINTER"));
+	pointerSprite.setOrigin(32, 12);
+	pointerSprite.setPosition(menuNav.getCurrentPosX(), menuNav.getCurrentPosY() + 5);
+	window.draw(pointerSprite);
 
 	//std::vector<dbHandle::inputItem>& inputStates = ih->getInputStates();
 

@@ -32,7 +32,7 @@ void inputHandle::init(dbHandle *db_obj, sf::Window *window_ref)
 	inputStates.push_back(item);
 	
 	item = db_obj->getInputItem(inputs::platform_filter_left, sf::Keyboard::Q);
-	item.inputName = "Platform Filter Previous";
+	item.inputName = "Platform Filter Prev";
 	inputStates.push_back(item);
 
 	item = db_obj->getInputItem(inputs::platform_filter_right, sf::Keyboard::W);
@@ -40,7 +40,7 @@ void inputHandle::init(dbHandle *db_obj, sf::Window *window_ref)
 	inputStates.push_back(item);
 
 	item = db_obj->getInputItem(inputs::filter_left, sf::Keyboard::A);
-	item.inputName = "Filter Previous";
+	item.inputName = "Filter Prev";
 	inputStates.push_back(item);
 
 	item = db_obj->getInputItem(inputs::filter_right, sf::Keyboard::S);

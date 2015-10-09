@@ -35,7 +35,6 @@ void SettingsScreen::init(float posX, float posY)
 	menuText.setCharacterSize(20);
 	menuShadowText = menuText;
 
-
 	menuNav.addItem("close", "", "", "","skin_select", "none", "Close Menu", menuRect.getPosition().x+16, menuRect.getPosition().y + 16);
 	menuNav.addItem("skin_select", "", "", "close", "controls", "none", "Skin Select", menuRect.getPosition().x + 16, menuRect.getPosition().y + (16 * 3) + (32 * 2));
 	menuNav.addItem("controls", "", "", "skin_select", "exit", "none", "Controls", menuRect.getPosition().x+16, menuRect.getPosition().y + (16 * 4) + (32 * 3));
