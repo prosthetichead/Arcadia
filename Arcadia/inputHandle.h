@@ -35,7 +35,6 @@ public:
 	std::vector<dbHandle::inputItem>& inputHandle::getInputStates();
 	void inputHandle::waitAndUpdateInput(inputs input);
 
-
 private:
 	sf::Window *window;
 	dbHandle *db;

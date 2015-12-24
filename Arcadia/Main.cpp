@@ -81,10 +81,10 @@ int main()
 
 		ih.update(); //update inputs
 		
-		if(ih.inputPress(inputHandle::inputs::exit_game) && (launch.processRunning))
-		{
-			launch.terminate();
-		}
+		//if(ih.inputPress(inputHandle::inputs::exit_game) && (launch.processRunning))
+		//{
+		//	launch.terminate();
+		//}
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)

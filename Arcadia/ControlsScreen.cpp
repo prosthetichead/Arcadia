@@ -52,21 +52,29 @@ void ControlsScreen::init(dbHandle* db_ref, assetHandle* ah_ref, inputHandle* ih
 
 bool ControlsScreen::update()
 {
-	if (ih->inputPress(inputHandle::inputs::up) || ih->inputHold(inputHandle::inputs::up))
-		menuNav.move(MenuNavigation::movements::up);
-	
-	else if (ih->inputPress(inputHandle::inputs::down) || ih->inputHold(inputHandle::inputs::down))
-		menuNav.move(MenuNavigation::movements::down);
-	
-	else if (ih->inputPress(inputHandle::inputs::left) || ih->inputHold(inputHandle::inputs::left))
-		menuNav.move(MenuNavigation::movements::left);
-	
-	else if (ih->inputPress(inputHandle::inputs::right) || ih->inputHold(inputHandle::inputs::right))
-		menuNav.move(MenuNavigation::movements::right);
-	
-	else if (ih->inputPress(inputHandle::inputs::start_game) && !menuNav.selected)
-		menuNav.selected = true;
+	if (menuNav.selected){
+		if (menuNav.getCurrentType() == "input"){
+			
+			printf(menuNav.getCurrentID().c_str());
+		}
+	}
+	else {
+		if (ih->inputPress(inputHandle::inputs::up) || ih->inputHold(inputHandle::inputs::up))
+			menuNav.move(MenuNavigation::movements::up);
 
+		else if (ih->inputPress(inputHandle::inputs::down) || ih->inputHold(inputHandle::inputs::down))
+			menuNav.move(MenuNavigation::movements::down);
+
+		else if (ih->inputPress(inputHandle::inputs::left) || ih->inputHold(inputHandle::inputs::left))
+			menuNav.move(MenuNavigation::movements::left);
+
+		else if (ih->inputPress(inputHandle::inputs::right) || ih->inputHold(inputHandle::inputs::right))
+			menuNav.move(MenuNavigation::movements::right);
+
+		else if (ih->inputPress(inputHandle::inputs::start_game) && !menuNav.selected)
+			menuNav.selected = true;
+	}
+	
 
 	//if (selected) // Lets update be skipped first time so screen can be drawn before waiting for the key
 	//{
